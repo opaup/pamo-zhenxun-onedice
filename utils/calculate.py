@@ -10,3 +10,8 @@ def operatorCal(operator, num1, num2):
     else:
         result = 0
     return result
+
+
+# 根据rd结果获取数字形式的最终结果
+def getIntResultForRdResult():
+    return

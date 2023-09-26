@@ -20,4 +20,5 @@ def on_message(msg):
 # TODO 定时备份到数据库 || init时同步检测数据更新
 
 
-print(on_message(".r3d6-2d3test扩展消息"))
+print(on_message(".r2d"))
+

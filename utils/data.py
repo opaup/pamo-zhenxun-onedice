@@ -5,6 +5,7 @@ import json
 
 USERNAME = ""
 GROUPID = ""
+NICKNAME = ""
 
 datePath = Path() / "data" / "pdice"
 # 卡数据
@@ -23,8 +24,6 @@ tempPath = datePath / "temp"
 msgJsonPath = customPath / "msg.json"
 
 botJsonPath = customPath / "bot.json"
-
-NICKNAME = ""
 
 
 # 如果为真寻bot，则优先加载真寻bot配置文件中的nickname
@@ -87,7 +86,7 @@ def createGroupInfo(groupPath):
 
 def refreshUser():
     global USERNAME, GROUPID
-    USERNAME = "TEST12138"
+    USERNAME = "绪山美波里"
     GROUPID = "114514"
 
 
