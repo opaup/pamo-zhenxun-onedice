@@ -1,4 +1,5 @@
 import utils.dice as dice
+import utils.calculate as cal
 from sub.custom import reply
 from em.msgCode import msgCode
 import re
@@ -87,7 +88,7 @@ def doRd(a1, a2, b1, b2, operator, diceType, extMsg):
         if b1 == 0:
             return reply(msgCode.RD_ILLEGAL_FORMAT.name)
         if b2 == 0:
-            c = dice.calculate(operator, int(firstResult["result"]), b1)
+            c = cal.operatorCal(operator, int(firstResult["result"]), b1)
             equation.append(str(b1))
             equation.append("=")
             equation.append(str(c))
@@ -96,7 +97,7 @@ def doRd(a1, a2, b1, b2, operator, diceType, extMsg):
             equation.append("]")
         else:
             extResult = dice.xdy(b1, b2)
-            c = dice.calculate(operator, int(firstResult["result"]), int(extResult["result"]))
+            c = cal.operatorCal(operator, int(firstResult["result"]), int(extResult["result"]))
             equation.append(str(b1) + "d" + str(b2) + "=")
             equation.append(str(c))
             equation.append("[")
