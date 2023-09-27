@@ -6,6 +6,9 @@ import utils.data as dataSource
 
 def doRa():
     # 读取propName和算式
+
+    # 如果是数字不是propName
+
     #
     character = dataSource.getCurrentCharacter()
     # 如果character为空，则prop值默认为0

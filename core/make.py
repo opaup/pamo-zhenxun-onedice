@@ -1,3 +1,5 @@
+import random
+
 import utils.dice as dice
 from em.msgCode import msgCode
 from sub.custom import reply
@@ -40,8 +42,6 @@ def getOneCocCard():
     education = roll2d6And6_5()
     luck = roll3d6_5()
     sanity = power
-    damageB = "0"
-    build = "0"
 
     # 计算伤害加值和体格
     dbcount = int(strength) + int(size)
@@ -85,13 +85,14 @@ def getOneCocCard():
         f"力量:{strength} 敏捷:{dexterity} 意志:{power}\n",
         f"体质:{constitution} 魅力:{appearance} 教育:{education}\n",
         f"体型:{size} 智力:{intelligence} 幸运:{luck}\n",
-        f"血量:{health} 魔法:{mana} DB:{damageB}\n",
+        f"体力:{health} 魔法:{mana} DB:{damageB}\n",
         f"san:{sanity} 体格：{build}\n",
-        f"总值:{totalNoLuck}/{total}"
+        f"总值:{totalNoLuck}/{total}\n",
+        f"★———☆—————"
     ])
 
 
-def cocMaker(num):
+def cocMaker(num, msgData):
     resultList = []
     num = int(num)
 
@@ -100,7 +101,7 @@ def cocMaker(num):
         if not i == num - 1:
             resultList.append("\n")
     result = "".join(resultList)
-    return reply(msgCode.MAKE_CARD_COC.name, result)
+    return reply(msgCode.MAKE_CARD_COC7.name, result, msgData)
 
 
 def dndMaker():

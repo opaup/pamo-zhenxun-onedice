@@ -6,7 +6,7 @@ import re
 
 
 # rd
-def rdFlow(cmdStr, diceType):
+def rdFlow(cmdStr, diceType, msgData):
     a1 = 0
     a2 = 0
     b1 = 0
@@ -71,12 +71,12 @@ def rdFlow(cmdStr, diceType):
             extMsg = re.findall(r'\D+', cmdStr)
     extMsg = "".join(extMsg)
 
-    return getRdResult(a1=a1, a2=a2, b1=b1, b2=b2, operator=operator, diceType=diceType, extMsg=extMsg)
+    return getRdResult(a1=a1, a2=a2, b1=b1, b2=b2, operator=operator, diceType=diceType, extMsg=extMsg, msgData=msgData)
 
 
-def getRdResult(a1, a2, b1, b2, operator, diceType, extMsg):
+def getRdResult(a1, a2, b1, b2, operator, diceType, extMsg, msgData):
     resultStr = doRd(a1=a1, a2=a2, b1=b1, b2=b2, operator=operator, diceType=diceType, extMsg=extMsg)
-    return reply(msgCode.RD_RESULT.name, result=resultStr)
+    return reply(msgCode.RD_RESULT.name, result=resultStr, msgData=msgData)
 
 
 def doRd(a1, a2, b1, b2, operator, diceType, extMsg):

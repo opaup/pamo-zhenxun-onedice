@@ -1,6 +1,5 @@
 import json
 import utils.data as dataSource
-from utils.data import USERNAME, GROUPID
 
 msgJsonPath = dataSource.msgJsonPath
 botJsonPath = dataSource.botJsonPath
@@ -9,7 +8,7 @@ botJsonPath = dataSource.botJsonPath
 placeholders = {}
 
 
-def updatePlaceholders():
+def updatePlaceholders(msgData):
     with open(botJsonPath, 'r', encoding='utf-8') as f:
         data = json.load(f)
         placeholders.update(data)
@@ -18,19 +17,19 @@ def updatePlaceholders():
         placeholders.update(data)
     if dataSource.NICKNAME != "":
         data['NICKNAME'] = dataSource.NICKNAME
-    if dataSource.GROUPID != "":
-        data['GROUPID'] = dataSource.GROUPID
-    if dataSource.USERNAME != "":
-        data['USERNAME'] = dataSource.USERNAME
+    if msgData['GROUPID'] != "":
+        data['GROUPID'] = msgData['GROUPID']
+    if msgData['USERNAME'] != "":
+        data['USERNAME'] = msgData['USERNAME']
     placeholders.update(data)
 
 
-def reply(key, result):
-    updatePlaceholders()
+def reply(key, result, msgData):
+    updatePlaceholders(msgData)
     with open(msgJsonPath, 'r', encoding='utf-8') as f:
         data = json.load(f)
     if key not in data:
-        return dataSource.supple(msgJsonPath, key)
+        data[key] = dataSource.suppleMsg(msgJsonPath, key)
     value = replace_placeholders(data[key], result=result)
     return value
 

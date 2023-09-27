@@ -3,14 +3,14 @@ import template.jsonTemplate as jsonTemplate
 import importlib.util as importlibUtil
 import json
 
-USERNAME = ""
-USERID = ""
-GROUPID = ""
 NICKNAME = ""
 
+# 数据目录
 datePath = Path() / "data" / "pdice"
+# 用户数据
+usersPath = datePath / "users"
 # 卡数据
-characterPath = datePath / "character"
+charactersPath = datePath / "character"
 # 自定义
 customPath = datePath / "custom"
 # 状态
@@ -40,7 +40,8 @@ def loadNickName():
 
 
 def load_path():
-    characterPath.mkdir(parents=True, exist_ok=True)
+    charactersPath.mkdir(parents=True, exist_ok=True)
+    usersPath.mkdir(parents=True, exist_ok=True)
     customPath.mkdir(parents=True, exist_ok=True)
     statusPath.mkdir(parents=True, exist_ok=True)
     statisticsPath.mkdir(parents=True, exist_ok=True)
@@ -52,13 +53,31 @@ def load_path():
         create_msg(msgJsonPath)
 
 
-def supple(msgPath, msg):
+def suppleMsg(msgPath, msg):
     with open(msgPath, 'r', encoding='utf-8') as f:
         oldJson = json.load(f)
     oldJson[msg] = jsonTemplate.msgDefaultJson[msg]
     with msgPath.open('w', encoding='utf-8') as f:
         json.dump(oldJson, f, indent=4, ensure_ascii=False)
     return oldJson[msg]
+
+
+def suppleUser(userPath, item):
+    with open(userPath, 'r', encoding='utf-8') as f:
+        oldJson = json.load(f)
+    oldJson[item] = jsonTemplate.userDefaultJson[item]
+    with userPath.open('w', encoding='utf-8') as f:
+        json.dump(oldJson, f, indent=4, ensure_ascii=False)
+    return oldJson[item]
+
+
+def suppleGroup(groupPath, item):
+    with open(groupPath, 'r', encoding='utf-8') as f:
+        oldJson = json.load(f)
+    oldJson[item] = jsonTemplate.groupDefaultJson[item]
+    with groupPath.open('w', encoding='utf-8') as f:
+        json.dump(oldJson, f, indent=4, ensure_ascii=False)
+    return oldJson[item]
 
 
 def create_bot(bot_path):
@@ -80,8 +99,18 @@ def createGroupInfo(groupPath):
         json.dump(jsonTemplate.groupDefaultJson, f, indent=4, ensure_ascii=False)
 
 
-def getUserInfo(userPath):
-    return
+def createUserInfo(userPath):
+    with userPath.open('w', encoding='utf-8') as f:
+        json.dump(jsonTemplate.userDefaultJson, f, indent=4, ensure_ascii=False)
+
+
+def getUserInfo(userId):
+    userPath = usersPath / (userId + ".json")
+    if not userPath.exists():
+        createUserInfo(userPath)
+    with open(userPath, 'r', encoding='utf-8') as f:
+        userInfo = json.load(f)
+    return userInfo
 
 
 def getGroupInfo(groupId):
@@ -94,19 +123,71 @@ def getGroupInfo(groupId):
 
 
 def getCharacter(cardId):
-    return
+    characterPath = charactersPath / (cardId + ".json")
+    if not characterPath.exists():
+        return {}
+    with open(characterPath, 'r', encoding='utf-8') as f:
+        characterInfo = json.load(f)
+    return characterInfo
 
 
 def getCurrentCharacter(userId, groupId):
     # 角色卡默认是全局的，如果群有设置，则优先取群的
-    return
+    characterId = ""
+    if not groupId == "":
+        cardLock = getGroupItem(groupId, "cardLock")
+        if userId in cardLock:
+            characterId = cardLock[userId]
+        else:
+            characterId = getUserItem(userId, "currentCard")
+    else:
+        characterId = getUserItem(userId, "currentCard")
+    characterInfo = getCharacter(characterId)
+    return characterInfo
 
 
-def refreshUser():
-    global USERNAME, USERID, GROUPID
-    USERNAME = "绪山美波里"
-    USERID = "12138"
-    GROUPID = "114514"
+def getGroupItem(groupId, item):
+    userInfo = getGroupInfo(groupId)
+    if item not in userInfo:
+        groupPath = statusPath / (groupId + ".json")
+        userInfo[item] = suppleGroup(groupPath, item)
+    return userInfo[item]
+
+
+def getUserItem(userId, item):
+    userInfo = getUserInfo(userId)
+    if item not in userInfo:
+        userPath = usersPath / (userId + ".json")
+        userInfo[item] = suppleUser(userPath, item)
+    return userInfo[item]
+
+
+def saveUserItem(userId, item, value):
+    userInfo = getUserInfo(userId)
+    userInfo[item] = value
+    userPath = usersPath / (userId + ".json")
+    with userPath.open('w', encoding='utf-8') as f:
+        json.dump(userInfo, f, indent=4, ensure_ascii=False)
+
+
+def createCharacter(userId, newId, newJson):
+    characterPath = charactersPath / (userId + "_" + newId + ".json")
+    with characterPath.open('w', encoding='utf-8') as f:
+        json.dump(newJson, f, indent=4, ensure_ascii=False)
+
+
+def saveCharacterProp(cardId, prop, value):
+    charactersInfo = getCharacter(cardId)
+    charactersInfo["prop"][prop] = value
+    with userPath.open('w', encoding='utf-8') as f:
+        json.dump(oldJson, f, indent=4, ensure_ascii=False)
+
+
+def saveCharacterItem(cardId, item, value):
+    charactersInfo = getCharacter(cardId)
+    charactersInfo[item] = value
+    with userPath.open('w', encoding='utf-8') as f:
+        json.dump(oldJson, f, indent=4, ensure_ascii=False)
 
 
 load_path()
