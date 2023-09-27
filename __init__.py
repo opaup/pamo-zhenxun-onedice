@@ -8,10 +8,10 @@ from flow import doFlow
 # 入口
 def on_message(msg):
     msgData = {
-        "MSG": msg.replace(".", "").replace("。", ""),
-        "USERNAME": "绪山美波里",
-        "USERID": "000000000",
-        "GROUPID": "114514"
+        "msg": msg.replace(".", "").replace("。", ""),
+        "username": "绪山美波里",
+        "userId": "000000000",
+        "groupId": "114514"
     }
     result = doFlow(msgData)
     # 如果没有任何匹配的指令，则跳过

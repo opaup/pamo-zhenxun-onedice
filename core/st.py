@@ -7,8 +7,8 @@ import utils.data as dataSource
 
 
 def stFlow(msgStr, msgData):
-    groupId = msgData["GROUPID"]
-    userId = msgData["USERID"]
+    groupId = msgData["groupId"]
+    userId = msgData["userId"]
 
     isLock = False
     groupInfo = {}
@@ -65,11 +65,11 @@ def splitProp(cardName, cardProp, msgData):
 
 def saveCard(cardName, cardProp, msgData):
     card = splitProp(cardName, cardProp, msgData)
-    dataSource.createCharacter(msgData["USERID"], card["id"], card)
-    cardList = dataSource.getUserItem(msgData["USERID"], "cardList")
+    dataSource.createCharacter(msgData["userId"], card["id"], card)
+    cardList = dataSource.getUserItem(msgData["userId"], "cardList")
     cardList[cardName] = card["id"]
-    dataSource.saveUserItem(msgData["USERID"], "cardList", cardList)
+    dataSource.saveUserItem(msgData["userId"], "cardList", cardList)
     # 切换全局卡为当前新卡
-    dataSource.saveUserItem(msgData["USERID"], "currentCard", card["name"])
+    dataSource.saveUserItem(msgData["userId"], "currentCard", card["name"])
 
     return reply(msgCode.SAVE_CARD_SUCCESS.name, cardName, msgData)

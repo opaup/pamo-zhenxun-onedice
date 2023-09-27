@@ -13,10 +13,10 @@ username = ""
 def doFlow(msgData):
     global cmdStr, username, userId, groupId
     result = ""
-    cmdStr = msgData["MSG"]
-    groupId = msgData["GROUPID"]
-    userId = msgData["USERID"]
-    username = msgData["USERNAME"]
+    cmdStr = msgData["msg"]
+    groupId = msgData["groupId"]
+    userId = msgData["userId"]
+    username = msgData["username"]
     diceType = dataSource.getDiceType(groupId)
     cmdStr = cmdStr.lower().lstrip()
     print(cmdStr)
