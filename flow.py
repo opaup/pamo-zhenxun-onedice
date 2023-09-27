@@ -1,14 +1,13 @@
 from sub.custom import reply
 from em.msgCode import msgCode
 import utils.data as dataSource
-import core.make as maker
-import core.rd as rd
-import core.ra as ra
+from core import ra, rd, make, st
 import re
 
 
 def doFlow(cmdStr):
     result = ""
+    userId = dataSource.USERID
     groupId = dataSource.GROUPID
     diceType = dataSource.getDiceType(groupId)
     cmdStr = cmdStr.lower().lstrip()
@@ -21,7 +20,7 @@ def doFlow(cmdStr):
             num = int(cmdStr)
         except ValueError:
             num = 1
-        return maker.cocMaker(num)
+        return make.cocMaker(num)
     # dnd
     if re.match(r'^(dnd)', cmdStr):
         return reply(msgCode.NO_ACHIEVE_CMD.name)
@@ -36,7 +35,7 @@ def doFlow(cmdStr):
         return reply(msgCode.NO_ACHIEVE_CMD.name)
     # st
     if re.match(r'^(st|pc|nn)', cmdStr):
-        return stFlow(cmdStr)
+        return st.stFlow(cmdStr=cmdStr, userId=userId, groupId=groupId)
     # ra
     if re.match(r'^(ra)', cmdStr):
         return ra.doRa()
@@ -66,14 +65,7 @@ def doFlow(cmdStr):
     # return reply(msgCode.NO_COMMAND.name)
     return False
 
-
 # ===二级指令
 
 
 # st
-def stFlow(cmdStr):
-    print(cmdStr)
-    # cmdStr = re.sub("st", cmdStr, count=1)
-    # cmdStr = re.sub("pc", cmdStr, count=1)
-    # cmdStr = re.sub("nn", cmdStr, count=1)
-    return reply(msgCode.NO_ACHIEVE_CMD.name)

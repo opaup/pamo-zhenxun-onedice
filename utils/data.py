@@ -4,6 +4,7 @@ import importlib.util as importlibUtil
 import json
 
 USERNAME = ""
+USERID = ""
 GROUPID = ""
 NICKNAME = ""
 
@@ -71,12 +72,7 @@ def create_msg(msg_path):
 
 
 def getDiceType(groupId):
-    groupPath = statusPath / (groupId + ".json")
-    if not groupPath.exists():
-        createGroupInfo(groupPath)
-    with open(groupPath, 'r', encoding='utf-8') as f:
-        groupInfo = json.load(f)
-    return groupInfo['diceType']
+    return getGroupInfo(groupId)['diceType']
 
 
 def createGroupInfo(groupPath):
@@ -84,9 +80,32 @@ def createGroupInfo(groupPath):
         json.dump(jsonTemplate.groupDefaultJson, f, indent=4, ensure_ascii=False)
 
 
+def getUserInfo(userPath):
+    return
+
+
+def getGroupInfo(groupId):
+    groupPath = statusPath / (groupId + ".json")
+    if not groupPath.exists():
+        createGroupInfo(groupPath)
+    with open(groupPath, 'r', encoding='utf-8') as f:
+        groupInfo = json.load(f)
+    return groupInfo
+
+
+def getCharacter(cardId):
+    return
+
+
+def getCurrentCharacter(userId, groupId):
+    # 角色卡默认是全局的，如果群有设置，则优先取群的
+    return
+
+
 def refreshUser():
-    global USERNAME, GROUPID
+    global USERNAME, USERID, GROUPID
     USERNAME = "绪山美波里"
+    USERID = "12138"
     GROUPID = "114514"
 
 

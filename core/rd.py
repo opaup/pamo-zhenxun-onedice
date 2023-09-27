@@ -33,7 +33,13 @@ def rdFlow(cmdStr, diceType):
         a1 = 1
         a2 = diceType
     else:
-        a1 = int(m)
+        try:
+            a1 = int(m)
+        except ValueError:
+            a1 = 1
+            extMsg = m
+        finally:
+            cmdStr = cmdStr.replace(m, "")
         # 判断是否存在附加表达式
         if not re.search(r'[+\-*/]', cmdStr):
             if cmdStr != "":

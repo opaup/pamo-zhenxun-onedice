@@ -7,3 +7,4 @@ class msgCode(Enum):
     ILLEGAL_FORMAT = ("ILLEGAL_FORMAT", "格式非法")
     RD_ILLEGAL_FORMAT = ("RD_ILLEGAL_FORMAT", "RD格式非法")
     RD_RESULT = ("RD_RESULT", "RD结果")
+    MAKE_CARD_COC = ("MAKE_CARD_COC", "角色卡作成")
