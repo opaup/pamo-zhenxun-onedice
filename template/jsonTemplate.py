@@ -10,7 +10,12 @@ msgDefaultJson = {
     "RD_RESULT": "{NICKNAME}为[{USERNAME}]掷出了：{RESULT}",
     "MAKE_CARD_COC7": "[{USERNAME}]的coc7th角色卡作成：\n{RESULT}",
     "NO_CARD": "[{USERNAME}]的包包中没有角色卡哦！",
-    "SAVE_CARD_SUCCESS": "已为[{USERNAME}]成功创建角色卡：{RESULT}"
+    "SAVE_CARD_SUCCESS": "已为[{USERNAME}]成功创建角色卡：{RESULT}",
+    "UPDATE_CARD_SUCCESS": "{RESULT}的值是⑨是吗？{NICKNAME}记住了！",
+    "SWITCH_CARD_SUCCESS": "[{USERNAME}]已切换到身份：{RESULT}",
+    "NOT_FOUND_CARD": "从[{USERNAME}]的包包里找不到名为{RESULT}的卡哦（？）",
+    "CARD_NAME_TOO_LONG": "目前规定单卡昵称不应大于18字",
+    "CARD_IN_GROUP_LOCKED": "已在本群锁卡。无法切换"
 }
 
 groupDefaultJson = {

@@ -170,24 +170,26 @@ def saveUserItem(userId, item, value):
         json.dump(userInfo, f, indent=4, ensure_ascii=False)
 
 
-def createCharacter(userId, newId, newJson):
-    characterPath = charactersPath / (userId + "_" + newId + ".json")
+def createCharacter(newId, newJson):
+    characterPath = charactersPath / (newId + ".json")
     with characterPath.open('w', encoding='utf-8') as f:
         json.dump(newJson, f, indent=4, ensure_ascii=False)
 
 
 def saveCharacterProp(cardId, prop, value):
+    characterPath = charactersPath / (cardId + ".json")
     charactersInfo = getCharacter(cardId)
     charactersInfo["prop"][prop] = value
-    with userPath.open('w', encoding='utf-8') as f:
-        json.dump(oldJson, f, indent=4, ensure_ascii=False)
+    with characterPath.open('w', encoding='utf-8') as f:
+        json.dump(charactersInfo, f, indent=4, ensure_ascii=False)
 
 
 def saveCharacterItem(cardId, item, value):
+    characterPath = charactersPath / (cardId + ".json")
     charactersInfo = getCharacter(cardId)
     charactersInfo[item] = value
-    with userPath.open('w', encoding='utf-8') as f:
-        json.dump(oldJson, f, indent=4, ensure_ascii=False)
+    with characterPath.open('w', encoding='utf-8') as f:
+        json.dump(charactersInfo, f, indent=4, ensure_ascii=False)
 
 
 load_path()
