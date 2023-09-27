@@ -17,10 +17,10 @@ def updatePlaceholders(msgData):
         placeholders.update(data)
     if dataSource.NICKNAME != "":
         data['NICKNAME'] = dataSource.NICKNAME
-    if msgData['GROUPID'] != "":
-        data['GROUPID'] = msgData['GROUPID']
-    if msgData['USERNAME'] != "":
-        data['USERNAME'] = msgData['USERNAME']
+    if msgData['groupId'] != "":
+        data['GROUPID'] = msgData['groupId']
+    if msgData['username'] != "":
+        data['USERNAME'] = msgData['username']
     placeholders.update(data)
 
 
