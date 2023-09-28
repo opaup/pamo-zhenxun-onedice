@@ -11,7 +11,10 @@ def on_message(msg):
         "msg": msg.replace(".", "").replace("。", ""),
         "username": "绪山美波里",
         "userId": "000000000",
-        "groupId": "114514"
+        # "msgType": "private",
+        "msgType": "group",
+        "groupId": "114514",
+        "groupName": "测试群",
     }
     result = doFlow(msgData)
     # 如果没有任何匹配的指令，则跳过
@@ -23,6 +26,6 @@ def on_message(msg):
 
 # TODO 定时备份到数据库 || init时同步检测数据更新
 
-msg = ".st 犬神香2"
-print(on_message(msg))
+msgStr = ".sc2d3/3d4"
+print(on_message(msgStr))
 

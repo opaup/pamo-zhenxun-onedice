@@ -131,9 +131,8 @@ def getCharacter(cardId):
     return characterInfo
 
 
-def getCurrentCharacter(userId, groupId):
+def getCurrentCharacter(userId, groupId=""):
     # 角色卡默认是全局的，如果群有设置，则优先取群的
-    characterId = ""
     if not groupId == "":
         cardLock = getGroupItem(groupId, "cardLock")
         if userId in cardLock:
@@ -170,6 +169,13 @@ def saveUserItem(userId, item, value):
         json.dump(userInfo, f, indent=4, ensure_ascii=False)
 
 
+def saveUserInfo(userId, value):
+    userInfo = value
+    userPath = usersPath / (userId + ".json")
+    with userPath.open('w', encoding='utf-8') as f:
+        json.dump(userInfo, f, indent=4, ensure_ascii=False)
+
+
 def createCharacter(newId, newJson):
     characterPath = charactersPath / (newId + ".json")
     with characterPath.open('w', encoding='utf-8') as f:
@@ -190,6 +196,14 @@ def saveCharacterItem(cardId, item, value):
     charactersInfo[item] = value
     with characterPath.open('w', encoding='utf-8') as f:
         json.dump(charactersInfo, f, indent=4, ensure_ascii=False)
+
+
+def getGroupIdAndName(msgData):
+    groupId = ""
+    groupName = ""
+    if msgData["msgType"] == "group":
+        msgData
+    return
 
 
 load_path()

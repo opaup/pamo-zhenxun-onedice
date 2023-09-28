@@ -6,7 +6,8 @@ import re
 
 
 # rd
-def rdFlow(cmdStr, diceType, msgData):
+def rdFlow(cmdStr, msgData):
+    diceType = "100"
     a1 = 0
     a2 = 0
     b1 = 0
@@ -14,6 +15,9 @@ def rdFlow(cmdStr, diceType, msgData):
     m = ""
     operator = ""
     extMsg = ""
+    if msgData["msgType"] == "group":
+        groupId = msgData["groupId"]
+        diceType = dataSource.getDiceType(groupId)
     cmdStr = re.sub("r", "", cmdStr, count=1)
     # 判断是否包含d，如包含，则取d之前的内容
     if cmdStr.find('d') != -1:
@@ -76,7 +80,7 @@ def rdFlow(cmdStr, diceType, msgData):
 
 def getRdResult(a1, a2, b1, b2, operator, diceType, extMsg, msgData):
     resultStr = doRd(a1=a1, a2=a2, b1=b1, b2=b2, operator=operator, diceType=diceType, extMsg=extMsg)
-    return reply(msgCode.RD_RESULT.name, result=resultStr, msgData=msgData)
+    return reply(msgCode.RD_RESULT.name, msgData, resultStr)
 
 
 def doRd(a1, a2, b1, b2, operator, diceType, extMsg):

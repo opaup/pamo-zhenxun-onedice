@@ -20,16 +20,18 @@ def stFlow(msgStr, msgData):
     # 读取当前环境下的卡，是否存在
     characterInfo = dataSource.getCurrentCharacter(userId, groupId)
 
+    # 判断是否存在 + - * / ，可能为修改
+
     if "-" in msgStr:
         # 包含 - 为创建/修改
         cmds = msgStr.split("-")
         if not len(cmds) == 2:
-            return reply(msgCode.ILLEGAL_FORMAT.name, "", msgData)
+            return reply(msgCode.ILLEGAL_FORMAT.name, msgData)
         # 规定单卡昵称不应大于18字
         cardName = cmds[0].strip()
         cardProp = cmds[1].strip()
         if len(cardName) > 18:
-            return reply(msgCode.CARD_NAME_TOO_LONG.name, "", msgData)
+            return reply(msgCode.CARD_NAME_TOO_LONG.name, msgData)
 
         # 判断是否存在同名卡，如是则为更新卡
         cardList = dataSource.getUserItem(userId, "cardList")
@@ -42,12 +44,12 @@ def stFlow(msgStr, msgData):
     cardList = dataSource.getUserItem(msgData["userId"], "cardList")
     if msgStr in cardList:
         if isLock:
-            return reply(msgCode.CARD_IN_GROUP_LOCKED.name, "", msgData)
+            return reply(msgCode.CARD_IN_GROUP_LOCKED.name, msgData)
         return switchCard(msgStr, cardList, msgData)
 
     if len(characterInfo) == 0:
-        return reply(msgCode.NO_CARD.name, "", msgData)
-    return reply(msgCode.NO_COMMAND.name, "", msgData)
+        return reply(msgCode.NO_CARD.name, msgData)
+    return reply(msgCode.NO_COMMAND.name, msgData)
 
 
 def splitProp(card, cardProp):
@@ -77,7 +79,7 @@ def newCard(cardName, cardProp, msgData):
     # 切换全局卡为当前新卡
     dataSource.saveUserItem(msgData["userId"], "currentCard", card["name"])
 
-    return reply(msgCode.SAVE_CARD_SUCCESS.name, cardName, msgData)
+    return reply(msgCode.SAVE_CARD_SUCCESS.name, msgData, cardName)
 
 
 def updateCurrentCard():
@@ -92,13 +94,13 @@ def updateCard(cardName, cardId, cardProp, msgData):
         if k in prop:
             prop[k] = v
     dataSource.saveCharacterItem(cardId, "prop", prop)
-    return reply(msgCode.UPDATE_CARD_SUCCESS.name, cardName, msgData)
+    return reply(msgCode.UPDATE_CARD_SUCCESS.name, msgData, cardName)
 
 
 def switchCard(cardName, cardList, msgData):
     dataSource.saveUserItem(msgData["userId"], "currentCardName", cardName)
     dataSource.saveUserItem(msgData["userId"], "currentCard", cardList[cardName])
-    return reply(msgCode.SWITCH_CARD_SUCCESS.name, cardName, msgData)
+    return reply(msgCode.SWITCH_CARD_SUCCESS.name, msgData, cardName)
 
 
 def showCard():

@@ -15,12 +15,24 @@ msgDefaultJson = {
     "SWITCH_CARD_SUCCESS": "[{USERNAME}]已切换到身份：{RESULT}",
     "NOT_FOUND_CARD": "从[{USERNAME}]的包包里找不到名为{RESULT}的卡哦（？）",
     "CARD_NAME_TOO_LONG": "目前规定单卡昵称不应大于18字",
-    "CARD_IN_GROUP_LOCKED": "已在本群锁卡。无法切换"
+    "CARD_IN_GROUP_LOCKED": "已在本群锁卡。无法切换",
+    "ROLL_FAIL": "掷骰出错了",
+    "ROLL_CHECK_SUCCESS": "{NICKNAME}为[{PCNAME}]进行{EXT1}检定：{RESULT}【{EXT2}】",
+    "ROLL_CHECK_HARD_SUCCESS": "{NICKNAME}为[{PCNAME}]进行{EXT1}检定：{RESULT}【{EXT2}】",
+    "ROLL_CHECK_EXT_HARD_SUCCESS": "{NICKNAME}为[{PCNAME}]进行{EXT1}检定：{RESULT}【{EXT2}】",
+    "ROLL_CHECK_GREAT_SUCCESS": "{NICKNAME}为[{PCNAME}]进行{EXT1}检定：{RESULT}【{EXT2}】",
+    "ROLL_CHECK_FAIL": "{NICKNAME}为[{PCNAME}]进行{EXT1}检定：{RESULT}【{EXT2}】",
+    "ROLL_CHECK_GREAT_FAIL": "{NICKNAME}为[{PCNAME}]进行{EXT1}检定：{RESULT}【{EXT2}】",
+    "SC_CHECK_SUCCESS": "[{PCNAME}]进行san检定：{RESULT}\n扣除san值：{EXT1} 剩余san值：{EXT2}",
+    "SC_CHECK_GREAT_SUCCESS": "[{PCNAME}]进行san检定：{RESULT}\n扣除san值：{EXT1} 剩余san值：{EXT2}",
+    "SC_CHECK_FAIL": "[{PCNAME}]进行san检定：{RESULT}\n扣除san值：{EXT1} 剩余san值：{EXT2}",
+    "SC_CHECK_GREAT_FAIL": "[{PCNAME}]进行san检定：{RESULT}\n扣除san值：{EXT1} 剩余san值：{EXT2}",
 }
 
 groupDefaultJson = {
     "onOff": "on",
     "diceType": "100",
+    "ruleType": "1",
     "isNotice": False,
     "cardLock": {}
 }

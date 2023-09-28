@@ -101,7 +101,7 @@ def cocMaker(num, msgData):
         if not i == num - 1:
             resultList.append("\n")
     result = "".join(resultList)
-    return reply(msgCode.MAKE_CARD_COC7.name, result, msgData)
+    return reply(msgCode.MAKE_CARD_COC7.name, msgData, result)
 
 
 def dndMaker():
