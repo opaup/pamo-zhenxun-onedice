@@ -6,14 +6,16 @@ from sub.custom import reply
 from em.msgCode import msgCode
 from template import propDic
 import utils.data as dataSource
+from core.aspect import rd_before
 
 
+@rd_before
 async def sc(cmdStr, msgData):
     a1 = ""
     a2 = ""
     b1 = ""
     b2 = ""
-    propValue = "0"
+    intelligent = "0"
     # 判断格式
     slashes = re.findall(r'[/|]', cmdStr)
     if len(slashes) != 1:
@@ -39,16 +41,17 @@ async def sc(cmdStr, msgData):
         b1 = failReduce
 
     # 检定
-    propName = "san"
-    raCal = ra.doRaCal(propName, msgData)
+    raCal = await ra.doRaCal("灵感", msgData)
+    card = await dataSource.getCurrentCharacter(msgData['userId'], msgData['groupId'])
+    san = card['prop']['san']
     cardId = raCal["cardId"]
     pcname = raCal["pcname"]
-    propValue = raCal["propValue"]
+    intelligent = raCal["propValue"]
     checkNum = raCal["checkNum"]
     ruleType = raCal["ruleType"]
-    oldPropValue = propValue
-    raResult = await ra.checkResult(propValue, checkNum, ruleType)
-    checkStr = ra.getCheckStrAndRecord(raResult, msgData)
+    oldSan = san
+    raResult = await ra.checkResult(intelligent, checkNum, ruleType)
+    checkStr = await ra.getCheckStrAndRecord(raResult, msgData)
     if raResult <= 4:
         # 成功减少
         # 大成功
@@ -56,26 +59,37 @@ async def sc(cmdStr, msgData):
             resultReduce = a1
             ext1 = rf"{a1}"
         else:
-            resultReduce = await dice.xdy(a1, a2)["result"]
-            ext1 = rf"{a1}d{a2}={resultReduce}"
+            if not a2 == "":
+                xdy = await dice.xdy(a1, a2)
+                resultReduce = xdy["result"]
+                ext1 = rf"{a1}d{a2}={resultReduce}"
+            else:
+                resultReduce = a1
+                ext1 = rf"{resultReduce}"
     else:
         # 失败减少
         # 大失败
         if raResult == 6:
-            resultReduce = int(b1) * int(b2)
+            resultReduce = int(b1)
+            if not b2 == "":
+                resultReduce = int(b1) * int(b2)
             ext1 = rf"{resultReduce}"
         else:
-            resultReduce = await dice.xdy(b1, b2)["result"]
-            ext1 = rf"{b1}d{b2}={resultReduce}"
-
+            if not b2 == "":
+                xdy = await dice.xdy(b1, b2)
+                resultReduce = xdy["result"]
+                ext1 = rf"{b1}d{b2}={resultReduce}"
+            else:
+                resultReduce = b1
+                ext1 = rf"{resultReduce}"
     # resultReduce {'equation': '(3+1)', 'result': '4'}
-    propValue = int(propValue) - int(resultReduce)
-    result = rf"{checkNum}/{oldPropValue}[{checkStr}]"
-    ext2 = rf"{propValue}"
+    san = int(san) - int(resultReduce)
+    result = rf"{checkNum}/{intelligent}[{checkStr}]"
+    ext2 = rf"{san}"
     # 保存
     propAlias = propDic.propName["san"]
     for alias in propAlias:
-        await dataSource.saveCharacterProp(cardId, alias, propValue)
+        await dataSource.saveCharacterProp(cardId, alias, san)
 
     if raResult <= 4:
         if raResult == 1:

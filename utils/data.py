@@ -187,7 +187,7 @@ async def createCharacter(newId, newJson):
 
 async def saveCharacterProp(cardId, prop, value):
     characterPath = charactersPath / (cardId + ".json")
-    charactersInfo = getCharacter(cardId)
+    charactersInfo = await getCharacter(cardId)
     charactersInfo["prop"][prop] = value
     with characterPath.open('w', encoding='utf-8') as f:
         json.dump(charactersInfo, f, indent=4, ensure_ascii=False)
@@ -195,7 +195,7 @@ async def saveCharacterProp(cardId, prop, value):
 
 async def saveCharacterItem(cardId, item, value):
     characterPath = charactersPath / (cardId + ".json")
-    charactersInfo = getCharacter(cardId)
+    charactersInfo = await getCharacter(cardId)
     charactersInfo[item] = value
     with characterPath.open('w', encoding='utf-8') as f:
         json.dump(charactersInfo, f, indent=4, ensure_ascii=False)
