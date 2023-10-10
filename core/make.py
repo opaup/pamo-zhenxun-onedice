@@ -5,7 +5,7 @@ from em.msgCode import msgCode
 from sub.custom import reply
 
 
-def roll3d6():
+async def roll3d6():
     a = 0
     for i in range(3):
         d = dice.roll(6)
@@ -13,12 +13,12 @@ def roll3d6():
     return str(a)
 
 
-def roll3d6_5():
+async def roll3d6_5():
     a = int(roll3d6()) * 5
     return str(a)
 
 
-def roll2d6And6():
+async def roll2d6And6():
     a = 0
     for i in range(2):
         d = dice.roll(6)
@@ -26,12 +26,12 @@ def roll2d6And6():
     return str(a)
 
 
-def roll2d6And6_5():
+async def roll2d6And6_5():
     a = int(roll2d6And6()) * 5
     return str(a)
 
 
-def getOneCocCard():
+async def getOneCocCard():
     strength = roll3d6_5()
     constitution = roll3d6_5()
     size = roll2d6And6_5()
@@ -92,7 +92,7 @@ def getOneCocCard():
     ])
 
 
-def cocMaker(num, msgData):
+async def cocMaker(num, msgData):
     resultList = []
     num = int(num)
 
@@ -104,13 +104,13 @@ def cocMaker(num, msgData):
     return reply(msgCode.MAKE_CARD_COC7.name, msgData, result)
 
 
-def dndMaker():
+async def dndMaker():
     return
 
 
-def coc5thMaker():
+async def coc5thMaker():
     return
 
 
-def cochildMaker():
+async def cochildMaker():
     return

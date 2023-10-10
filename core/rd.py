@@ -6,7 +6,7 @@ import re
 
 
 # rd
-def rdFlow(cmdStr, msgData):
+async def rdFlow(cmdStr, msgData):
     diceType = "100"
     a1 = 0
     a2 = 0
@@ -78,12 +78,12 @@ def rdFlow(cmdStr, msgData):
     return getRdResult(a1=a1, a2=a2, b1=b1, b2=b2, operator=operator, diceType=diceType, extMsg=extMsg, msgData=msgData)
 
 
-def getRdResult(a1, a2, b1, b2, operator, diceType, extMsg, msgData):
+async def getRdResult(a1, a2, b1, b2, operator, diceType, extMsg, msgData):
     resultStr = doRd(a1=a1, a2=a2, b1=b1, b2=b2, operator=operator, diceType=diceType, extMsg=extMsg)
     return reply(msgCode.RD_RESULT.name, msgData, resultStr)
 
 
-def doRd(a1, a2, b1, b2, operator, diceType, extMsg):
+async def doRd(a1, a2, b1, b2, operator, diceType, extMsg):
     result = []
     if a1 == 0:
         a1 = 1

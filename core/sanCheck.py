@@ -8,7 +8,7 @@ from template import propDic
 import utils.data as dataSource
 
 
-def sc(cmdStr, msgData):
+async def sc(cmdStr, msgData):
     a1 = ""
     a2 = ""
     b1 = ""
@@ -47,7 +47,7 @@ def sc(cmdStr, msgData):
     checkNum = raCal["checkNum"]
     ruleType = raCal["ruleType"]
     oldPropValue = propValue
-    raResult = ra.checkResult(propValue, checkNum, ruleType)
+    raResult = await ra.checkResult(propValue, checkNum, ruleType)
     checkStr = ra.getCheckStrAndRecord(raResult, msgData)
     if raResult <= 4:
         # 成功减少
@@ -75,18 +75,18 @@ def sc(cmdStr, msgData):
     # 保存
     propAlias = propDic.propName["san"]
     for alias in propAlias:
-        dataSource.saveCharacterProp(cardId, alias, propValue)
+        await dataSource.saveCharacterProp(cardId, alias, propValue)
 
     if raResult <= 4:
         if raResult == 1:
-            return reply(msgCode.SC_CHECK_GREAT_SUCCESS.name, msgData, pcname=pcname, result=result, ext1=ext1,
-                         ext2=ext2)
+            return await reply(msgCode.SC_CHECK_GREAT_SUCCESS.name, msgData, pcname=pcname, result=result, ext1=ext1,
+                               ext2=ext2)
         else:
-            return reply(msgCode.SC_CHECK_SUCCESS.name, msgData, pcname=pcname, result=result, ext1=ext1, ext2=ext2)
+            return await reply(msgCode.SC_CHECK_SUCCESS.name, msgData, pcname=pcname, result=result, ext1=ext1,
+                               ext2=ext2)
     else:
         if raResult == 6:
-            return reply(msgCode.SC_CHECK_GREAT_FAIL.name, msgData, pcname=pcname, result=result, ext1=ext1, ext2=ext2)
+            return await reply(msgCode.SC_CHECK_GREAT_FAIL.name, msgData, pcname=pcname, result=result, ext1=ext1,
+                               ext2=ext2)
         else:
-            return reply(msgCode.SC_CHECK_FAIL.name, msgData, pcname=pcname, result=result, ext1=ext1, ext2=ext2)
-
-
+            return await reply(msgCode.SC_CHECK_FAIL.name, msgData, pcname=pcname, result=result, ext1=ext1, ext2=ext2)

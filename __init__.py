@@ -6,7 +6,7 @@ from flow import doFlow
 
 
 # 入口
-def on_message(msg):
+async def on_message(msg):
     msgData = {
         "msg": msg.replace(".", "").replace("。", ""),
         "username": "绪山美波里",
@@ -15,8 +15,9 @@ def on_message(msg):
         "msgType": "group",
         "groupId": "114514",
         "groupName": "测试群",
+        "isAdmin": False,
     }
-    result = doFlow(msgData)
+    result = await doFlow(msgData)
     # 如果没有任何匹配的指令，则跳过
     if type(result) == bool:
         if not result:

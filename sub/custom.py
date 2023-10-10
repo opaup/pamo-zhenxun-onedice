@@ -8,7 +8,7 @@ botJsonPath = dataSource.botJsonPath
 placeholders = {}
 
 
-def updatePlaceholders(msgData):
+async def updatePlaceholders(msgData):
     with open(botJsonPath, 'r', encoding='utf-8') as f:
         data = json.load(f)
         placeholders.update(data)
@@ -25,8 +25,8 @@ def updatePlaceholders(msgData):
     placeholders.update(data)
 
 
-def reply(key, msgData, result="", pcname="", ext1="", ext2=""):
-    updatePlaceholders(msgData)
+async def reply(key, msgData, result="", pcname="", ext1="", ext2=""):
+    await updatePlaceholders(msgData)
     with open(msgJsonPath, 'r', encoding='utf-8') as f:
         data = json.load(f)
     if key not in data:
@@ -36,7 +36,7 @@ def reply(key, msgData, result="", pcname="", ext1="", ext2=""):
 
 
 # 替换占位符
-def replace_placeholders(text, result="", pcname="", ext1="", ext2=""):
+async def replace_placeholders(text, result="", pcname="", ext1="", ext2=""):
     for placeholder, value in placeholders.items():
         placeholder_with_braces = "{" + placeholder + "}"
         text = text.replace(placeholder_with_braces, value)

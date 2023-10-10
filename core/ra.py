@@ -8,7 +8,7 @@ from em.msgCode import msgCode
 from sub.custom import reply
 
 
-def doRa(cmdStr, msgData):
+async def doRa(cmdStr, msgData):
     calResult = doRaCal(cmdStr, msgData)
     pcname = calResult["pcname"]
     ruleType = calResult["ruleType"]
@@ -45,7 +45,7 @@ def doRa(cmdStr, msgData):
     return
 
 
-def getCheckStrAndRecord(checkResultNum, msgData):
+async def getCheckStrAndRecord(checkResultNum, msgData):
     checkStr = ""
     if checkResultNum == 0:
         checkStr = "错误"
@@ -76,20 +76,20 @@ def getCheckStrAndRecord(checkResultNum, msgData):
             if checkResultNum == 6:
                 greatFailRollNum = userInfo["greatFailRollNum"]
                 userInfo["greatFailRollNum"] = greatFailRollNum + 1
-        dataSource.saveUserInfo(msgData["userId"], userInfo)
+        await dataSource.saveUserInfo(msgData["userId"], userInfo)
     return checkStr
 
 
 # 进行房规检定，并得到检定结果
 # 0 出错了 1 大成功 2 极难成功 3 困难成功 4 成功 5 失败 6 大失败
-def checkResult(propValue, checkNum, ruleType):
+async def checkResult(propValue, checkNum, ruleType):
     result = 0
     if ruleType == "1":
         result = propUtil.check1(propValue, checkNum)
     return result
 
 
-def doRaCal(cmdStr, msgData):
+async def doRaCal(cmdStr, msgData):
     cardId = ""
     propName = ""
     propValue = ""

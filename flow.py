@@ -5,7 +5,7 @@ from core import ra, rd, make, st, sanCheck
 import re
 
 
-def doFlow(msgData):
+async def doFlow(msgData):
     cmdStr = msgData["msg"].lower().lstrip()
     print(cmdStr)
 
@@ -18,52 +18,52 @@ def doFlow(msgData):
             num = int(cmdStr)
         except ValueError:
             num = 1
-        return make.cocMaker(num, msgData)
+        return await make.cocMaker(num, msgData)
     # dnd
     if re.match(r'^(dnd)', cmdStr):
-        return reply(msgCode.NO_ACHIEVE_CMD.name, msgData)
+        return await reply(msgCode.NO_ACHIEVE_CMD.name, msgData)
     # coc5th
     if re.match(r'^(coc5th)', cmdStr):
-        return reply(msgCode.NO_ACHIEVE_CMD.name, msgData)
+        return await reply(msgCode.NO_ACHIEVE_CMD.name, msgData)
     # cochild
     if re.match(r'^(cochild)', cmdStr):
-        return reply(msgCode.NO_ACHIEVE_CMD.name, msgData)
+        return await reply(msgCode.NO_ACHIEVE_CMD.name, msgData)
     # rh
     if re.match(r'^(rh)', cmdStr):
-        return reply(msgCode.NO_ACHIEVE_CMD.name, msgData)
+        return await reply(msgCode.NO_ACHIEVE_CMD.name, msgData)
     # st
     if re.match(r'^(st|pc|nn)', cmdStr):
         cmdStr = re.sub(r'\b(st|pc|nn)\b', "", cmdStr, count=1).strip()
-        return st.stFlow(cmdStr, msgData)
+        return await st.stFlow(cmdStr, msgData)
     # ra
     if re.match(r'^(ra)', cmdStr):
         cmdStr = re.sub(r'ra', "", cmdStr, count=1).strip()
-        return ra.doRa(cmdStr, msgData)
+        return await ra.doRa(cmdStr, msgData)
     # sc
     if re.match(r'^(sc)', cmdStr):
         cmdStr = re.sub(r'sc', "", cmdStr, count=1).strip()
-        return sanCheck.sc(cmdStr, msgData)
+        return await sanCheck.sc(cmdStr, msgData)
     # rc
     if re.match(r'^(rc)', cmdStr):
-        return reply(msgCode.NO_ACHIEVE_CMD.name, msgData)
+        return await reply(msgCode.NO_ACHIEVE_CMD.name, msgData)
     # rb
     if re.match(r'^(rb)', cmdStr):
-        return reply(msgCode.NO_ACHIEVE_CMD.name, msgData)
+        return await reply(msgCode.NO_ACHIEVE_CMD.name, msgData)
     # rp
     if re.match(r'^(rp)', cmdStr):
-        return reply(msgCode.NO_ACHIEVE_CMD.name, msgData)
+        return await reply(msgCode.NO_ACHIEVE_CMD.name, msgData)
     # npc
     if re.match(r'^(npc)', cmdStr):
-        return reply(msgCode.NO_ACHIEVE_CMD.name, msgData)
+        return await reply(msgCode.NO_ACHIEVE_CMD.name, msgData)
 
     # rd单独最后处理（如果前面都没匹配上，则执行rd
     rdPattern = r'(?:r(?:\\d{1,2})?(?:d\\w{0,16}|$)|r)(.*)'
     if re.match(rdPattern, cmdStr):
         try:
-            return rd.rdFlow(cmdStr, diceType, msgData)
+            return await rd.rdFlow(cmdStr, diceType, msgData)
         except ValueError:
-            return reply(msgCode.ILLEGAL_FORMAT.name, msgData)
-    # return reply(msgCode.NO_COMMAND.name)
+            return await reply(msgCode.ILLEGAL_FORMAT.name, msgData)
+    # return await reply(msgCode.NO_COMMAND.name)
     return False
 
 # ===二级指令

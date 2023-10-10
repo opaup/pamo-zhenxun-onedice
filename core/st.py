@@ -4,21 +4,31 @@ import re
 from sub.custom import reply
 from em.msgCode import msgCode
 import utils.data as dataSource
+from utils import strUtil
+
+helpDic = ["help", "帮助"]
+showDic = ["show", "查看", "info"]
 
 
-def stFlow(msgStr, msgData):
-    groupId = msgData["groupId"]
-    userId = msgData["userId"]
-
+async def stFlow(msgStr, msgData):
     isLock = False
-    groupInfo = {}
-    if groupId == "":
-        isLock = True
-    else:
-        groupInfo = dataSource.getGroupInfo(groupId)
+    userId = msgData["userId"]
+    groupId = ""
+    if msgData["groupId"]:
+        groupId = msgData["groupId"]
+        cardLock = dataSource.getGroupItem(groupId, "cardLock")
+        for ids in cardLock:
+            lockedUser = re.split("_", ids)
+            if userId == lockedUser:
+                isLock = True
 
-    # 读取当前环境下的卡，是否存在
-    characterInfo = dataSource.getCurrentCharacter(userId, groupId)
+    # 判断 二级指令
+    cmdSplit = re.split(" ", msgStr)
+    if len(cmdSplit) >= 1:
+        if cmdSplit[0] in helpDic:
+            return stHelp
+        if cmdSplit[0] in showDic:
+            return showCard(msgStr, msgData)
 
     # 判断是否存在 + - * / ，可能为修改
 
@@ -44,15 +54,17 @@ def stFlow(msgStr, msgData):
     cardList = dataSource.getUserItem(msgData["userId"], "cardList")
     if msgStr in cardList:
         if isLock:
-            return reply(msgCode.CARD_IN_GROUP_LOCKED.name, msgData)
+            return await reply(msgCode.CARD_IN_GROUP_LOCKED.name, msgData)
         return switchCard(msgStr, cardList, msgData)
 
-    if len(characterInfo) == 0:
-        return reply(msgCode.NO_CARD.name, msgData)
-    return reply(msgCode.NO_COMMAND.name, msgData)
+    # 读取当前环境下的卡，是否存在（切换角色卡）
+    characterInfo = dataSource.getCurrentCharacter(userId, groupId)
+    if characterInfo:
+        return await reply(msgCode.NO_CARD.name, msgData)
+    return await reply(msgCode.NO_COMMAND.name, msgData)
 
 
-def splitProp(card, cardProp):
+async def splitProp(card, cardProp):
     # 拆分属性键值对放在字典中
     regex = "(?<=\\D)(?=\\d)|(?<=\\d)(?=\\D)"
     parts = re.split(regex, cardProp)
@@ -66,46 +78,52 @@ def splitProp(card, cardProp):
     return card
 
 
-def newCard(cardName, cardProp, msgData):
+async def newCard(cardName, cardProp, msgData):
     card = {
         "name": cardName,
         "id": msgData["userId"] + "_" + str((int(time.time()) * 1000) // 1)
     }
     card = splitProp(card, cardProp)
-    dataSource.createCharacter(card["id"], card)
+    await dataSource.createCharacter(card["id"], card)
     cardList = dataSource.getUserItem(msgData["userId"], "cardList")
     cardList[cardName] = card["id"]
-    dataSource.saveUserItem(msgData["userId"], "cardList", cardList)
+    await dataSource.saveUserItem(msgData["userId"], "cardList", cardList)
     # 切换全局卡为当前新卡
-    dataSource.saveUserItem(msgData["userId"], "currentCard", card["name"])
+    await dataSource.saveUserItem(msgData["userId"], "currentCard", card["name"])
 
-    return reply(msgCode.SAVE_CARD_SUCCESS.name, msgData, cardName)
+    return await reply(msgCode.SAVE_CARD_SUCCESS.name, msgData, cardName)
 
 
-def updateCurrentCard():
+async def updateCurrentCard():
     return
 
 
-def updateCard(cardName, cardId, cardProp, msgData):
+async def updateCard(cardName, cardId, cardProp, msgData):
     newProp = {}
     prop = dataSource.getCharacter(cardId)["prop"]
     newProp = splitProp(newProp, cardProp)["prop"]
     for k, v in newProp.items():
         if k in prop:
             prop[k] = v
-    dataSource.saveCharacterItem(cardId, "prop", prop)
-    return reply(msgCode.UPDATE_CARD_SUCCESS.name, msgData, cardName)
+    await dataSource.saveCharacterItem(cardId, "prop", prop)
+    return await reply(msgCode.UPDATE_CARD_SUCCESS.name, msgData, cardName)
 
 
-def switchCard(cardName, cardList, msgData):
-    dataSource.saveUserItem(msgData["userId"], "currentCardName", cardName)
-    dataSource.saveUserItem(msgData["userId"], "currentCard", cardList[cardName])
-    return reply(msgCode.SWITCH_CARD_SUCCESS.name, msgData, cardName)
+async def switchCard(cardName, cardList, msgData):
+    await dataSource.saveUserItem(msgData["userId"], "currentCardName", cardName)
+    await dataSource.saveUserItem(msgData["userId"], "currentCard", cardList[cardName])
+    return await reply(msgCode.SWITCH_CARD_SUCCESS.name, msgData, cardName)
 
 
-def showCard():
+async def showCard(msgStr, msgData):
+    msgStr = strUtil.replaceCmdByDic(msgStr, showDic)
+
     return
 
 
-def listCard():
+async def listCard():
+    return
+
+
+async def stHelp():
     return
