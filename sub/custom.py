@@ -1,4 +1,7 @@
 import json
+import re
+import random
+
 import utils.data as dataSource
 
 msgJsonPath = dataSource.msgJsonPath
@@ -30,8 +33,12 @@ async def reply(key, msgData, result="", pcname="", ext1="", ext2=""):
     with open(msgJsonPath, 'r', encoding='utf-8') as f:
         data = json.load(f)
     if key not in data:
-        data[key] = dataSource.suppleMsg(msgJsonPath, key)
-    value = await replace_placeholders(data[key], result, pcname, ext1, ext2)
+        data[key] = await dataSource.suppleMsg(msgJsonPath, key)
+    text = data[key]
+    if re.search("[|]", text):
+        parts = text.split("|")
+        text = random.choice(parts)
+    value = await replace_placeholders(text, result, pcname, ext1, ext2)
     return value
 
 

@@ -2,11 +2,13 @@ import utils.dice as dice
 import utils.calculate as cal
 from sub.custom import reply
 from em.msgCode import msgCode
+from core.aspect import rd_before
 import utils.data as dataSource
 import re
 
 
 # rd
+@rd_before
 async def rdFlow(cmdStr, msgData):
     diceType = "100"
     a1 = 0

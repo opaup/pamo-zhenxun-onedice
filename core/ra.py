@@ -5,9 +5,11 @@ import utils.data as dataSource
 import utils.dice as dice
 import utils.propUtil as propUtil
 from em.msgCode import msgCode
+from core.aspect import rd_before
 from sub.custom import reply
 
 
+@rd_before
 async def doRa(cmdStr, msgData):
     calResult = await doRaCal(cmdStr, msgData)
     pcname = calResult["pcname"]
@@ -95,16 +97,16 @@ async def doRaCal(cmdStr, msgData):
     propValue = ""
     diceType = "100"
     if not msgData["msgType"] == "group":
-        diceType = dataSource.getGroupItem(msgData["groupId"], "diceType")
+        diceType = await dataSource.getGroupItem(msgData["groupId"], "diceType")
     operator = ""
     equation = ""
     num1 = 0
     num2 = 0
     ruleType = "1"
-    normalResult = dice.roll(int(diceType))
+    normalResult = await dice.roll(int(diceType))
 
     if not msgData["msgType"] == "group":
-        character = dataSource.getCurrentCharacter(msgData["userId"])
+        character = await dataSource.getCurrentCharacter(msgData["userId"])
     else:
         character = await dataSource.getCurrentCharacter(msgData["userId"], msgData["groupId"])
         ruleType = await dataSource.getGroupItem(msgData["groupId"], "ruleType")
@@ -150,8 +152,8 @@ async def doRaCal(cmdStr, msgData):
     # print(rf"propName = {propName}, propValue = {propValue}, operator = {operator}, equation = {equation}")
     # 计算开始
     xdy = await dice.xdy(num1, num2)
-    secondResult = await xdy["result"]
-    secondEquation = await xdy["equation"]
+    secondResult = xdy["result"]
+    secondEquation = xdy["equation"]
     checkNum = normalResult
     if not operator == "":
         checkNum = cal.operatorCal(operator, normalResult, int(secondResult))
