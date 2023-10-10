@@ -156,7 +156,7 @@ async def doRaCal(cmdStr, msgData):
     secondEquation = xdy["equation"]
     checkNum = normalResult
     if not operator == "":
-        checkNum = cal.operatorCal(operator, normalResult, int(secondResult))
+        checkNum = await cal.operatorCal(operator, normalResult, int(secondResult))
 
     calResult = {
         "propName": propName,

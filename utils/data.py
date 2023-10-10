@@ -1,4 +1,5 @@
 from pathlib import Path
+from template.propDic import propName
 import template.jsonTemplate as jsonTemplate
 import importlib.util as importlibUtil
 import json
@@ -199,6 +200,20 @@ async def saveCharacterItem(cardId, item, value):
     charactersInfo[item] = value
     with characterPath.open('w', encoding='utf-8') as f:
         json.dump(charactersInfo, f, indent=4, ensure_ascii=False)
+
+
+async def updateMultiCharacterProp(cardId, prop, value):
+    key = ""
+    for standard_key, aliases in propName.items():
+        if prop in aliases:
+            key = standard_key
+            break
+    if not key == "":
+        propAlias = propName[key]
+        for alias in propAlias:
+            await saveCharacterProp(cardId, alias, value)
+    else:
+        await saveCharacterProp(cardId, prop, value)
 
 
 async def getGroupIdAndName(msgData):

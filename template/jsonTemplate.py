@@ -14,6 +14,7 @@ msgDefaultJson = {
     "UPDATE_CARD_SUCCESS": "{RESULT}的值是⑨是吗？{NICKNAME}记住了！",
     "SWITCH_CARD_SUCCESS": "[{USERNAME}]已切换到身份：{RESULT}",
     "NOT_FOUND_CARD": "从[{USERNAME}]的包包里找不到名为{RESULT}的卡哦（？）",
+    "NOT_FOUND_CARD_PROP": "从[{RESULT}]的身体里找不到名为【{EXT1}】的属性哦！",
     "CARD_NAME_TOO_LONG": "目前规定单卡昵称不应大于18字",
     "CARD_IN_GROUP_LOCKED": "已在本群锁卡。无法切换",
     "ROLL_FAIL": "掷骰出错了",

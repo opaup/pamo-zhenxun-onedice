@@ -3,12 +3,14 @@ import time
 import re
 from sub.custom import reply
 from em.msgCode import msgCode
+from utils.calculate import operatorCal
 import utils.data as dataSource
 from utils import strUtil
 
 helpDic = ["help", "帮助"]
 showDic = ["show", "查看", "info"]
 listDic = ["list", "列表"]
+lockDic = ["lock", "锁定"]
 
 
 async def stFlow(msgStr, msgData):
@@ -36,9 +38,9 @@ async def stFlow(msgStr, msgData):
             return await reply(msgCode.CARD_NAME_TOO_LONG.name, msgData)
 
         # 判断是否存在同名卡，如是则为更新卡
-        cardList = dataSource.getUserItem(userId, "cardList")
+        cardList = await dataSource.getUserItem(userId, "cardList")
         if cardName in cardList:
-            return await updateCard(cardName, cardList[cardName], cardProp, msgData)
+            return await remakeCard(cardName, cardList[cardName], cardProp, msgData)
         return await newCard(cardName, cardProp, msgData)
     # 按空格分隔，如第一个匹配二级指令 list show
 
@@ -52,17 +54,35 @@ async def stFlow(msgStr, msgData):
     # 读取当前环境下的卡，是否存在
     characterInfo = await dataSource.getCurrentCharacter(userId, groupId)
     if not characterInfo:
-        return await reply(msgCode.NO_CARD.name, msgData)
+        if not isLock:
+            return await reply(msgCode.NO_CARD.name, msgData)
 
     # 判断 二级指令
     cmdSplit = re.split(" ", msgStr)
     if len(cmdSplit) >= 1:
         if cmdSplit[0] in helpDic:
-            return await stHelp
+            return await stHelp()
         if cmdSplit[0] in showDic:
             return await showCard(msgStr, msgData)
         if cmdSplit[0] in listDic:
             return await listCard(msgData)
+    else:
+        return await stHelp()
+
+    # 是否存在 +-，且应存在角色卡，格式为 字符串[+-]数字
+    m2 = re.match(r'^([\u4e00-\u9fa5]+)(\d+)$', msgStr)
+    if re.match(r'^(.+)[+-](\d+)$', msgStr) or m2:
+        # TODO 如果是锁定卡则更新锁定卡
+        operator = ""
+        if re.search("[+]", msgStr):
+            operator = "+"
+        if re.search("-", msgStr):
+            operator = "-"
+        if operator == "":
+            s = [m2.group(1), m2.group(2)]
+        else:
+            s = msgStr.split(operator)
+        return await updateCard(characterInfo['id'], s[0], operator, s[1], msgData)
 
     return await reply(msgCode.NO_COMMAND.name, msgData)
 
@@ -97,11 +117,20 @@ async def newCard(cardName, cardProp, msgData):
     return await reply(msgCode.SAVE_CARD_SUCCESS.name, msgData, cardName)
 
 
-async def updateCurrentCard():
-    return
+async def updateCard(cardId, propName, operator, value, msgData):
+    cardInfo = await dataSource.getCharacter(cardId)
+    if propName not in cardInfo['prop']:
+        return await reply(msgCode.NOT_FOUND_CARD_PROP.name, msgData, cardInfo['name'], ext1=propName)
+    oldPropValue = cardInfo['prop'][propName]
+    if operator == "":
+        propValue = int(value)
+    else:
+        propValue = await operatorCal(operator, int(oldPropValue), int(value))
+    await dataSource.updateMultiCharacterProp(cardId, propName, propValue)
+    return await reply(msgCode.UPDATE_CARD_SUCCESS.name, msgData, propName)
 
 
-async def updateCard(cardName, cardId, cardProp, msgData):
+async def remakeCard(cardName, cardId, cardProp, msgData):
     newProp = {}
     prop = dataSource.getCharacter(cardId)["prop"]
     newProp = splitProp(newProp, cardProp)["prop"]

@@ -13,6 +13,7 @@ class msgCode(Enum):
     UPDATE_CARD_SUCCESS = ("UPDATE_CARD_SUCCESS", "成功更新角色卡")
     SWITCH_CARD_SUCCESS = ("SWITCH_CARD_SUCCESS", "成功切换角色卡")
     NOT_FOUND_CARD = ("NOT_FOUND_CARD", "找不到角色卡")
+    NOT_FOUND_CARD_PROP = ("NOT_FOUND_CARD_PROP", "找不到该角色卡属性")
     CARD_NAME_TOO_LONG = ("NOT_FOUND_CARD", "卡名过长")
     CARD_IN_GROUP_LOCKED = ("NOT_FOUND_CARD", "已在本群锁卡。无法切换")
     ROLL_FAIL = ("ROLL_FAIL", "掷骰出错了")

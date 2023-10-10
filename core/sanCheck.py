@@ -11,11 +11,8 @@ from core.aspect import rd_before
 
 @rd_before
 async def sc(cmdStr, msgData):
-    a1 = ""
     a2 = ""
-    b1 = ""
     b2 = ""
-    intelligent = "0"
     # 判断格式
     slashes = re.findall(r'[/|]', cmdStr)
     if len(slashes) != 1:
@@ -49,7 +46,6 @@ async def sc(cmdStr, msgData):
     intelligent = raCal["propValue"]
     checkNum = raCal["checkNum"]
     ruleType = raCal["ruleType"]
-    oldSan = san
     raResult = await ra.checkResult(intelligent, checkNum, ruleType)
     checkStr = await ra.getCheckStrAndRecord(raResult, msgData)
     if raResult <= 4:
@@ -87,9 +83,7 @@ async def sc(cmdStr, msgData):
     result = rf"{checkNum}/{intelligent}[{checkStr}]"
     ext2 = rf"{san}"
     # 保存
-    propAlias = propDic.propName["san"]
-    for alias in propAlias:
-        await dataSource.saveCharacterProp(cardId, alias, san)
+    await dataSource.updateMultiCharacterProp(cardId, alias, san)
 
     if raResult <= 4:
         if raResult == 1:

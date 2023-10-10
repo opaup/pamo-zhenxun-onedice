@@ -112,7 +112,7 @@ async def doRd(a1, a2, b1, b2, operator, diceType, extMsg):
         if b1 == 0:
             return await reply(msgCode.RD_ILLEGAL_FORMAT.name)
         if b2 == 0:
-            c = cal.operatorCal(operator, int(firstResult["result"]), b1)
+            c = await cal.operatorCal(operator, int(firstResult["result"]), b1)
             equation.append(str(b1))
             equation.append("=")
             equation.append(str(c))
@@ -121,7 +121,7 @@ async def doRd(a1, a2, b1, b2, operator, diceType, extMsg):
             equation.append("]")
         else:
             extResult = await dice.xdy(b1, b2)
-            c = cal.operatorCal(operator, int(firstResult["result"]), int(extResult["result"]))
+            c = await cal.operatorCal(operator, int(firstResult["result"]), int(extResult["result"]))
             equation.append(str(b1) + "d" + str(b2) + "=")
             equation.append(str(c))
             equation.append("[")
