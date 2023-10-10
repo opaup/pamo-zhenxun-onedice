@@ -1,5 +1,6 @@
 import asyncio
 import random
+from em.msgCode import msgCode
 from functools import wraps
 from sub.custom import reply
 
@@ -9,7 +10,7 @@ from sub.custom import reply
 def rd_before(func):
     @wraps(func)
     async def wrapper(cmdStr, msgData, *args, **kwargs):
-        result = await reply("RD_BEFORE", msgData)
+        result = await reply(msgCode.RD_BEFORE.name, msgData)
         print(result)
         await asyncio.sleep(2)
         return await func(cmdStr, msgData, *args, **kwargs)

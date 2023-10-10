@@ -28,5 +28,5 @@ async def on_message(msg):
 
 # TODO 定时备份到数据库 || init时同步检测数据更新
 
-msgStr = ".sc1/2"
+msgStr = ".st list"
 print(asyncio.run(on_message(msgStr)))

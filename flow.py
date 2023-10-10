@@ -55,7 +55,21 @@ async def doFlow(msgData):
     # npc
     if re.match(r'^(npc)', cmdStr):
         return await reply(msgCode.NO_ACHIEVE_CMD.name, msgData)
-
+    # help
+    if re.match(r'^(help|帮助)', cmdStr):
+        cmdStr = re.sub(r'\b(help|帮助)\b', "", cmdStr, count=1).strip()
+        tempResult = """
+这里是一个临时的帮助说明。
+目前pamo-zhenxun-onedice仍在开发过程中，可能存在不可预知的bug。
+目前实现了：
+基本的.rd
+.coc
+.st录入
+.st切卡
+.ra检定
+.sc
+"""
+        return tempResult
     # rd单独最后处理（如果前面都没匹配上，则执行rd
     rdPattern = r'(?:r(?:\\d{1,2})?(?:d\\w{0,16}|$)|r)(.*)'
     if re.match(rdPattern, cmdStr):

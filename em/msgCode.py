@@ -26,3 +26,6 @@ class msgCode(Enum):
     SC_CHECK_GREAT_SUCCESS = ("SC_CHECK_GREAT_SUCCESS", "sc检定大成功")
     SC_CHECK_FAIL = ("SC_CHECK_FAIL", "sc检定失败")
     SC_CHECK_GREAT_FAIL = ("SC_CHECK_GREAT_FAIL", "sc检定大失败")
+    RD_BEFORE = ("RD_BEFORE", "RD延迟骰预告")
+    SHOW_CARD_INFO = ("SHOW_CARD_INFO", "查看角色卡详情")
+    SHOW_CARD_LIST = ("SHOW_CARD_LIST", "查看角色卡列表")

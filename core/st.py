@@ -8,6 +8,7 @@ from utils import strUtil
 
 helpDic = ["help", "帮助"]
 showDic = ["show", "查看", "info"]
+listDic = ["list", "列表"]
 
 
 async def stFlow(msgStr, msgData):
@@ -16,51 +17,53 @@ async def stFlow(msgStr, msgData):
     groupId = ""
     if msgData["groupId"]:
         groupId = msgData["groupId"]
-        cardLock = dataSource.getGroupItem(groupId, "cardLock")
+        cardLock = await dataSource.getGroupItem(groupId, "cardLock")
         for ids in cardLock:
             lockedUser = re.split("_", ids)
             if userId == lockedUser:
                 isLock = True
 
-    # 判断 二级指令
-    cmdSplit = re.split(" ", msgStr)
-    if len(cmdSplit) >= 1:
-        if cmdSplit[0] in helpDic:
-            return stHelp
-        if cmdSplit[0] in showDic:
-            return showCard(msgStr, msgData)
-
     # 判断是否存在 + - * / ，可能为修改
-
     if "-" in msgStr:
         # 包含 - 为创建/修改
         cmds = msgStr.split("-")
         if not len(cmds) == 2:
-            return reply(msgCode.ILLEGAL_FORMAT.name, msgData)
+            return await reply(msgCode.ILLEGAL_FORMAT.name, msgData)
         # 规定单卡昵称不应大于18字
         cardName = cmds[0].strip()
         cardProp = cmds[1].strip()
         if len(cardName) > 18:
-            return reply(msgCode.CARD_NAME_TOO_LONG.name, msgData)
+            return await reply(msgCode.CARD_NAME_TOO_LONG.name, msgData)
 
         # 判断是否存在同名卡，如是则为更新卡
         cardList = dataSource.getUserItem(userId, "cardList")
         if cardName in cardList:
-            return updateCard(cardName, cardList[cardName], cardProp, msgData)
-        return newCard(cardName, cardProp, msgData)
+            return await updateCard(cardName, cardList[cardName], cardProp, msgData)
+        return await newCard(cardName, cardProp, msgData)
     # 按空格分隔，如第一个匹配二级指令 list show
 
     # 判断user所拥有的卡中是否存在msgStr的卡
-    cardList = dataSource.getUserItem(msgData["userId"], "cardList")
+    cardList = await dataSource.getUserItem(msgData["userId"], "cardList")
     if msgStr in cardList:
         if isLock:
             return await reply(msgCode.CARD_IN_GROUP_LOCKED.name, msgData)
-        return switchCard(msgStr, cardList, msgData)
+        return await switchCard(msgStr, cardList, msgData)
 
-    # 读取当前环境下的卡，是否存在（切换角色卡）
-    characterInfo = dataSource.getCurrentCharacter(userId, groupId)
-    if characterInfo:
+    # 读取当前环境下的卡，是否存在
+    characterInfo = await dataSource.getCurrentCharacter(userId, groupId)
+    if not characterInfo:
         return await reply(msgCode.NO_CARD.name, msgData)
+
+    # 判断 二级指令
+    cmdSplit = re.split(" ", msgStr)
+    if len(cmdSplit) >= 1:
+        if cmdSplit[0] in helpDic:
+            return await stHelp
+        if cmdSplit[0] in showDic:
+            return await showCard(msgStr, msgData)
+        if cmdSplit[0] in listDic:
+            return await listCard(msgData)
+
     return await reply(msgCode.NO_COMMAND.name, msgData)
 
 
@@ -116,13 +119,28 @@ async def switchCard(cardName, cardList, msgData):
 
 
 async def showCard(msgStr, msgData):
-    msgStr = strUtil.replaceCmdByDic(msgStr, showDic)
+    msgStr = await strUtil.replaceCmdByDic(msgStr, showDic)
+    msgStr = msgStr.strip()
+    cardInfo = await dataSource.getCurrentCharacter(msgData['userId'], msgData['groupId'])
+    result = json.dumps(cardInfo, indent=4, ensure_ascii=False)
+    # 如果为查看某个属性，查询是否存在该属性
+    if not msgStr == "":
+        if msgStr not in cardInfo['prop']:
+            cardInfo['prop'][msgStr] = 0
+        result = f"{msgStr}：{cardInfo['prop'][msgStr]}"
+    return await reply(msgCode.SHOW_CARD_INFO.name, msgData, result, cardInfo['name'])
 
-    return
 
-
-async def listCard():
-    return
+async def listCard(msgData):
+    cardList = await dataSource.getUserItem(msgData['userId'], 'cardList')
+    index = 1
+    result = ""
+    for key in cardList:
+        result += f"{index}. {key}"
+        if index < len(cardList):
+            result += "\n"
+        index += 1
+    return result
 
 
 async def stHelp():
