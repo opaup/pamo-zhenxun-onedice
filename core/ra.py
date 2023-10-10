@@ -9,7 +9,7 @@ from sub.custom import reply
 
 
 async def doRa(cmdStr, msgData):
-    calResult = doRaCal(cmdStr, msgData)
+    calResult = await doRaCal(cmdStr, msgData)
     pcname = calResult["pcname"]
     ruleType = calResult["ruleType"]
     propName = calResult["propName"]
@@ -20,28 +20,28 @@ async def doRa(cmdStr, msgData):
     checkNum = calResult["checkNum"]
     normalResult = calResult["normalResult"]
 
-    checkResultNum = checkResult(propValue, checkNum, ruleType)
+    checkResultNum = await checkResult(propValue, checkNum, ruleType)
     if checkResultNum == 0:
         return
-    checkStr = getCheckStrAndRecord(checkResultNum, msgData)
+    checkStr = await getCheckStrAndRecord(checkResultNum, msgData)
     result = rf"{checkNum}/{propValue}"
     if not operator == "":
         result += rf"[{normalResult}{operator}{equation}{secondEquation}]"
 
     if checkResultNum == 1:
-        return reply(msgCode.ROLL_CHECK_GREAT_SUCCESS.name, msgData, result, ext1=propName, ext2=checkStr,
+        return await reply(msgCode.ROLL_CHECK_GREAT_SUCCESS.name, msgData, result, ext1=propName, ext2=checkStr,
                      pcname=pcname)
     if checkResultNum == 2:
-        return reply(msgCode.ROLL_CHECK_EXT_HARD_SUCCESS.name, msgData, result, ext1=propName, ext2=checkStr,
+        return await reply(msgCode.ROLL_CHECK_EXT_HARD_SUCCESS.name, msgData, result, ext1=propName, ext2=checkStr,
                      pcname=pcname)
     if checkResultNum == 3:
-        return reply(msgCode.ROLL_CHECK_HARD_SUCCESS.name, msgData, result, ext1=propName, ext2=checkStr, pcname=pcname)
+        return await reply(msgCode.ROLL_CHECK_HARD_SUCCESS.name, msgData, result, ext1=propName, ext2=checkStr, pcname=pcname)
     if checkResultNum == 4:
-        return reply(msgCode.ROLL_CHECK_SUCCESS.name, msgData, result, ext1=propName, ext2=checkStr, pcname=pcname)
+        return await reply(msgCode.ROLL_CHECK_SUCCESS.name, msgData, result, ext1=propName, ext2=checkStr, pcname=pcname)
     if checkResultNum == 5:
-        return reply(msgCode.ROLL_CHECK_FAIL.name, msgData, result, ext1=propName, ext2=checkStr, pcname=pcname)
+        return await reply(msgCode.ROLL_CHECK_FAIL.name, msgData, result, ext1=propName, ext2=checkStr, pcname=pcname)
     if checkResultNum == 6:
-        return reply(msgCode.ROLL_CHECK_GREAT_FAIL.name, msgData, result, ext1=propName, ext2=checkStr, pcname=pcname)
+        return await reply(msgCode.ROLL_CHECK_GREAT_FAIL.name, msgData, result, ext1=propName, ext2=checkStr, pcname=pcname)
     return
 
 
@@ -63,7 +63,7 @@ async def getCheckStrAndRecord(checkResultNum, msgData):
         checkStr = "大失败"
 
     if checkResultNum != 0:
-        userInfo = dataSource.getUserInfo(msgData["userId"])
+        userInfo = await dataSource.getUserInfo(msgData["userId"])
         if checkResultNum <= 4:
             successRollNum = userInfo["successRollNum"]
             userInfo["successRollNum"] = successRollNum + 1
@@ -106,8 +106,8 @@ async def doRaCal(cmdStr, msgData):
     if not msgData["msgType"] == "group":
         character = dataSource.getCurrentCharacter(msgData["userId"])
     else:
-        character = dataSource.getCurrentCharacter(msgData["userId"], msgData["groupId"])
-        ruleType = dataSource.getGroupItem(msgData["groupId"], "ruleType")
+        character = await dataSource.getCurrentCharacter(msgData["userId"], msgData["groupId"])
+        ruleType = await dataSource.getGroupItem(msgData["groupId"], "ruleType")
         cardId = character["id"]
     if not character:
         character["name"] = "{USERNAME}"
@@ -119,7 +119,7 @@ async def doRaCal(cmdStr, msgData):
         split = cmdStr.split(operator)
         # 存在一个操作符以上的非法格式
         if len(split) > 2:
-            return reply(msgCode.ILLEGAL_FORMAT.name, msgData)
+            return await reply(msgCode.ILLEGAL_FORMAT.name, msgData)
         equation = split[1]
         cmdStr = cmdStr.replace(operator + equation, "")
     if not cmdStr == "":
@@ -145,13 +145,13 @@ async def doRaCal(cmdStr, msgData):
             else:
                 num1 = int("".join(re.findall(r'\d+', equation)))
     except ValueError:
-        return reply(msgCode.ILLEGAL_FORMAT.name, "", msgData)
+        return await reply(msgCode.ILLEGAL_FORMAT.name, "", msgData)
 
     # print(rf"propName = {propName}, propValue = {propValue}, operator = {operator}, equation = {equation}")
     # 计算开始
-    xdy = dice.xdy(num1, num2)
-    secondResult = xdy["result"]
-    secondEquation = xdy["equation"]
+    xdy = await dice.xdy(num1, num2)
+    secondResult = await xdy["result"]
+    secondEquation = await xdy["equation"]
     checkNum = normalResult
     if not operator == "":
         checkNum = cal.operatorCal(operator, normalResult, int(secondResult))

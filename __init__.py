@@ -1,5 +1,6 @@
 import utils.data as dataSource
 from flow import doFlow
+import asyncio
 
 # 初始化
 # load_path()
@@ -27,6 +28,6 @@ async def on_message(msg):
 
 # TODO 定时备份到数据库 || init时同步检测数据更新
 
-msgStr = ".sc2d3/3d4"
-print(on_message(msgStr))
+msgStr = ".rd12+3d2"
+print(asyncio.run(on_message(msgStr)))
 

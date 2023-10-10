@@ -2,6 +2,7 @@ from pathlib import Path
 import template.jsonTemplate as jsonTemplate
 import importlib.util as importlibUtil
 import json
+import asyncio
 
 NICKNAME = ""
 
@@ -48,9 +49,9 @@ async def load_path():
     logsPath.mkdir(parents=True, exist_ok=True)
 
     if not botJsonPath.exists():
-        create_bot(botJsonPath)
+        await create_bot(botJsonPath)
     if not msgJsonPath.exists():
-        create_msg(msgJsonPath)
+        await create_msg(msgJsonPath)
 
 
 async def suppleMsg(msgPath, msg):
@@ -91,7 +92,9 @@ async def create_msg(msg_path):
 
 
 async def getDiceType(groupId):
-    return getGroupInfo(groupId)['diceType']
+    groupInfo = await getGroupInfo(groupId)
+    diceType = groupInfo['diceType']
+    return diceType
 
 
 async def createGroupInfo(groupPath):
@@ -107,7 +110,7 @@ async def createUserInfo(userPath):
 async def getUserInfo(userId):
     userPath = usersPath / (userId + ".json")
     if not userPath.exists():
-        createUserInfo(userPath)
+        await createUserInfo(userPath)
     with open(userPath, 'r', encoding='utf-8') as f:
         userInfo = json.load(f)
     return userInfo
@@ -116,7 +119,7 @@ async def getUserInfo(userId):
 async def getGroupInfo(groupId):
     groupPath = statusPath / (groupId + ".json")
     if not groupPath.exists():
-        createGroupInfo(groupPath)
+        await createGroupInfo(groupPath)
     with open(groupPath, 'r', encoding='utf-8') as f:
         groupInfo = json.load(f)
     return groupInfo
@@ -134,19 +137,19 @@ async def getCharacter(cardId):
 async def getCurrentCharacter(userId, groupId=""):
     # 角色卡默认是全局的，如果群有设置，则优先取群的
     if not groupId == "":
-        cardLock = getGroupItem(groupId, "cardLock")
+        cardLock = await getGroupItem(groupId, "cardLock")
         if userId in cardLock:
             characterId = cardLock[userId]
         else:
-            characterId = getUserItem(userId, "currentCard")
+            characterId = await getUserItem(userId, "currentCard")
     else:
-        characterId = getUserItem(userId, "currentCard")
-    characterInfo = getCharacter(characterId)
+        characterId = await getUserItem(userId, "currentCard")
+    characterInfo = await getCharacter(characterId)
     return characterInfo
 
 
 async def getGroupItem(groupId, item):
-    userInfo = getGroupInfo(groupId)
+    userInfo = await getGroupInfo(groupId)
     if item not in userInfo:
         groupPath = statusPath / (groupId + ".json")
         userInfo[item] = suppleGroup(groupPath, item)
@@ -154,7 +157,7 @@ async def getGroupItem(groupId, item):
 
 
 async def getUserItem(userId, item):
-    userInfo = getUserInfo(userId)
+    userInfo = await getUserInfo(userId)
     if item not in userInfo:
         userPath = usersPath / (userId + ".json")
         userInfo[item] = suppleUser(userPath, item)
@@ -162,7 +165,7 @@ async def getUserItem(userId, item):
 
 
 async def saveUserItem(userId, item, value):
-    userInfo = getUserInfo(userId)
+    userInfo = await getUserInfo(userId)
     userInfo[item] = value
     userPath = usersPath / (userId + ".json")
     with userPath.open('w', encoding='utf-8') as f:
@@ -201,10 +204,10 @@ async def saveCharacterItem(cardId, item, value):
 async def getGroupIdAndName(msgData):
     groupId = ""
     groupName = ""
-    if msgData["msgType"] == "group":
-        msgData
+    # if msgData["msgType"] == "group":
+    # msgData
     return
 
+asyncio.run(load_path())
+asyncio.run(loadNickName())
 
-load_path()
-loadNickName()

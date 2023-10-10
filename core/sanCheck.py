@@ -56,7 +56,7 @@ async def sc(cmdStr, msgData):
             resultReduce = a1
             ext1 = rf"{a1}"
         else:
-            resultReduce = dice.xdy(a1, a2)["result"]
+            resultReduce = await dice.xdy(a1, a2)["result"]
             ext1 = rf"{a1}d{a2}={resultReduce}"
     else:
         # 失败减少
@@ -65,7 +65,7 @@ async def sc(cmdStr, msgData):
             resultReduce = int(b1) * int(b2)
             ext1 = rf"{resultReduce}"
         else:
-            resultReduce = dice.xdy(b1, b2)["result"]
+            resultReduce = await dice.xdy(b1, b2)["result"]
             ext1 = rf"{b1}d{b2}={resultReduce}"
 
     # resultReduce {'equation': '(3+1)', 'result': '4'}

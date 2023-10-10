@@ -31,7 +31,7 @@ async def reply(key, msgData, result="", pcname="", ext1="", ext2=""):
         data = json.load(f)
     if key not in data:
         data[key] = dataSource.suppleMsg(msgJsonPath, key)
-    value = replace_placeholders(data[key], result, pcname, ext1, ext2)
+    value = await replace_placeholders(data[key], result, pcname, ext1, ext2)
     return value
 
 

@@ -2,7 +2,7 @@ import random
 from collections import deque
 
 
-def roll(num_faces):
+async def roll(num_faces):
     # 生成0到num_faces-1的随机索引
     random.randint(0, num_faces - 1)
     # weights = [1] * num_faces
@@ -20,13 +20,13 @@ def roll(num_faces):
     return face
 
 
-def xdy(times, numFaces):
+async def xdy(times, numFaces):
     times = int(times)
     numFaces = int(numFaces)
     a = 0
     b = []
     for i in range(times):
-        d = roll(numFaces)
+        d = await roll(numFaces)
         a += d
         b.append(str(d))
         if not i == int(times)-1:

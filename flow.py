@@ -60,7 +60,7 @@ async def doFlow(msgData):
     rdPattern = r'(?:r(?:\\d{1,2})?(?:d\\w{0,16}|$)|r)(.*)'
     if re.match(rdPattern, cmdStr):
         try:
-            return await rd.rdFlow(cmdStr, diceType, msgData)
+            return await rd.rdFlow(cmdStr, msgData)
         except ValueError:
             return await reply(msgCode.ILLEGAL_FORMAT.name, msgData)
     # return await reply(msgCode.NO_COMMAND.name)
