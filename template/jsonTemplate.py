@@ -34,13 +34,29 @@ msgDefaultJson = {
     "RH_TO_PRIVATE": "你在群聊[{EXT1}]进行了暗骰检定：{RESULT}",
     "RH_TO_GROUP": "咕噜噜，[{PCNAME}]发动了暗骰检定！",
     "RH_NOT_IN_GROUP": "只有在群聊中才可以使用暗骰哦~",
+    "RP_OR_RB_FORMAT_FAIL": "rp或rb的指令后必须跟10以内的数字哦。",
+    "DICE_SET_NOT_ADMIN": "只有群主或管理员才可以使用该指令哦！",
+    "DICE_SET_HELP": "定义格式： group 字段名 value\ndice on/off 开关骰功能\ndice set x  设置默认骰\ndice isNotice on/off    "
+                     "设置是否为公告群\ndice secret on/off    设置是否开启秘密团模式\ndice mode coc/dnd/其他    设置骰模式\ndice rule x "
+                     "设置房规\n------附加内容------\n默认房规，当值小于50时，1大成功，98-100大失败，大于50时，1-3大成功，100大失败",
+    "DICE_SET_ON": "骰功能已开启",
+    "DICE_SET_OFF": "骰功能已关闭",
+    "DICE_SET_SECRET_ON": "已开启秘密团模式",
+    "DICE_SET_SECRET_OFF": "已关闭秘密团模式",
+    "DICE_SET_ISNOTICE_ON": "已开启本群为团贴公告扩散群",
+    "DICE_SET_ISNOTICE_OFF": "已关闭本群为团贴公告扩散群",
+    "DICE_SET_MODE": "已设置DICE默认模式为：{RESULT}",
+    "DICE_SET_RULE": "已设置本群默认房规为：{RESULT}{EXT1}",
+    "DICE_SET_DICETYPE": "已设置本群默认DICE为：{RESULT}",
 }
 
 groupDefaultJson = {
     "onOff": "on",
+    "diceMode": "coc",
     "diceType": "100",
     "ruleType": "1",
-    "isNotice": False,
+    "isNotice": "off",
+    "secretMode": "off",
     "cardLock": {}
 }
 

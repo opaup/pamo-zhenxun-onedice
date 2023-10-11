@@ -1,16 +1,16 @@
 import re
-import utils.dice as dice
-import utils.calculate as cal
-from core import ra
-from sub.custom import reply
-from em.msgCode import msgCode
-from template import propDic
-import utils.data as dataSource
-from core.aspect import rd_before
+from ..core import ra
+from ..sub.custom import reply
+from ..em.msgCode import msgCode
+from ..template import propDic
+from ..utils import calculate as cal
+from ..utils import dice as dice
+from ..utils import data as dataSource
+from ..core.aspect import rd_before
 
 
 @rd_before
-async def sc(cmdStr, msgData):
+async def sc(cmdStr, msgData, bot):
     a2 = ""
     b2 = ""
     # 判断格式

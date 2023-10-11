@@ -1,6 +1,6 @@
 from pathlib import Path
-from template.propDic import propName
-import template.jsonTemplate as jsonTemplate
+from ..template.propDic import propName
+from ..template import jsonTemplate as jsonTemplate
 import importlib.util as importlibUtil
 import json
 import asyncio
@@ -153,7 +153,7 @@ async def getGroupItem(groupId, item):
     userInfo = await getGroupInfo(groupId)
     if item not in userInfo:
         groupPath = statusPath / (groupId + ".json")
-        userInfo[item] = suppleGroup(groupPath, item)
+        userInfo[item] = await suppleGroup(groupPath, item)
     return userInfo[item]
 
 
@@ -200,6 +200,14 @@ async def saveCharacterItem(cardId, item, value):
     charactersInfo[item] = value
     with characterPath.open('w', encoding='utf-8') as f:
         json.dump(charactersInfo, f, indent=4, ensure_ascii=False)
+
+
+async def updateGroupItem(groupId, item, value):
+    groupPath = statusPath / (groupId + ".json")
+    groupInfo = await getGroupInfo(groupId)
+    groupInfo[item] = value
+    with groupPath.open('w', encoding='utf-8') as f:
+        json.dump(groupInfo, f, indent=4, ensure_ascii=False)
 
 
 async def updateMultiCharacterProp(cardId, prop, value):
