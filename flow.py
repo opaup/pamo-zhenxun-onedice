@@ -1,15 +1,38 @@
 from sub.custom import reply
 from em.msgCode import msgCode
 import utils.data as dataSource
-from core import ra, rh, rd, rpAndRb, make, st, sanCheck
+from core import ra, rh, rd, rpAndRb, make, st, sanCheck, diceConfig
 import re
+
+
+help_template = """
+这里是一个临时的帮助说明。
+目前pamo-zhenxun-onedice仍在开发过程中，可能存在不可预知的bug。
+目前实现了：
+基本的.rd
+.coc
+.st录入
+.st切卡
+.ra检定
+.sc
+.dice help 查看群设置
+——————
+项目地址：https://github.com/opaup/pamo-zhenxun-onedice
+"""
 
 
 async def doFlow(msgData):
     cmdStr = msgData["msg"].lower().lstrip()
     print(cmdStr)
 
+    # 设置
+    if re.match(r'^(dice)', cmdStr):
+        cmdStr = re.sub("dice", "", cmdStr, count=1).strip()
+        return await diceConfig.diceFlow(cmdStr, msgData)
     # 检查该环境下的dice功能是否开启
+    if msgData['msgType'] == "group":
+        if not await dataSource.getGroupItem(msgData['groupId'], "onOff") == "on":
+            return False
 
     # coc
     if re.match(r'^(coc)', cmdStr):
@@ -61,17 +84,7 @@ async def doFlow(msgData):
     # help
     if re.match(r'^(help|帮助)', cmdStr):
         cmdStr = re.sub(r'\b(help|帮助)\b', "", cmdStr, count=1).strip()
-        tempResult = """
-这里是一个临时的帮助说明。
-目前pamo-zhenxun-onedice仍在开发过程中，可能存在不可预知的bug。
-目前实现了：
-基本的.rd
-.coc
-.st录入
-.st切卡
-.ra检定
-.sc
-"""
+        tempResult = help_template
         return tempResult
     # rd单独最后处理（如果前面都没匹配上，则执行rd
     rdPattern = r'(?:r(?:\\d{1,2})?(?:d\\w{0,16}|$)|r)(.*)'

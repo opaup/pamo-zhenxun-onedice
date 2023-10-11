@@ -202,6 +202,14 @@ async def saveCharacterItem(cardId, item, value):
         json.dump(charactersInfo, f, indent=4, ensure_ascii=False)
 
 
+async def updateGroupItem(groupId, item, value):
+    groupPath = statusPath / (groupId + ".json")
+    groupInfo = await getGroupInfo(groupId)
+    groupInfo[item] = value
+    with groupPath.open('w', encoding='utf-8') as f:
+        json.dump(groupInfo, f, indent=4, ensure_ascii=False)
+
+
 async def updateMultiCharacterProp(cardId, prop, value):
     key = ""
     for standard_key, aliases in propName.items():

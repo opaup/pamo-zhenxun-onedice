@@ -56,3 +56,11 @@ async def replace_placeholders(text, result="", pcname="", ext1="", ext2=""):
         if ext2 != "":
             text = text.replace("{EXT2}", ext2)
     return text
+
+
+async def getReply(msgStr, msgData):
+    return
+
+
+async def updateReply(msgStr, msgData):
+    return
