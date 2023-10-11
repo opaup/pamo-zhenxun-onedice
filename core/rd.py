@@ -10,7 +10,7 @@ import re
 # rd
 @rd_before
 async def rdFlow(cmdStr, msgData):
-    split = await rdSplit(cmdStr.msgData)
+    split = await rdSplit(cmdStr, msgData)
     a1 = split['a1']
     a2 = split['a2']
     b1 = split['b1']
@@ -43,19 +43,16 @@ async def rdSplit(cmdStr, msgData):
         cmdStr = split[1]
         # 如果数字在d后面，而d前没数字，如rd20，则diceType=20
         # 判断cmdStr是否为纯数字，如是则diceType=它
-        operator = re.search(r'[+\-*/]', cmdStr).group()
-        if operator:
+        if re.search(r'[+\-*/]', cmdStr):
+            operator = re.search(r'[+\-*/]', cmdStr).group()
             s = cmdStr.split(operator)
             if s[0].isdigit():
                 diceType = s[0]
     else:
         if cmdStr != "":
             m = cmdStr
-        else:
-            a1 = 1
-            a2 = diceType
     # 如果m不为空，判断 m 是否为数字
-    if m == "":
+    if cmdStr == "":
         # 空则默认1d默认Dice
         a1 = 1
         a2 = diceType
@@ -81,7 +78,7 @@ async def rdSplit(cmdStr, msgData):
             cmdStr = split[1]
     # 运算符不为空，则表示存在附加表达式
     if not operator == "":
-        cmdStr = cmdStr.split(operator)[1]
+        # cmdStr = cmdStr.split(operator)[1]
         # 判断是否包含d，如包含，则取d之前的内容
         if cmdStr.find('d') != -1:
             split = cmdStr.split("d", 1)
