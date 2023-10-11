@@ -1,4 +1,4 @@
-def operatorCal(operator, num1, num2):
+async def operatorCal(operator, num1, num2):
     if operator == '+':
         result = num1 + num2
     elif operator == '-':
@@ -13,5 +13,5 @@ def operatorCal(operator, num1, num2):
 
 
 # 根据rd结果获取数字形式的最终结果
-def getIntResultForRdResult():
+async def getIntResultForRdResult():
     return

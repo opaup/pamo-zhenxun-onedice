@@ -2,11 +2,15 @@ import utils.dice as dice
 import utils.calculate as cal
 from sub.custom import reply
 from em.msgCode import msgCode
+from core.aspect import rd_before
+import utils.data as dataSource
 import re
 
 
 # rd
-def rdFlow(cmdStr, diceType, msgData):
+@rd_before
+async def rdFlow(cmdStr, msgData):
+    diceType = "100"
     a1 = 0
     a2 = 0
     b1 = 0
@@ -14,6 +18,9 @@ def rdFlow(cmdStr, diceType, msgData):
     m = ""
     operator = ""
     extMsg = ""
+    if msgData["msgType"] == "group":
+        groupId = msgData["groupId"]
+        diceType = await dataSource.getDiceType(groupId)
     cmdStr = re.sub("r", "", cmdStr, count=1)
     # 判断是否包含d，如包含，则取d之前的内容
     if cmdStr.find('d') != -1:
@@ -21,6 +28,13 @@ def rdFlow(cmdStr, diceType, msgData):
         split = cmdStr.split("d", 1)
         m = split[0]
         cmdStr = split[1]
+        # 如果数字在d后面，而d前没数字，如rd20，则diceType=20
+        # 判断cmdStr是否为纯数字，如是则diceType=它
+        operator = re.search(r'[+\-*/]', cmdStr).group()
+        if operator:
+            s = cmdStr.split(operator)
+            if s[0].isdigit():
+                diceType = s[0]
     else:
         if cmdStr != "":
             m = cmdStr
@@ -54,6 +68,7 @@ def rdFlow(cmdStr, diceType, msgData):
             cmdStr = split[1]
     # 运算符不为空，则表示存在附加表达式
     if not operator == "":
+        cmdStr = cmdStr.split(operator)[1]
         # 判断是否包含d，如包含，则取d之前的内容
         if cmdStr.find('d') != -1:
             split = cmdStr.split("d", 1)
@@ -71,30 +86,33 @@ def rdFlow(cmdStr, diceType, msgData):
             extMsg = re.findall(r'\D+', cmdStr)
     extMsg = "".join(extMsg)
 
-    return getRdResult(a1=a1, a2=a2, b1=b1, b2=b2, operator=operator, diceType=diceType, extMsg=extMsg, msgData=msgData)
+    return await getRdResult(a1=a1, a2=a2, b1=b1, b2=b2, operator=operator, diceType=diceType, extMsg=extMsg,
+                             msgData=msgData)
 
 
-def getRdResult(a1, a2, b1, b2, operator, diceType, extMsg, msgData):
-    resultStr = doRd(a1=a1, a2=a2, b1=b1, b2=b2, operator=operator, diceType=diceType, extMsg=extMsg)
-    return reply(msgCode.RD_RESULT.name, result=resultStr, msgData=msgData)
+async def getRdResult(a1, a2, b1, b2, operator, diceType, extMsg, msgData):
+    resultStr = await doRd(a1=a1, a2=a2, b1=b1, b2=b2, operator=operator, diceType=diceType, extMsg=extMsg)
+    return await reply(msgCode.RD_RESULT.name, msgData, resultStr)
 
 
-def doRd(a1, a2, b1, b2, operator, diceType, extMsg):
+async def doRd(a1, a2, b1, b2, operator, diceType, extMsg):
     result = []
     if a1 == 0:
         a1 = 1
     if a2 == 0:
         a2 = diceType
-    firstResult = dice.xdy(a1, a2)
+    firstResult = await dice.xdy(a1, a2)
     equation = [str(a1) + "d" + str(a2)]
 
     # 如果operator存在
     if not operator == "":
         equation.append(operator)
+        if firstResult["equation"] == '':
+            firstResult["equation"] = firstResult["result"]
         if b1 == 0:
-            return reply(msgCode.RD_ILLEGAL_FORMAT.name)
+            return await reply(msgCode.RD_ILLEGAL_FORMAT.name)
         if b2 == 0:
-            c = cal.operatorCal(operator, int(firstResult["result"]), b1)
+            c = await cal.operatorCal(operator, int(firstResult["result"]), b1)
             equation.append(str(b1))
             equation.append("=")
             equation.append(str(c))
@@ -102,8 +120,8 @@ def doRd(a1, a2, b1, b2, operator, diceType, extMsg):
             equation.append(firstResult["equation"] + operator + str(b1) + "=" + str(c))
             equation.append("]")
         else:
-            extResult = dice.xdy(b1, b2)
-            c = cal.operatorCal(operator, int(firstResult["result"]), int(extResult["result"]))
+            extResult = await dice.xdy(b1, b2)
+            c = await cal.operatorCal(operator, int(firstResult["result"]), int(extResult["result"]))
             equation.append(str(b1) + "d" + str(b2) + "=")
             equation.append(str(c))
             equation.append("[")

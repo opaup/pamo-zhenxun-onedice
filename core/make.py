@@ -5,42 +5,42 @@ from em.msgCode import msgCode
 from sub.custom import reply
 
 
-def roll3d6():
+async def roll3d6():
     a = 0
     for i in range(3):
-        d = dice.roll(6)
+        d = await dice.roll(6)
         a += d
     return str(a)
 
 
-def roll3d6_5():
-    a = int(roll3d6()) * 5
+async def roll3d6_5():
+    a = int(await roll3d6()) * 5
     return str(a)
 
 
-def roll2d6And6():
+async def roll2d6And6():
     a = 0
     for i in range(2):
-        d = dice.roll(6)
+        d = await dice.roll(6)
         a += d
     return str(a)
 
 
-def roll2d6And6_5():
-    a = int(roll2d6And6()) * 5
+async def roll2d6And6_5():
+    a = int(await roll2d6And6()) * 5
     return str(a)
 
 
-def getOneCocCard():
-    strength = roll3d6_5()
-    constitution = roll3d6_5()
-    size = roll2d6And6_5()
-    dexterity = roll3d6_5()
-    appearance = roll3d6_5()
-    intelligence = roll2d6And6_5()
-    power = roll3d6_5()
-    education = roll2d6And6_5()
-    luck = roll3d6_5()
+async def getOneCocCard():
+    strength = await roll3d6_5()
+    constitution = await roll3d6_5()
+    size = await roll2d6And6_5()
+    dexterity = await roll3d6_5()
+    appearance = await roll3d6_5()
+    intelligence = await roll2d6And6_5()
+    power = await roll3d6_5()
+    education = await roll2d6And6_5()
+    luck = await roll3d6_5()
     sanity = power
 
     # 计算伤害加值和体格
@@ -92,25 +92,25 @@ def getOneCocCard():
     ])
 
 
-def cocMaker(num, msgData):
+async def cocMaker(num, msgData):
     resultList = []
     num = int(num)
 
     for i in range(num):
-        resultList.append(getOneCocCard())
+        resultList.append(await getOneCocCard())
         if not i == num - 1:
             resultList.append("\n")
     result = "".join(resultList)
-    return reply(msgCode.MAKE_CARD_COC7.name, result, msgData)
+    return await reply(msgCode.MAKE_CARD_COC7.name, msgData, result)
 
 
-def dndMaker():
+async def dndMaker():
     return
 
 
-def coc5thMaker():
+async def coc5thMaker():
     return
 
 
-def cochildMaker():
+async def cochildMaker():
     return

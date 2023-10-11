@@ -1,7 +1,9 @@
 from pathlib import Path
+from template.propDic import propName
 import template.jsonTemplate as jsonTemplate
 import importlib.util as importlibUtil
 import json
+import asyncio
 
 NICKNAME = ""
 
@@ -28,7 +30,7 @@ botJsonPath = customPath / "bot.json"
 
 
 # 如果为真寻bot，则优先加载真寻bot配置文件中的nickname
-def loadNickName():
+async def loadNickName():
     try:
         zhenxunConfig = "configs.config"
         if importlibUtil.find_spec(zhenxunConfig):
@@ -39,7 +41,7 @@ def loadNickName():
         NICKNAME = ""
 
 
-def load_path():
+async def load_path():
     charactersPath.mkdir(parents=True, exist_ok=True)
     usersPath.mkdir(parents=True, exist_ok=True)
     customPath.mkdir(parents=True, exist_ok=True)
@@ -48,12 +50,12 @@ def load_path():
     logsPath.mkdir(parents=True, exist_ok=True)
 
     if not botJsonPath.exists():
-        create_bot(botJsonPath)
+        await create_bot(botJsonPath)
     if not msgJsonPath.exists():
-        create_msg(msgJsonPath)
+        await create_msg(msgJsonPath)
 
 
-def suppleMsg(msgPath, msg):
+async def suppleMsg(msgPath, msg):
     with open(msgPath, 'r', encoding='utf-8') as f:
         oldJson = json.load(f)
     oldJson[msg] = jsonTemplate.msgDefaultJson[msg]
@@ -62,7 +64,7 @@ def suppleMsg(msgPath, msg):
     return oldJson[msg]
 
 
-def suppleUser(userPath, item):
+async def suppleUser(userPath, item):
     with open(userPath, 'r', encoding='utf-8') as f:
         oldJson = json.load(f)
     oldJson[item] = jsonTemplate.userDefaultJson[item]
@@ -71,7 +73,7 @@ def suppleUser(userPath, item):
     return oldJson[item]
 
 
-def suppleGroup(groupPath, item):
+async def suppleGroup(groupPath, item):
     with open(groupPath, 'r', encoding='utf-8') as f:
         oldJson = json.load(f)
     oldJson[item] = jsonTemplate.groupDefaultJson[item]
@@ -80,49 +82,51 @@ def suppleGroup(groupPath, item):
     return oldJson[item]
 
 
-def create_bot(bot_path):
+async def create_bot(bot_path):
     with bot_path.open('w', encoding='utf-8') as f:
         json.dump(jsonTemplate.botDefaultJson, f, indent=4, ensure_ascii=False)
 
 
-def create_msg(msg_path):
+async def create_msg(msg_path):
     with msg_path.open('w', encoding='utf-8') as f:
         json.dump(jsonTemplate.msgDefaultJson, f, indent=4, ensure_ascii=False)
 
 
-def getDiceType(groupId):
-    return getGroupInfo(groupId)['diceType']
+async def getDiceType(groupId):
+    groupInfo = await getGroupInfo(groupId)
+    diceType = groupInfo['diceType']
+    return diceType
 
 
-def createGroupInfo(groupPath):
+async def createGroupInfo(groupPath):
     with groupPath.open('w', encoding='utf-8') as f:
         json.dump(jsonTemplate.groupDefaultJson, f, indent=4, ensure_ascii=False)
 
 
-def createUserInfo(userPath):
+async def createUserInfo(userPath):
     with userPath.open('w', encoding='utf-8') as f:
         json.dump(jsonTemplate.userDefaultJson, f, indent=4, ensure_ascii=False)
 
 
-def getUserInfo(userId):
+async def getUserInfo(userId):
     userPath = usersPath / (userId + ".json")
     if not userPath.exists():
-        createUserInfo(userPath)
+        await createUserInfo(userPath)
     with open(userPath, 'r', encoding='utf-8') as f:
         userInfo = json.load(f)
     return userInfo
 
 
-def getGroupInfo(groupId):
+async def getGroupInfo(groupId):
     groupPath = statusPath / (groupId + ".json")
     if not groupPath.exists():
-        createGroupInfo(groupPath)
+        await createGroupInfo(groupPath)
     with open(groupPath, 'r', encoding='utf-8') as f:
         groupInfo = json.load(f)
     return groupInfo
 
 
-def getCharacter(cardId):
+async def getCharacter(cardId):
     characterPath = charactersPath / (cardId + ".json")
     if not characterPath.exists():
         return {}
@@ -131,64 +135,94 @@ def getCharacter(cardId):
     return characterInfo
 
 
-def getCurrentCharacter(userId, groupId):
+async def getCurrentCharacter(userId, groupId=""):
     # 角色卡默认是全局的，如果群有设置，则优先取群的
-    characterId = ""
     if not groupId == "":
-        cardLock = getGroupItem(groupId, "cardLock")
+        cardLock = await getGroupItem(groupId, "cardLock")
         if userId in cardLock:
             characterId = cardLock[userId]
         else:
-            characterId = getUserItem(userId, "currentCard")
+            characterId = await getUserItem(userId, "currentCard")
     else:
-        characterId = getUserItem(userId, "currentCard")
-    characterInfo = getCharacter(characterId)
+        characterId = await getUserItem(userId, "currentCard")
+    characterInfo = await getCharacter(characterId)
     return characterInfo
 
 
-def getGroupItem(groupId, item):
-    userInfo = getGroupInfo(groupId)
+async def getGroupItem(groupId, item):
+    userInfo = await getGroupInfo(groupId)
     if item not in userInfo:
         groupPath = statusPath / (groupId + ".json")
         userInfo[item] = suppleGroup(groupPath, item)
     return userInfo[item]
 
 
-def getUserItem(userId, item):
-    userInfo = getUserInfo(userId)
+async def getUserItem(userId, item):
+    userInfo = await getUserInfo(userId)
     if item not in userInfo:
         userPath = usersPath / (userId + ".json")
         userInfo[item] = suppleUser(userPath, item)
     return userInfo[item]
 
 
-def saveUserItem(userId, item, value):
-    userInfo = getUserInfo(userId)
+async def saveUserItem(userId, item, value):
+    userInfo = await getUserInfo(userId)
     userInfo[item] = value
     userPath = usersPath / (userId + ".json")
     with userPath.open('w', encoding='utf-8') as f:
         json.dump(userInfo, f, indent=4, ensure_ascii=False)
 
 
-def createCharacter(userId, newId, newJson):
-    characterPath = charactersPath / (userId + "_" + newId + ".json")
+async def saveUserInfo(userId, value):
+    userInfo = value
+    userPath = usersPath / (userId + ".json")
+    with userPath.open('w', encoding='utf-8') as f:
+        json.dump(userInfo, f, indent=4, ensure_ascii=False)
+
+
+async def createCharacter(newId, newJson):
+    characterPath = charactersPath / (newId + ".json")
     with characterPath.open('w', encoding='utf-8') as f:
         json.dump(newJson, f, indent=4, ensure_ascii=False)
 
 
-def saveCharacterProp(cardId, prop, value):
-    charactersInfo = getCharacter(cardId)
+async def saveCharacterProp(cardId, prop, value):
+    characterPath = charactersPath / (cardId + ".json")
+    charactersInfo = await getCharacter(cardId)
     charactersInfo["prop"][prop] = value
-    with userPath.open('w', encoding='utf-8') as f:
-        json.dump(oldJson, f, indent=4, ensure_ascii=False)
+    with characterPath.open('w', encoding='utf-8') as f:
+        json.dump(charactersInfo, f, indent=4, ensure_ascii=False)
 
 
-def saveCharacterItem(cardId, item, value):
-    charactersInfo = getCharacter(cardId)
+async def saveCharacterItem(cardId, item, value):
+    characterPath = charactersPath / (cardId + ".json")
+    charactersInfo = await getCharacter(cardId)
     charactersInfo[item] = value
-    with userPath.open('w', encoding='utf-8') as f:
-        json.dump(oldJson, f, indent=4, ensure_ascii=False)
+    with characterPath.open('w', encoding='utf-8') as f:
+        json.dump(charactersInfo, f, indent=4, ensure_ascii=False)
 
 
-load_path()
-loadNickName()
+async def updateMultiCharacterProp(cardId, prop, value):
+    key = ""
+    for standard_key, aliases in propName.items():
+        if prop in aliases:
+            key = standard_key
+            break
+    if not key == "":
+        propAlias = propName[key]
+        for alias in propAlias:
+            await saveCharacterProp(cardId, alias, value)
+    else:
+        await saveCharacterProp(cardId, prop, value)
+
+
+async def getGroupIdAndName(msgData):
+    groupId = ""
+    groupName = ""
+    # if msgData["msgType"] == "group":
+    # msgData
+    return
+
+asyncio.run(load_path())
+asyncio.run(loadNickName())
+
