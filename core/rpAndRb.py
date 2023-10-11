@@ -26,7 +26,7 @@ async def rp(msgStr, msgData):
 # 奖励
 async def rb(msgStr, msgData):
     if msgStr == "" or not re.match(r'^\d$', msgStr):
-        return
+        return await reply(key=msgCode.RP_OR_RB_FORMAT_FAIL.name, msgData=msgData)
     else:
         msgStr = int(msgStr)
     diceMode = await dataSource.getGroupItem(msgData["groupId"], "diceMode")
