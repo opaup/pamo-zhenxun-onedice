@@ -30,5 +30,5 @@ async def on_message(msg):
 
 # TODO 定时备份到数据库 || init时同步检测数据更新
 
-msgStr = ".rh"
+msgStr = ".rb2"
 print(asyncio.run(on_message(msgStr)))

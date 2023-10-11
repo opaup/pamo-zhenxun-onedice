@@ -1,3 +1,5 @@
+import asyncio
+
 import nonebot.adapters.onebot.v11.bot as bot
 from core.rd import rdSplit, doRd
 from sub.custom import reply
@@ -22,6 +24,7 @@ async def rh(msgStr, msgData):
     #                        message=reply(key=msgCode.RH_TO_GROUP.name, msgData=msgData, result=result,
     #                                      pcname=pcname, ext1=ext1))
 
+    await asyncio.sleep(2)
     # await bot.Bot.send_msg(message_type='private', user_id=msgData['userId'],
     #                        message=reply(key=msgCode.RH_TO_PRIVATE.name, msgData=msgData, result=result,
     #                                      pcname=pcname, ext1=ext1))

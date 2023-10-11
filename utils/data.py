@@ -153,7 +153,7 @@ async def getGroupItem(groupId, item):
     userInfo = await getGroupInfo(groupId)
     if item not in userInfo:
         groupPath = statusPath / (groupId + ".json")
-        userInfo[item] = suppleGroup(groupPath, item)
+        userInfo[item] = await suppleGroup(groupPath, item)
     return userInfo[item]
 
 

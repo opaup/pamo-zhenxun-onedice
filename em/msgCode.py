@@ -33,3 +33,4 @@ class msgCode(Enum):
     RH_TO_PRIVATE = ("RH_TO_PRIVATE", "暗骰私聊消息")
     RH_TO_GROUP = ("RH_TO_GROUP", "暗骰群聊消息")
     RH_NOT_IN_GROUP = ("RH_NOT_IN_GROUP", "没有在群聊中使用暗骰")
+    RP_OR_RB_FORMAT_FAIL = ("RP_OR_RB_FORMAT_FAIL", "RP、RB格式错误")

@@ -34,10 +34,12 @@ msgDefaultJson = {
     "RH_TO_PRIVATE": "你在群聊[{EXT1}]进行了暗骰检定：{RESULT}",
     "RH_TO_GROUP": "咕噜噜，[{PCNAME}]发动了暗骰检定！",
     "RH_NOT_IN_GROUP": "只有在群聊中才可以使用暗骰哦~",
+    "RP_OR_RB_FORMAT_FAIL": "rp或rb的指令后必须跟10以内的数字哦。",
 }
 
 groupDefaultJson = {
     "onOff": "on",
+    "diceMode": "coc",
     "diceType": "100",
     "ruleType": "1",
     "isNotice": False,
