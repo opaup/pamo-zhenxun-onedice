@@ -1,7 +1,7 @@
 from sub.custom import reply
 from em.msgCode import msgCode
 import utils.data as dataSource
-from core import ra, rd, make, st, sanCheck
+from core import ra, rh, rd, make, st, sanCheck
 import re
 
 
@@ -30,7 +30,8 @@ async def doFlow(msgData):
         return await reply(msgCode.NO_ACHIEVE_CMD.name, msgData)
     # rh
     if re.match(r'^(rh)', cmdStr):
-        return await reply(msgCode.NO_ACHIEVE_CMD.name, msgData)
+        cmdStr = re.sub(r'\b(rh)\b', "", cmdStr, count=1).strip()
+        return await rh.rh(cmdStr, msgData)
     # st
     if re.match(r'^(st|pc|nn)', cmdStr):
         cmdStr = re.sub(r'\b(st|pc|nn)\b', "", cmdStr, count=1).strip()

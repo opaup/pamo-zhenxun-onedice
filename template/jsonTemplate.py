@@ -31,6 +31,9 @@ msgDefaultJson = {
     "RD_BEFORE": "转动命运的齿轮，拨开眼前迷雾...|启动吧，命运的水晶球，为[{USERNAME}]指引方向！|嗯哼，在此刻转动吧！命运之轮！|{NICKNAME}在此祈愿，请为[{USERNAME}]降下指引...",
     "SHOW_CARD_INFO": "正在查看[{USERNAME}]的角色卡：{PCNAME}\n{RESULT}",
     "SHOW_CARD_LIST": "正在查看[{USERNAME}]的角色卡列表：\n{RESULT}",
+    "RH_TO_PRIVATE": "你在群聊[{EXT1}]进行了暗骰检定：{RESULT}",
+    "RH_TO_GROUP": "咕噜噜，[{PCNAME}]发动了暗骰检定！",
+    "RH_NOT_IN_GROUP": "只有在群聊中才可以使用暗骰哦~",
 }
 
 groupDefaultJson = {
