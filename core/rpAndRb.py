@@ -55,7 +55,7 @@ async def cocRp(time, msgData):
 
 async def cocRb(time, msgData):
     unit = await dice.roll(10)-1
-    decade = 0
+    decade = 9
     allDecade = []
     for i in range(time):
         d = await dice.roll(10)-1
@@ -63,7 +63,7 @@ async def cocRb(time, msgData):
         if d < decade:
             decade = d
 
-    resultNum = str(unit) + str(decade)
+    resultNum = str(decade) + str(unit)
     allDecade = ", ".join(allDecade)
     result = f"{resultNum}({allDecade})"
     return await reply(msgCode.RD_RESULT.name, msgData, result)
