@@ -2,7 +2,7 @@ import json
 import re
 import random
 
-import utils.data as dataSource
+from ..utils import data as dataSource
 
 msgJsonPath = dataSource.msgJsonPath
 botJsonPath = dataSource.botJsonPath

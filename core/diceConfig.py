@@ -6,14 +6,16 @@
 # dice mode coc/dnd/其他
 # dice rule x
 import re
-from sub.custom import reply
-from em.msgCode import msgCode
-from utils.calculate import operatorCal
-import utils.data as dataSource
+from ..sub.custom import reply
+from ..em.msgCode import msgCode
+from ..utils import data as dataSource
+from ..utils.calculate import operatorCal
 
 
 async def diceFlow(msgStr, msgData):
     # isAdmin
+    if not msgData['isAdmin']:
+        return await reply(key=msgCode.DICE_SET_NOT_ADMIN.name, msgData=msgData)
     split = re.split(" ", msgStr)
     if len(split) <= 0:
         return await reply(key=msgCode.DICE_SET_HELP.name, msgData=msgData)

@@ -1,6 +1,6 @@
 from pathlib import Path
-from template.propDic import propName
-import template.jsonTemplate as jsonTemplate
+from ..template.propDic import propName
+from ..template import jsonTemplate as jsonTemplate
 import importlib.util as importlibUtil
 import json
 import asyncio

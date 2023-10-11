@@ -1,11 +1,11 @@
 import json
 import time
 import re
-from sub.custom import reply
-from em.msgCode import msgCode
-from utils.calculate import operatorCal
-import utils.data as dataSource
-from utils import strUtil
+from ..sub.custom import reply
+from ..em.msgCode import msgCode
+from ..utils.calculate import operatorCal
+from ..utils import strUtil
+from ..utils import data as dataSource
 
 helpDic = ["help", "帮助"]
 showDic = ["show", "查看", "info"]
@@ -109,11 +109,12 @@ async def newCard(cardName, cardProp, msgData):
     }
     card = await splitProp(card, cardProp)
     await dataSource.createCharacter(card["id"], card)
-    cardList = dataSource.getUserItem(msgData["userId"], "cardList")
+    cardList = await dataSource.getUserItem(msgData["userId"], "cardList")
     cardList[cardName] = card["id"]
     await dataSource.saveUserItem(msgData["userId"], "cardList", cardList)
     # 切换全局卡为当前新卡
-    await dataSource.saveUserItem(msgData["userId"], "currentCard", card["name"])
+    await dataSource.saveUserItem(msgData["userId"], "currentCard", card["id"])
+    await dataSource.saveUserItem(msgData["userId"], "currentCardName", card["name"])
 
     return await reply(msgCode.SAVE_CARD_SUCCESS.name, msgData, cardName)
 
@@ -170,7 +171,7 @@ async def listCard(msgData):
         if index < len(cardList):
             result += "\n"
         index += 1
-    return result
+    return await reply(msgCode.SHOW_CARD_LIST.name, msgData, result)
 
 
 async def stHelp():

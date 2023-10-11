@@ -38,7 +38,7 @@ msgDefaultJson = {
     "DICE_SET_NOT_ADMIN": "只有群主或管理员才可以使用该指令哦！",
     "DICE_SET_HELP": "定义格式： group 字段名 value\ndice on/off 开关骰功能\ndice set x  设置默认骰\ndice isNotice on/off    "
                      "设置是否为公告群\ndice secret on/off    设置是否开启秘密团模式\ndice mode coc/dnd/其他    设置骰模式\ndice rule x "
-                     "设置房规\n------附加内容------",
+                     "设置房规\n------附加内容------\n默认房规，当值小于50时，1大成功，98-100大失败，大于50时，1-3大成功，100大失败",
     "DICE_SET_ON": "骰功能已开启",
     "DICE_SET_OFF": "骰功能已关闭",
     "DICE_SET_SECRET_ON": "已开启秘密团模式",

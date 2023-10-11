@@ -1,16 +1,16 @@
 import re
 
-import utils.calculate as cal
-import utils.data as dataSource
-import utils.dice as dice
-import utils.propUtil as propUtil
-from em.msgCode import msgCode
-from core.aspect import rd_before
-from sub.custom import reply
+from ..utils import calculate as cal
+from ..utils import dice as dice
+from ..utils import data as dataSource
+from ..utils import propUtil as propUtil
+from ..em.msgCode import msgCode
+from ..core.aspect import rd_before
+from ..sub.custom import reply
 
 
 @rd_before
-async def doRa(cmdStr, msgData):
+async def doRa(cmdStr, msgData, bot):
     calResult = await doRaCal(cmdStr, msgData)
     pcname = calResult["pcname"]
     ruleType = calResult["ruleType"]

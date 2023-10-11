@@ -1,7 +1,7 @@
-from sub.custom import reply
-from em.msgCode import msgCode
-import utils.data as dataSource
-from core import ra, rh, rd, rpAndRb, make, st, sanCheck, diceConfig
+from .sub.custom import reply
+from .em import msgCode
+from .utils import data as dataSource
+from .core import ra, rh, rd, rpAndRb, make, st, sanCheck, diceConfig
 import re
 
 
@@ -21,7 +21,7 @@ help_template = """
 """
 
 
-async def doFlow(msgData):
+async def doFlow(msgData, bot):
     cmdStr = msgData["msg"].lower().lstrip()
     print(cmdStr)
 
@@ -53,8 +53,8 @@ async def doFlow(msgData):
         return await reply(msgCode.NO_ACHIEVE_CMD.name, msgData)
     # rh
     if re.match(r'^(rh)', cmdStr):
-        cmdStr = re.sub(r'\b(rh)\b', "", cmdStr, count=1).strip()
-        return await rh.rh(cmdStr, msgData)
+        cmdStr = re.sub(r'rh', "", cmdStr, count=1).strip()
+        return await rh.rh(cmdStr, msgData, bot)
     # st
     if re.match(r'^(st|pc|nn)', cmdStr):
         cmdStr = re.sub(r'\b(st|pc|nn)\b', "", cmdStr, count=1).strip()
@@ -62,11 +62,11 @@ async def doFlow(msgData):
     # ra
     if re.match(r'^(ra)', cmdStr):
         cmdStr = re.sub(r'ra', "", cmdStr, count=1).strip()
-        return await ra.doRa(cmdStr, msgData)
+        return await ra.doRa(cmdStr, msgData, bot)
     # sc
     if re.match(r'^(sc)', cmdStr):
         cmdStr = re.sub(r'sc', "", cmdStr, count=1).strip()
-        return await sanCheck.sc(cmdStr, msgData)
+        return await sanCheck.sc(cmdStr, msgData, bot)
     # rc
     if re.match(r'^(rc)', cmdStr):
         return await reply(msgCode.NO_ACHIEVE_CMD.name, msgData)
@@ -90,7 +90,7 @@ async def doFlow(msgData):
     rdPattern = r'(?:r(?:\\d{1,2})?(?:d\\w{0,16}|$)|r)(.*)'
     if re.match(rdPattern, cmdStr):
         try:
-            return await rd.rdFlow(cmdStr, msgData)
+            return await rd.rdFlow(cmdStr, msgData, bot)
         except ValueError:
             return await reply(msgCode.ILLEGAL_FORMAT.name, msgData)
     # return await reply(msgCode.NO_COMMAND.name)

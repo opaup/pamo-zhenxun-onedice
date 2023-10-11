@@ -1,15 +1,15 @@
-import utils.dice as dice
-import utils.calculate as cal
-from sub.custom import reply
-from em.msgCode import msgCode
-from core.aspect import rd_before
-import utils.data as dataSource
+from ..utils import dice as dice
+from ..utils import calculate as cal
+from ..sub.custom import reply
+from ..em.msgCode import msgCode
+from ..core.aspect import rd_before
+from ..utils import data as dataSource
 import re
 
 
 # rd
 @rd_before
-async def rdFlow(cmdStr, msgData):
+async def rdFlow(cmdStr, msgData, bot):
     split = await rdSplit(cmdStr, msgData)
     a1 = split['a1']
     a2 = split['a2']

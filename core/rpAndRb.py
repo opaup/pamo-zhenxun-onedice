@@ -1,11 +1,11 @@
 # coc/dnd 模式 dice set coc/ dice set dnd，默认coc
 # coc ->diceType=100 +-d10 -> 两个roll(10)-1（一个十位一个个位）
 # dnd -> d20*n
-from sub.custom import reply
-from em.msgCode import msgCode
-from utils.calculate import operatorCal
-import utils.dice as dice
-import utils.data as dataSource
+from ..sub.custom import reply
+from ..em.msgCode import msgCode
+from ..utils.calculate import operatorCal
+from ..utils import dice as dice
+from ..utils import data as dataSource
 import re
 
 

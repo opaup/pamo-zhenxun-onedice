@@ -1,8 +1,8 @@
 import random
 
-import utils.dice as dice
-from em.msgCode import msgCode
-from sub.custom import reply
+from ..utils import dice
+from ..sub.custom import reply
+from ..em.msgCode import msgCode
 
 
 async def roll3d6():
