@@ -10,6 +10,19 @@ import re
 # rd
 @rd_before
 async def rdFlow(cmdStr, msgData):
+    split = await rdSplit(cmdStr.msgData)
+    a1 = split['a1']
+    a2 = split['a2']
+    b1 = split['b1']
+    b2 = split['b2']
+    operator = split['operator']
+    diceType = split['diceType']
+    extMsg = split['extMsg']
+    return await getRdResult(a1=a1, a2=a2, b1=b1, b2=b2, operator=operator, diceType=diceType, extMsg=extMsg,
+                             msgData=msgData)
+
+
+async def rdSplit(cmdStr, msgData):
     diceType = "100"
     a1 = 0
     a2 = 0
@@ -86,8 +99,16 @@ async def rdFlow(cmdStr, msgData):
             extMsg = re.findall(r'\D+', cmdStr)
     extMsg = "".join(extMsg)
 
-    return await getRdResult(a1=a1, a2=a2, b1=b1, b2=b2, operator=operator, diceType=diceType, extMsg=extMsg,
-                             msgData=msgData)
+    result = {
+        "a1": a1,
+        "a2": a2,
+        "b1": b1,
+        "b2": b2,
+        "operator": operator,
+        "diceType": diceType,
+        "extMsg": extMsg
+    }
+    return result
 
 
 async def getRdResult(a1, a2, b1, b2, operator, diceType, extMsg, msgData):

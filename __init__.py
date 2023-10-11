@@ -21,6 +21,8 @@ async def on_message(msg):
     result = await doFlow(msgData)
     # 如果没有任何匹配的指令，则跳过
     if type(result) == bool:
+        if result:
+            print("拦截且不回复")
         if not result:
             print("跳过拦截")
     return result
@@ -28,5 +30,5 @@ async def on_message(msg):
 
 # TODO 定时备份到数据库 || init时同步检测数据更新
 
-msgStr = ".st hp-1"
+msgStr = ".rh"
 print(asyncio.run(on_message(msgStr)))

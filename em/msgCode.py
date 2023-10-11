@@ -30,3 +30,6 @@ class msgCode(Enum):
     RD_BEFORE = ("RD_BEFORE", "RD延迟骰预告")
     SHOW_CARD_INFO = ("SHOW_CARD_INFO", "查看角色卡详情")
     SHOW_CARD_LIST = ("SHOW_CARD_LIST", "查看角色卡列表")
+    RH_TO_PRIVATE = ("RH_TO_PRIVATE", "暗骰私聊消息")
+    RH_TO_GROUP = ("RH_TO_GROUP", "暗骰群聊消息")
+    RH_NOT_IN_GROUP = ("RH_NOT_IN_GROUP", "没有在群聊中使用暗骰")
