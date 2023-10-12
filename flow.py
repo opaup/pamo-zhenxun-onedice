@@ -7,7 +7,7 @@ import re
 
 help_template = """这里是一个临时的帮助说明。
 目前pamo-zhenxun-onedice仍在初期开发过程，如出现未知bug请及时联系帕沫（525915186）。
-目前实现了：
+简单的指令列表：
 基本的.rd
 .coc
 .st 角色名 切卡
@@ -22,7 +22,7 @@ help_template = """这里是一个临时的帮助说明。
 .sc
 .dice help 查看群设置帮助
 ——————
-项目地址：https://github.com/opaup/pamo-zhenxun-onedice
+详细可查看项目地址：https://gitee.com/opaup/pamo-zhenxun-onedice
 """
 
 
