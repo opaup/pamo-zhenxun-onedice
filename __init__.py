@@ -16,13 +16,14 @@ import asyncio
 __zx_plugin_name__ = "DICE"
 __plugin_usage__ = f"""
 usage：
-使用 .help 来查看相关帮助，前缀可以是. 也可以是 。
-快让小真寻担任骰娘吧！
+使用 .help 来查看相关帮助，前缀可以是 . 也可以是 。
+快让小真寻担任新的骰娘吧！
+（目前仅为预览版）
 """.strip()
 __plugin_des__ = f""
 __plugin_cmd__ = ["."]
 __plugin_type__ = ("功能", "工具")
-__plugin_version__ = 1.0
+__plugin_version__ = 0.1
 __plugin_author__ = "opaup"
 __plugin_settings__ = {
     "level": 5,
