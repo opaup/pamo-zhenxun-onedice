@@ -5,17 +5,22 @@ from .core import ra, rh, rd, rpAndRb, make, st, sanCheck, diceConfig
 import re
 
 
-help_template = """
-这里是一个临时的帮助说明。
-目前pamo-zhenxun-onedice仍在开发过程中，可能存在不可预知的bug。
+help_template = """这里是一个临时的帮助说明。
+目前pamo-zhenxun-onedice仍在初期开发过程，如出现未知bug请及时联系帕沫（525915186）。
 目前实现了：
 基本的.rd
 .coc
-.st录入
-.st切卡
+.st 角色名 切卡
+.st 角色名-属性属性值 录入/更新
+.st 属性+-值 当前卡属性调整
+.st show (属性名) 查看角色卡详情/属性值
+.st list 查看角色卡列表
+.rd基础投掷
 .ra检定
+.rp和.rb惩罚奖励骰
+.rh暗骰（格式和rd一致）
 .sc
-.dice help 查看群设置
+.dice help 查看群设置帮助
 ——————
 项目地址：https://github.com/opaup/pamo-zhenxun-onedice
 """
