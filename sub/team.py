@@ -98,7 +98,7 @@ async def teamList(msgData, bot):
     return True
 
 
-# team 查看团队列表
+# team show 查看团队成员属性
 async def teamShow(msgStr, msgData, bot):
     return
 
@@ -151,6 +151,7 @@ async def teamClr(msgStr, msgData, bot):
 # team rm/del @at|uid|id 从队伍删除
 async def teamRm(msgStr, msgData, bot):
     # 获取当前成员列表，查看是否存在该用户，如不存在则移除
+
     return
 
 
