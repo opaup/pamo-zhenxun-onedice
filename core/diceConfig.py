@@ -42,6 +42,9 @@ async def diceFlow(msgStr, msgData):
 
 
 async def onOff(msgStr, msgData):
+    """
+    开启或关闭骰子功能
+    """
     if msgStr == "on":
         await dataSource.updateGroupItem(msgData['groupId'], 'onOff', msgStr)
         return await reply(key=msgCode.DICE_SET_ON.name, msgData=msgData)
@@ -52,6 +55,9 @@ async def onOff(msgStr, msgData):
 
 
 async def setDiceType(msgStr, msgData):
+    """
+    设置默认骰子面数
+    """
     if not msgStr.isdigit():
         return await reply(key=msgCode.DICE_SET_HELP.name, msgData=msgData)
     await dataSource.updateGroupItem(msgData['groupId'], 'diceType', msgStr)
@@ -60,6 +66,9 @@ async def setDiceType(msgStr, msgData):
 
 
 async def setIsNotice(msgStr, msgData):
+    """
+    设置本群是否为团贴扩散群
+    """
     if msgStr == "on":
         await dataSource.updateGroupItem(msgData['groupId'], 'isNotice', msgStr)
         return await reply(key=msgCode.DICE_SET_ISNOTICE_ON.name, msgData=msgData)
@@ -70,6 +79,10 @@ async def setIsNotice(msgStr, msgData):
 
 
 async def setMode(msgStr, msgData):
+    """
+    设置默认游戏模式，如coc/dnd
+    对部分指令会产生影响，如rp、rb
+    """
     diceMode = ["coc"]
     if msgStr not in diceMode:
         return await reply(key=msgCode.DICE_SET_HELP.name, msgData=msgData)
@@ -79,6 +92,9 @@ async def setMode(msgStr, msgData):
 
 
 async def setRule(msgStr, msgData):
+    """
+    设置默认房规，需要指令为数字
+    """
     if not type(msgStr) == int:
         return await reply(key=msgCode.DICE_SET_HELP.name, msgData=msgData)
 
@@ -86,6 +102,9 @@ async def setRule(msgStr, msgData):
 
 
 async def setSecret(msgStr, msgData):
+    """
+    设置开启/关闭秘密团模式
+    """
     if msgStr == "on":
         return await reply(key=msgCode.DICE_SET_HELP.name, msgData=msgData)
     if msgStr == "off":

@@ -4,7 +4,7 @@ import re
 from ..sub.custom import reply
 from ..em.msgCode import msgCode
 from ..utils.calculate import operatorCal
-from ..utils import strUtil
+from ..utils import cqUtil
 from ..utils import data as dataSource
 
 helpDic = ["help", "帮助"]
@@ -150,7 +150,8 @@ async def switchCard(cardName, cardList, msgData):
 
 
 async def showCard(msgStr, msgData):
-    msgStr = await strUtil.replaceCmdByDic(msgStr, showDic)
+    show_pattern = r'\b({})\b'.format('|'.join(showDic))
+    msgStr = re.sub(show_pattern, "", msgStr, count=1).strip()
     msgStr = msgStr.strip()
     cardInfo = await dataSource.getCurrentCharacter(msgData['userId'], msgData['groupId'])
     result = json.dumps(cardInfo, indent=4, ensure_ascii=False)
@@ -172,6 +173,10 @@ async def listCard(msgData):
             result += "\n"
         index += 1
     return await reply(msgCode.SHOW_CARD_LIST.name, msgData, result)
+
+
+async def removeCard(msgStr, msgData):
+    return
 
 
 async def stHelp():

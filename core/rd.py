@@ -23,6 +23,19 @@ async def rdFlow(cmdStr, msgData, bot):
 
 
 async def rdSplit(cmdStr, msgData):
+    """
+    用来分割如rd一样形式的计算表达式
+    Returns:
+        result = {
+        "a1": 第1个表达式的次数,
+        "a2": 第1个表达式的面数,
+        "b1": 第2个表达式的次数,
+        "b2": 第2个表达式的面数,
+        "operator": 操作符,
+        "diceType": 默认骰,
+        "extMsg": 附加信息
+        }
+    """
     diceType = "100"
     a1 = 0
     a2 = 0

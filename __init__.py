@@ -2,11 +2,12 @@ import nonebot
 from nonebot import get_driver, on_command
 from nonebot.rule import to_me
 from nonebot.typing import T_State
-from nonebot.adapters import Bot, Event
-from nonebot.adapters.onebot.v11 import MessageSegment, GroupMessageEvent, PrivateMessageEvent, Message, MessageEvent
+from nonebot.adapters import Event
+from nonebot.adapters.onebot.v11 import Bot, MessageSegment, GroupMessageEvent, PrivateMessageEvent, Message, MessageEvent
 from nonebot.params import CommandArg
 from nonebot.plugin import PluginMetadata
 from .utils import data as dataSource
+from .utils import eventUtil as eventUtil
 from .flow import doFlow
 import asyncio
 
@@ -23,7 +24,7 @@ usage：
 __plugin_des__ = f""
 __plugin_cmd__ = ["."]
 __plugin_type__ = ("功能", "工具")
-__plugin_version__ = 0.1
+__plugin_version__ = 0.2
 __plugin_author__ = "opaup"
 __plugin_settings__ = {
     "level": 5,
@@ -34,25 +35,25 @@ __plugin_settings__ = {
 
 
 # 入口
-async def on_message(msg, msgData):
-    # msgData = {
-    # "msg": msg.replace(".", "").replace("。", ""),
-    # "username": "绪山美波里",
-    # "userId": "000000000",
-    # # "msgType": "private",
-    # "msgType": "group",
-    # "groupId": "114514",
-    # "groupName": "测试群",
-    # "isAdmin": False,
-    # }
-    result = await doFlow(msgData)
-    # 如果没有任何匹配的指令，则跳过
-    if type(result) == bool:
-        if result:
-            print("拦截且不回复")
-        if not result:
-            print("跳过拦截")
-    return result
+# async def on_message(msg, msgData):
+#     # msgData = {
+#     # "msg": msg.replace(".", "").replace("。", ""),
+#     # "username": "绪山美波里",
+#     # "userId": "000000000",
+#     # # "msgType": "private",
+#     # "msgType": "group",
+#     # "groupId": "114514",
+#     # "groupName": "测试群",
+#     # "isAdmin": False,
+#     # }
+#     result = await doFlow(msgData)
+#     # 如果没有任何匹配的指令，则跳过
+#     if type(result) == bool:
+#         if result:
+#             print("拦截且不回复")
+#         if not result:
+#             print("跳过拦截")
+#     return result
 
 
 # TODO 定时备份到数据库 || init时同步检测数据更新
@@ -67,7 +68,7 @@ response = on_command(
 
 @response.handle()
 async def handle_first_receive(bot: Bot, event: MessageEvent, arg: Message = CommandArg()):
-    msg = arg.extract_plain_text().replace(".", "").replace("。", "")
+    msg = str(event.message).replace(".", "").replace("。", "")
     username = event.sender.nickname
     msgData = {
         "msg": msg,
@@ -80,8 +81,9 @@ async def handle_first_receive(bot: Bot, event: MessageEvent, arg: Message = Com
     }
     # 如果是群消息
     if msgData['msgType'] == "group":
-        msgData['groupId'] = str(event.group_id)
-        msgData['groupName'] = "None"
+        groupId = event.group_id
+        msgData['groupId'] = str(groupId)
+        msgData['groupName'] = await eventUtil.getGroupName(groupId, bot)
         # 是管理员或群主
         if event.sender.role == 'owner' or event.sender.role == 'admin':
             msgData['isAdmin'] = True

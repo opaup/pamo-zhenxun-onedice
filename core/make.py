@@ -14,11 +14,17 @@ async def roll3d6():
 
 
 async def roll3d6_5():
+    """
+    简单的3d6 * 5
+    """
     a = int(await roll3d6()) * 5
     return str(a)
 
 
 async def roll2d6And6():
+    """
+    简单的2d6 + 6
+    """
     a = 0
     for i in range(2):
         d = await dice.roll(6)
@@ -27,6 +33,9 @@ async def roll2d6And6():
 
 
 async def roll2d6And6_5():
+    """
+    简单的(2d6 + 6) * 5
+    """
     a = int(await roll2d6And6()) * 5
     return str(a)
 

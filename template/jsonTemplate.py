@@ -33,7 +33,7 @@ msgDefaultJson = {
     "SHOW_CARD_LIST": "正在查看[{USERNAME}]的角色卡列表：\n{RESULT}",
     "RH_TO_PRIVATE": "你在群聊[{EXT1}]进行了暗骰检定：{RESULT}",
     "RH_TO_GROUP": "咕噜噜，[{PCNAME}]发动了暗骰检定！",
-    "RH_NOT_IN_GROUP": "只有在群聊中才可以使用暗骰哦~",
+    "SENDER_NOT_FROM_GROUP": "只有在群聊中才可以使用暗骰哦~",
     "RP_OR_RB_FORMAT_FAIL": "rp或rb的指令后必须跟10以内的数字哦。",
     "DICE_SET_NOT_ADMIN": "只有群主或管理员才可以使用该指令哦！",
     "DICE_SET_HELP": "定义格式： group 字段名 value\ndice on/off 开关骰功能\ndice set x  设置默认骰\ndice isNotice on/off    "
@@ -48,6 +48,18 @@ msgDefaultJson = {
     "DICE_SET_MODE": "已设置DICE默认模式为：{RESULT}",
     "DICE_SET_RULE": "已设置本群默认房规为：{RESULT}{EXT1}",
     "DICE_SET_DICETYPE": "已设置本群默认DICE为：{RESULT}",
+    "ST_HELP": "",
+    "TEAM_NO_ONE": "唔？你说的是谁？群里边有 {RESULT} 这个人吗？",
+    "TEAM_ADD_SUCCESS": "已将{RESULT}添加到本群队伍中",
+    "TEAM_RM_SUCCESS": "已将{RESULT}从本群队伍中移除",
+    "TEAM_IN_LOCK": "{EXT1}已锁定角色卡{RESULT}，请先解锁角色卡",
+    "TEAM_LIST": "当前队伍列表：\n{RESULT}",
+    "TEAM_SHOW": "{EXT1}的{EXT2}属性如下：\n{RESULT}",
+    "TEAM_CLR": "{RESULT}的队伍已清空",
+    "TEAM_CALL": "{NICKNAME}正在释放大召唤术！\n{RESULT}",
+    "TEAM_PROP": "将{EXT1}的{EXT2}调整为：\n{RESULT}",
+    "TEAM_LOCK_SUCCESS": "已将队伍中的全部角色卡锁定！",
+    "TEAM_LOCK_FAIL": "{RESULT}还没有选择好角色卡哦。",
 }
 
 groupDefaultJson = {
@@ -57,7 +69,8 @@ groupDefaultJson = {
     "ruleType": "1",
     "isNotice": "off",
     "secretMode": "off",
-    "cardLock": {}
+    "cardLock": {},
+    "teamList": []
 }
 
 userDefaultJson = {

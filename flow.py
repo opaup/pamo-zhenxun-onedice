@@ -2,6 +2,8 @@ from .sub.custom import reply
 from .em import msgCode
 from .utils import data as dataSource
 from .core import ra, rh, rd, rpAndRb, make, st, sanCheck, diceConfig
+from .sub import team
+from services.log import logger
 import re
 
 
@@ -22,13 +24,17 @@ help_template = """这里是一个临时的帮助说明。
 .sc
 .dice help 查看群设置帮助
 ——————
-详细可查看项目地址：https://gitee.com/opaup/pamo-zhenxun-onedice
+详细可查看项目地址：https://git.rabi-town.cn/opaup/pamo-zhenxun-onedice
 """
 
 
 async def doFlow(msgData, bot):
     cmdStr = msgData["msg"].lower().lstrip()
-    print(cmdStr)
+    logger.info(rf"[onedice]检测到指令：{cmdStr}")
+
+    # 查找是否包含cq,替换成CQ
+    if re.search(r'cq', cmdStr):
+        cmdStr = re.sub(r'cq', 'CQ', cmdStr)
 
     # 设置
     if re.match(r'^(dice)', cmdStr):
@@ -83,6 +89,10 @@ async def doFlow(msgData, bot):
     if re.match(r'^(rp)', cmdStr):
         cmdStr = re.sub(r'rp', "", cmdStr, count=1).strip()
         return await rpAndRb.rp(cmdStr, msgData)
+    # team
+    if re.match(r'^(team)', cmdStr):
+        cmdStr = re.sub(r'team', "", cmdStr, count=1).strip()
+        return await team.teamFlow(cmdStr, msgData, bot)
     # npc
     if re.match(r'^(npc)', cmdStr):
         return await reply(msgCode.NO_ACHIEVE_CMD.name, msgData)

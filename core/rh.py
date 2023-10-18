@@ -5,11 +5,11 @@ from ..utils import data as dataSource
 from ..em.msgCode import msgCode
 import nonebot
 from nonebot.adapters.onebot.v11 import Bot
+from ..core.aspect import check_from_group
 
 
+@check_from_group
 async def rh(msgStr, msgData, bot):
-    if not msgData['msgType'] == 'group':
-        return await reply(key=msgCode.RH_NOT_IN_GROUP.name, msgData=msgData)
     cardInfo = await dataSource.getCurrentCharacter(msgData['userId'], msgData['groupId'])
     if cardInfo:
         pcname = cardInfo['name']

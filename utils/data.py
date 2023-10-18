@@ -127,6 +127,8 @@ async def getGroupInfo(groupId):
 
 
 async def getCharacter(cardId):
+    if cardId == "":
+        return {}
     characterPath = charactersPath / (cardId + ".json")
     if not characterPath.exists():
         return {}
