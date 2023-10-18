@@ -4,10 +4,6 @@
 除继承基础的常用骰功能外，希望在指令使用感上进一步优化，同时添加一些方便有趣的附属功能，如[团贴功能](#fun_notice)
 
 
-<details>
-   <summary>一个简单功能介绍</summary>
-   <p>
-         
 **一个简单功能介绍**
 <details>
    <summary>基础roll点</summary>
@@ -217,9 +213,6 @@
   秘密团相关指令，包括：设置自己为kp、加入ob队列......
 
    </p>
-</details>
-  
-  </p>
 </details>
 
 
