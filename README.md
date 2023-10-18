@@ -5,19 +5,26 @@
 
 
 <details>
-   <summary>**一个简单功能介绍**</summary>
+   <summary>一个简单功能介绍</summary>
    <p>
          
 **一个简单功能介绍**
-
+<details>
+   <summary>基础roll点</summary>
+   <p>
 - **基础roll点** ~rd~
 
   即最基础也是最简单的dice指令，默认为1d100，如果群内设置了默认骰，如20，则默认为1d20。同时支持附加表达式的简单计算，如：.rd20+1d3 | .r3d6*5 | .r2d6+6
 
   > "d"是什么意思？ d即是 dice的意思，如1d100就是roll 1次100面骰
 
+   </p>
+</details>
   
 
+<details>
+   <summary>人物卡相关操作</summary>
+   <p>
 - **人物卡做成** ~make~
 
   目前仅实现了coc7th的人物卡做成，指令格式如 .coc | .coc5 ，后面跟数字即是做成n次
@@ -69,7 +76,11 @@
   TODO： 角色卡锁定与删除
 
   
-
+   </p>
+</details>
+<details>
+   <summary>进阶检定</summary>
+   <p>
 - **进阶检定** ~rh/ra/sc/rb/rp~
 
   分别为：暗骰、属性/技能检定、san check、惩罚骰、奖励骰
@@ -124,7 +135,11 @@
 
   即抽取随机的疯狂症状，虽然目前还没有这个指令，但kp可以自行去规则书抽。
 
-  
+  </p>
+</details>
+<details>
+   <summary>队伍相关的指令</summary>
+   <p>
 
 - team
 
@@ -157,7 +172,12 @@
   队伍内一键全体角色卡上锁
 
   
+   </p>
+</details>
 
+<details>
+   <summary>其他指令</summary>
+   <p>
 - **今日人品** ~jrrp~
 
   **未完成**
@@ -195,6 +215,10 @@
   **未完成**
 
   秘密团相关指令，包括：设置自己为kp、加入ob队列......
+
+   </p>
+</details>
+  
   </p>
 </details>
 
