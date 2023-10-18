@@ -138,7 +138,10 @@ async def getCharacter(cardId):
 
 
 async def getCurrentCharacter(userId, groupId=""):
-    # 角色卡默认是全局的，如果群有设置，则优先取群的
+    """
+    获取user当前的角色卡
+    角色卡默认是全局的，如果有在该群设置cardLock，则优先取群lock的
+    """
     if not groupId == "":
         cardLock = await getGroupItem(groupId, "cardLock")
         if userId in cardLock:
@@ -212,7 +215,11 @@ async def updateGroupItem(groupId, item, value):
         json.dump(groupInfo, f, indent=4, ensure_ascii=False)
 
 
-async def updateMultiCharacterProp(cardId, prop, value):
+async def updateCharacterProp(cardId, prop, value):
+    """
+    更新角色的指定属性为指定值。
+    会同时更新保存在propDic中的其他别名的值
+    """
     key = ""
     for standard_key, aliases in propName.items():
         if prop in aliases:

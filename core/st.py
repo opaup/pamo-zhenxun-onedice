@@ -128,7 +128,7 @@ async def updateCard(cardId, propName, operator, value, msgData):
         propValue = int(value)
     else:
         propValue = await operatorCal(operator, int(oldPropValue), int(value))
-    await dataSource.updateMultiCharacterProp(cardId, propName, propValue)
+    await dataSource.updateCharacterProp(cardId, propName, propValue)
     return await reply(msgCode.UPDATE_CARD_SUCCESS.name, msgData, propName)
 
 

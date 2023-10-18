@@ -83,7 +83,7 @@ async def sc(cmdStr, msgData, bot):
     result = rf"{checkNum}/{intelligent}[{checkStr}]"
     ext2 = rf"{san}"
     # 保存
-    await dataSource.updateMultiCharacterProp(cardId, alias, san)
+    await dataSource.updateCharacterProp(cardId, alias, san)
 
     if raResult <= 4:
         if raResult == 1:

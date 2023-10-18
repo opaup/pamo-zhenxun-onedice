@@ -4,9 +4,9 @@ import re
 from ..core.rd import rdSplit, doRd
 from ..sub.custom import reply
 from ..utils import data as dataSource
-from ..utils import cqUtil
+from ..utils import cqUtil, eventUtil
 from ..em.msgCode import msgCode
-from ..core.aspect import team_operator_error, check_from_group, check_from_admin
+from ..core.aspect import team_operator_error, check_from_group
 
 
 # @team_operator_error
@@ -36,8 +36,7 @@ async def teamFlow(msgStr, msgData, bot):
         msgStr = re.sub('|'.join(showDic), "", msgStr, 1).lstrip()
         return await teamShow(msgStr, msgData, bot)
     if cmd in clrDic:
-        msgStr = re.sub('|'.join(clrDic), "", msgStr, 1).lstrip()
-        return await teamClr(msgStr, msgData, bot)
+        return await teamClr(msgData, bot)
     if cmd in rmDic:
         msgStr = re.sub('|'.join(rmDic), "", msgStr, 1).lstrip()
         return await teamRm(msgStr, msgData, bot)
@@ -60,27 +59,14 @@ async def teamList(msgData, bot):
     result = []
     for idStr in nowTeamList:
         i += 1
-        # s = f"{str(i)}.{cqUtil.atSomebody(idStr)}"
-        # 是否锁定卡
-        locked = groupInfo["cardLock"]
-        if idStr in locked:
-            cardInfo = await dataSource.getCharacter(locked[idStr])
-        else:
-            cardId = await dataSource.getUserItem(idStr, "currentCard")
-            cardInfo = await dataSource.getCharacter(cardId)
         s = []
-        if cardInfo == {}:
-            userInfo = await bot.get_stranger_info(user_id=int(idStr))
-            if userInfo:
-                pcname = userInfo["nickname"]
-            else:
-                pcname = idStr
-            s.append(f"{str(i)}.{pcname}")
-        else:
-            prop = cardInfo['prop']
-            pcname = cardInfo['name']
-            s.append(f"{str(i)}.{pcname}(")
+        cardInfo = await dataSource.getCurrentCharacter(idStr, msgData['groupId'])
+        pcname = await eventUtil.getPcName(idStr, msgData, bot)
+        s.append(f"{str(i)}.{pcname}|{idStr}")
+        if not cardInfo == {}:
             s2 = []
+            s.append(f"(")
+            prop = cardInfo['prop']
             if 'hp' in prop:
                 hp = prop['hp']
                 s2.append(f"hp:{str(hp)}")
@@ -100,7 +86,27 @@ async def teamList(msgData, bot):
 
 # team show 查看团队成员属性
 async def teamShow(msgStr, msgData, bot):
-    return
+    userId = cqUtil.fromStrGetUserId(msgStr)
+    cardInfo = await dataSource.getCurrentCharacter(userId, msgData['groupId'])
+    prop = cardInfo['prop']
+    pcname = await eventUtil.getPcName(msgStr, msgData, bot)
+    if cardInfo == "":
+        return await reply(msgCode.TARGET_USER_NOT_HAVE_CARD.name, msgData, ext1=ext1)
+    # 如果没有匹配到，返回全部属性
+    propName = re.search(r'\D+', msgStr)
+    result = ""
+    if propName:
+        if propName not in prop:
+            prop[propName] = 0
+        result = f"{propName} : {prop['propName']}"
+    else:
+        s = []
+        for propName, propValue in prop.items():
+            s.append(f"{propName} : {propValue}")
+        result = "\n".join(s)
+    resultMsg = await reply(msgCode.TEAM_SHOW.name, msgData, result, pcname=pcname)
+    await bot.send_msg(user_id=msgData["userId"], group_id=msgData["groupId"], message=resultMsg, auto_escape=False)
+    return True
 
 
 # team add @at|uid 添加到队伍
@@ -113,7 +119,6 @@ async def teamAdd(msgStr, msgData, bot):
     elif re.search(idPattern, msgStr):
         willAddIds = re.findall(idPattern, msgStr)
     result = " [" + "], [".join(willAddIds) + "] "
-    print(f"result = {result}")
     # 获取当前成员列表，查看是否存在该用户
     groupList = await bot.get_group_member_list(group_id=msgData['groupId'])
     # 为CQ码则解析CQ码再加入，如为ID则直接加入
@@ -125,14 +130,11 @@ async def teamAdd(msgStr, msgData, bot):
     userIdInGroupList = []
     for userInGroup in groupList:
         userIdInGroupList.append(str(userInGroup['user_id']))
-    print(f"userIdInGroupList = {userIdInGroupList}")
     for user in willAddIds:
         if user not in userIdInGroupList:
-            return await reply(msgCode.TEAM_NO_ONE.name, msgData)
+            return await reply(msgCode.GROUP_NO_ONE.name, msgData)
 
     oldTeamList = await dataSource.getGroupItem(msgData['groupId'], "teamList")
-    print(f"oldTeamList = {oldTeamList}")
-    print(f"willAddIds={willAddIds}")
     # 如果已在team中，不重复加入
     for willAddId in willAddIds:
         if willAddId not in oldTeamList:
@@ -144,15 +146,49 @@ async def teamAdd(msgStr, msgData, bot):
 
 
 # team clear/clr/cls 清空队伍
-async def teamClr(msgStr, msgData, bot):
-    return
+async def teamClr(msgData, bot):
+    result = f"{msgData['groupName']}({msgData['groupId']})"
+    resultMsg = await reply(msgCode.TEAM_CLR.name, msgData, result)
+    await dataSource.updateGroupItem(msgData['groupId'], "teamList", {})
+    await bot.send_msg(user_id=msgData["userId"], group_id=msgData["groupId"], message=resultMsg, auto_escape=False)
+    return True
 
 
-# team rm/del @at|uid|id 从队伍删除
+# team rm/del @at|uid 从队伍删除
 async def teamRm(msgStr, msgData, bot):
     # 获取当前成员列表，查看是否存在该用户，如不存在则移除
+    cqCodePattern = r'\[(.+?)\]'
+    idPattern = r'\d+'
+    willRmIds = []
+    if re.search(cqCodePattern, msgStr):
+        willRmIds = re.findall(cqCodePattern, msgStr)
+    elif re.search(idPattern, msgStr):
+        willRmIds = re.findall(idPattern, msgStr)
+    result = " [" + "], [".join(willRmIds) + "] "
+    # 获取当前团队列表，查看是否存在该用户
+    groupInfo = await dataSource.getGroupInfo(msgData['groupId'])
+    nowTeamList = groupInfo["teamList"]
+    locked = groupInfo["cardLock"]
+    # 为CQ码则解析CQ码再加入，如为ID则直接删除
+    tempList = []
+    for idStr in willRmIds:
+        if idStr in locked:
+            pcname = await eventUtil.getPcName(idStr, msgData, bot)
+            ext1 = cqUtil.atSomebody(idStr)
+            return await reply(msgCode.TEAM_IN_LOCK.name, msgData, pcname=pcname, ext1=ext1)
+        tempList.append(cqUtil.fromAtGetId(idStr))
+    if not len(tempList) == 0:
+        willRmIds = tempList
+    for idStr in willRmIds:
+        if idStr not in nowTeamList:
+            result = idStr
+            return await reply(msgCode.TEAM_NO_ONE.name, msgData, result)
+        nowTeamList.remove(idStr)
 
-    return
+    resultMsg = await reply(msgCode.TEAM_RM_SUCCESS.name, msgData, result)
+    await dataSource.updateGroupItem(msgData['groupId'], "teamList", nowTeamList)
+    await bot.send_msg(user_id=msgData["userId"], group_id=msgData["groupId"], message=resultMsg, auto_escape=False)
+    return True
 
 
 # team call 呼叫队伍全体成员
@@ -173,9 +209,34 @@ async def teamCall(msgData, bot):
 
 # team @at|uid propvalue 调整成员卡属性
 async def teamProp(msgStr, msgData, bot):
-    return
+    userId = cqUtil.fromStrGetUserId(msgStr)
+    cardInfo = await dataSource.getCurrentCharacter(userId, msgData['groupId'])
+    prop = cardInfo['prop']
+    pcname = await eventUtil.getPcName(msgStr, msgData, bot)
+    if cardInfo == "":
+        return await reply(msgCode.TARGET_USER_NOT_HAVE_CARD.name, msgData, ext1=ext1)
+    # 如果没有匹配到则为错误格式
+    propName = re.search(r'\D+', msgStr)
+    adjust = re.search(rf'(?<={propName})\w+', msgStr)
+    if propName not in prop:
+        prop[propName] = 0
+    propValue = prop[propName]
+    oldValue = propValue
+    propValue -= int(adjust)
+    if propValue < 0:
+        propValue = 0
+    result = f"{str(oldValue)}-({adjust}) = {str(propValue)}"
+    await dataSource.updateCharacterProp(cardInfo['id'], propName, propValue)
+    resultMsg = await reply(msgCode.TEAM_PROP.name, msgData, result, pcname=pcname)
+    await bot.send_msg(user_id=msgData["userId"], group_id=msgData["groupId"], message=resultMsg, auto_escape=False)
+    return True
 
 
 # team lock 一键全体卡上锁
 async def teamLock(msgStr, msgData, bot):
-    return
+    return True
+
+
+# team unlock 一键全体卡解锁
+async def teamUnLock(msgStr, msgData, bot):
+    return True

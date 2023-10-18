@@ -40,7 +40,7 @@ def team_operator_error(func):
             return await func(*args, **kwargs)
         except Exception as e:
             logger.warning(f"Caught exception in {func.__name__}: {e}")
-            return "方法出错了，请检查指令格式！"
+            return "指令格式或内部逻辑错误，请通过.help获取帮助"
 
     return wrapper
 
@@ -63,7 +63,8 @@ def check_from_admin():
     确认发送者是否拥有admin权限
     """
     @wraps(func)
-    async def wrapper(msgData, *args, **kwargs):
-        return
+    async def wrapper(cmdStr, msgData, *args, **kwargs):
+
+        return await func(cmdStr, msgData, *args, **kwargs)
 
     return wrapper

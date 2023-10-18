@@ -3,6 +3,7 @@ import re
 import random
 
 from ..utils import data as dataSource
+from ..utils import eventUtil
 
 msgJsonPath = dataSource.msgJsonPath
 botJsonPath = dataSource.botJsonPath
@@ -29,6 +30,16 @@ async def updatePlaceholders(msgData):
 
 
 async def reply(key, msgData, result="", pcname="", ext1="", ext2=""):
+    """
+    全部回复词的加工厂，关键字会在这里替换进个性化的回复词中，如回复词中存在“|”分隔符则会随机选取一个。
+
+    :param key:需要与template的值相对应，会自动更新当前group没有而template有的值
+    :param msgData:必传
+    :param result:结果
+    :param pcname:为空时默认获取sender的pcname/username/id
+    :param ext1
+    :param ext2
+    """
     await updatePlaceholders(msgData)
     with open(msgJsonPath, 'r', encoding='utf-8') as f:
         data = json.load(f)
@@ -38,6 +49,8 @@ async def reply(key, msgData, result="", pcname="", ext1="", ext2=""):
     if re.search("[|]", text):
         parts = text.split("|")
         text = random.choice(parts)
+    if pcname == "":
+        pcname = await eventUtil.getPcName(msgData=msgData)
     value = await replace_placeholders(text, result, pcname, ext1, ext2)
     return value
 

@@ -23,3 +23,19 @@ def fromAtGetId(s):
         else:
             userId = ""
     return userId
+
+
+def fromStrGetUserId(msgStr):
+    """
+    获取单个userId，该字符串需包含有效cq:at或userId数字
+    """
+    cqCodePattern = r'\[(.+?)\]'
+    idPattern = r'\d+'
+    willAddIds = []
+    if re.search(cqCodePattern, msgStr):
+        willAddIds = re.findall(cqCodePattern, msgStr)
+    elif re.search(idPattern, msgStr):
+        willAddIds = re.findall(idPattern, msgStr)
+    return fromAtGetId(willAddIds[0])
+
+
