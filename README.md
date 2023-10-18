@@ -8,6 +8,7 @@
 <details>
    <summary>基础roll点</summary>
    <p>
+      
 - **基础roll点** ~rd~
 
   即最基础也是最简单的dice指令，默认为1d100，如果群内设置了默认骰，如20，则默认为1d20。同时支持附加表达式的简单计算，如：.rd20+1d3 | .r3d6*5 | .r2d6+6
@@ -21,6 +22,7 @@
 <details>
    <summary>人物卡相关操作</summary>
    <p>
+      
 - **人物卡做成** ~make~
 
   目前仅实现了coc7th的人物卡做成，指令格式如 .coc | .coc5 ，后面跟数字即是做成n次
@@ -77,6 +79,7 @@
 <details>
    <summary>进阶检定</summary>
    <p>
+      
 - **进阶检定** ~rh/ra/sc/rb/rp~
 
   分别为：暗骰、属性/技能检定、san check、惩罚骰、奖励骰
@@ -174,6 +177,7 @@
 <details>
    <summary>其他指令</summary>
    <p>
+      
 - **今日人品** ~jrrp~
 
   **未完成**
