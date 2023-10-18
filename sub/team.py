@@ -44,7 +44,7 @@ async def teamFlow(msgStr, msgData, bot):
         msgStr = re.sub('|'.join(lockDic), "", msgStr, 1).lstrip()
         return await teamLock(msgStr, msgData, bot)
     # 如果为数字或起始终止符为[]
-    if (re.match(r'^\d{2,}$', text)) or (len(text) >= 2 and text[0] == '[' and text[-1] == ']'):
+    if (re.match(r'^\d{2,}$', cmd)) or (len(cmd) >= 2 and cmd[0] == '[' and cmd[-1] == ']'):
         return await teamProp(msgStr, msgData, bot)
 
     return False
@@ -56,7 +56,7 @@ async def teamList(msgData, bot):
     # 应当显示属性和状态
     nowTeamList = groupInfo["teamList"]
     i = 0
-    result = []
+    result = [' ']
     for idStr in nowTeamList:
         i += 1
         s = []
@@ -89,16 +89,16 @@ async def teamShow(msgStr, msgData, bot):
     userId = cqUtil.fromStrGetUserId(msgStr)
     cardInfo = await dataSource.getCurrentCharacter(userId, msgData['groupId'])
     prop = cardInfo['prop']
-    pcname = await eventUtil.getPcName(msgStr, msgData, bot)
+    pcname = await eventUtil.getPcName(userId, msgData, bot)
     if cardInfo == "":
         return await reply(msgCode.TARGET_USER_NOT_HAVE_CARD.name, msgData, ext1=ext1)
     # 如果没有匹配到，返回全部属性
-    propName = re.search(r'\D+', msgStr)
-    result = ""
+    propName = re.search(r']\s*(\D+)', msgStr)
     if propName:
+        propName = propName.group(0).replace(']', '').lstrip()
         if propName not in prop:
             prop[propName] = 0
-        result = f"{propName} : {prop['propName']}"
+        result = f"{propName} : {prop[propName]}"
     else:
         s = []
         for propName, propValue in prop.items():
@@ -133,7 +133,6 @@ async def teamAdd(msgStr, msgData, bot):
     for user in willAddIds:
         if user not in userIdInGroupList:
             return await reply(msgCode.GROUP_NO_ONE.name, msgData)
-
     oldTeamList = await dataSource.getGroupItem(msgData['groupId'], "teamList")
     # 如果已在team中，不重复加入
     for willAddId in willAddIds:
@@ -149,7 +148,7 @@ async def teamAdd(msgStr, msgData, bot):
 async def teamClr(msgData, bot):
     result = f"{msgData['groupName']}({msgData['groupId']})"
     resultMsg = await reply(msgCode.TEAM_CLR.name, msgData, result)
-    await dataSource.updateGroupItem(msgData['groupId'], "teamList", {})
+    await dataSource.updateGroupItem(msgData['groupId'], "teamList", [])
     await bot.send_msg(user_id=msgData["userId"], group_id=msgData["groupId"], message=resultMsg, auto_escape=False)
     return True
 
@@ -212,22 +211,25 @@ async def teamProp(msgStr, msgData, bot):
     userId = cqUtil.fromStrGetUserId(msgStr)
     cardInfo = await dataSource.getCurrentCharacter(userId, msgData['groupId'])
     prop = cardInfo['prop']
-    pcname = await eventUtil.getPcName(msgStr, msgData, bot)
+    pcname = await eventUtil.getPcName(userId, msgData, bot)
     if cardInfo == "":
         return await reply(msgCode.TARGET_USER_NOT_HAVE_CARD.name, msgData, ext1=ext1)
     # 如果没有匹配到则为错误格式
-    propName = re.search(r'\D+', msgStr)
-    adjust = re.search(rf'(?<={propName})\w+', msgStr)
+    propName = re.search(r']\s*(\D+)', msgStr).group(0).replace(']', '').lstrip()
+    adjust = re.search(r'\d+(?:[a-zA-Z]+)?$', msgStr).group(0).lstrip()
+    if propName[-1] == '-':
+        adjust = '-' + adjust
+        propName = propName.replace('-', '')
     if propName not in prop:
         prop[propName] = 0
     propValue = prop[propName]
     oldValue = propValue
-    propValue -= int(adjust)
+    propValue = int(propValue) - int(adjust)
+    result = f"{str(oldValue)}-({adjust}) = {str(propValue)}"
     if propValue < 0:
         propValue = 0
-    result = f"{str(oldValue)}-({adjust}) = {str(propValue)}"
     await dataSource.updateCharacterProp(cardInfo['id'], propName, propValue)
-    resultMsg = await reply(msgCode.TEAM_PROP.name, msgData, result, pcname=pcname)
+    resultMsg = await reply(msgCode.TEAM_PROP.name, msgData, result, pcname=pcname, ext1=propName)
     await bot.send_msg(user_id=msgData["userId"], group_id=msgData["groupId"], message=resultMsg, auto_escape=False)
     return True
 

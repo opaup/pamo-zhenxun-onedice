@@ -21,10 +21,10 @@ async def getPcName(idStr="", msgData=None, bot=None):
     if idStr == "":
         idStr = msgData['userId']
     cardInfo = await dataSource.getCurrentCharacter(idStr, msgData['groupId'])
-    if not cardInfo == "":
+    if not cardInfo == {}:
         pcname = cardInfo['name']
     else:
-        if not bot:
+        if bot is not None:
             userInfo = await bot.get_stranger_info(user_id=int(idStr))
             pcname = userInfo['nickname']
         else:

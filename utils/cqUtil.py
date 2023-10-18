@@ -8,12 +8,12 @@ def atSomebody(idStr):
     return f"[CQ:at,qq={idStr}]"
 
 
-def fromAtGetId(s):
+def fromAtGetId(user):
     """
     解析：从CQ码中获取id，如传入的参数为纯数字则返回纯数字
     """
-    if s[0] == '[' and s[-1] == ']':
-        s = s[1:-1]
+    if user[0] == '[' and user[-1] == ']':
+        user = user[1:-1]
     userId = re.search(r"qq=(\d+)", user)
     if userId:
         userId = userId.group(1)
@@ -31,11 +31,11 @@ def fromStrGetUserId(msgStr):
     """
     cqCodePattern = r'\[(.+?)\]'
     idPattern = r'\d+'
-    willAddIds = []
+    willIds = []
     if re.search(cqCodePattern, msgStr):
-        willAddIds = re.findall(cqCodePattern, msgStr)
+        willIds = re.findall(cqCodePattern, msgStr)
     elif re.search(idPattern, msgStr):
-        willAddIds = re.findall(idPattern, msgStr)
-    return fromAtGetId(willAddIds[0])
+        willIds = re.findall(idPattern, msgStr)
+    return fromAtGetId(willIds[0])
 
 

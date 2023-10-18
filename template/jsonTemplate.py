@@ -54,7 +54,7 @@ msgDefaultJson = {
     "TEAM_ADD_SUCCESS": "已将{RESULT}添加到本群队伍中",
     "TEAM_RM_SUCCESS": "已将{RESULT}从本群队伍中移除",
     "TEAM_IN_LOCK": "{EXT1}已锁定角色卡[{PCNAME}]，请先解锁角色卡",
-    "TEAM_LIST": "当前队伍列表：\n{RESULT}",
+    "TEAM_LIST": "当前队伍列表：{RESULT}",
     "TEAM_SHOW": "{PCNAME}的属性如下：\n{RESULT}",
     "TEAM_CLR": "{RESULT}的队伍已清空",
     "TEAM_CALL": "{NICKNAME}正在帮助[{USERNAME}]释放鸽子召唤术！\n{RESULT}",

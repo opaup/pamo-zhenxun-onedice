@@ -51,7 +51,7 @@ class msgCode(Enum):
     TEAM_ADD_SUCCESS = ("TEAM_ADD_SUCCESS", "已将{RESULT}添加到本群队伍中")
     TEAM_RM_SUCCESS = ("TEAM_RM_SUCCESS", "已将{RESULT}从本群队伍中移除")
     TEAM_IN_LOCK = ("TEAM_IN_LOCK", "{EXT1}已锁定角色卡[{PCNAME}]，请先解锁角色卡")
-    TEAM_LIST = ("TEAM_LIST", "当前队伍列表：\n{RESULT}")
+    TEAM_LIST = ("TEAM_LIST", "当前队伍列表：{RESULT}")
     TEAM_SHOW = ("TEAM_SHOW", "{PCNAME}的属性如下：\n{RESULT}")
     TEAM_CLR = ("TEAM_CLR", "{RESULT}的队伍已清空")
     TEAM_CALL = ("TEAM_CALL", "{NICKNAME}正在帮助[{PCNAME}]释放鸽子大召唤术！\n{RESULT}")
