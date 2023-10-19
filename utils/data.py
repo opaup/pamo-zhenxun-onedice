@@ -141,6 +141,7 @@ async def getCurrentCharacter(userId, groupId=""):
     """
     获取user当前的角色卡
     角色卡默认是全局的，如果有在该群设置cardLock，则优先取群lock的
+    没有找到卡返回{}
     """
     if not groupId == "":
         cardLock = await getGroupItem(groupId, "cardLock")
@@ -155,6 +156,9 @@ async def getCurrentCharacter(userId, groupId=""):
 
 
 async def getGroupItem(groupId, item):
+    """
+    不存在时为新的默认值/默认值查看template
+    """
     userInfo = await getGroupInfo(groupId)
     if item not in userInfo:
         groupPath = statusPath / (groupId + ".json")
@@ -170,7 +174,10 @@ async def getUserItem(userId, item):
     return userInfo[item]
 
 
-async def saveUserItem(userId, item, value):
+async def updateUserItem(userId, item, value):
+    """
+    覆盖原来的保存新的item
+    """
     userInfo = await getUserInfo(userId)
     userInfo[item] = value
     userPath = usersPath / (userId + ".json")
@@ -179,6 +186,9 @@ async def saveUserItem(userId, item, value):
 
 
 async def saveUserInfo(userId, value):
+    """
+    覆盖原来的保存新的Info
+    """
     userInfo = value
     userPath = usersPath / (userId + ".json")
     with userPath.open('w', encoding='utf-8') as f:
@@ -192,6 +202,9 @@ async def createCharacter(newId, newJson):
 
 
 async def saveCharacterProp(cardId, prop, value):
+    """
+    覆盖原来的保存新的prop
+    """
     characterPath = charactersPath / (cardId + ".json")
     charactersInfo = await getCharacter(cardId)
     charactersInfo["prop"][prop] = value
@@ -199,7 +212,7 @@ async def saveCharacterProp(cardId, prop, value):
         json.dump(charactersInfo, f, indent=4, ensure_ascii=False)
 
 
-async def saveCharacterItem(cardId, item, value):
+async def updateCharacterItem(cardId, item, value):
     characterPath = charactersPath / (cardId + ".json")
     charactersInfo = await getCharacter(cardId)
     charactersInfo[item] = value

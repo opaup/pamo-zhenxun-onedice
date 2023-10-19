@@ -21,6 +21,7 @@ async def teamFlow(msgStr, msgData, bot):
     rmDic = ["rm", "del"]
     callDic = ["call"]
     lockDic = ["lock"]
+    unlockDic = ["unlock"]
     if msgStr == "":
         return await teamList(msgData, bot)
     cmdSplit = re.split(" ", msgStr)
@@ -43,6 +44,8 @@ async def teamFlow(msgStr, msgData, bot):
     if cmd in lockDic:
         msgStr = re.sub('|'.join(lockDic), "", msgStr, 1).lstrip()
         return await teamLock(msgStr, msgData, bot)
+    if cmd in unlockDic:
+        return await teamUnLock(msgData, bot)
     # 如果为数字或起始终止符为[]
     if (re.match(r'^\d{2,}$', cmd)) or (len(cmd) >= 2 and cmd[0] == '[' and cmd[-1] == ']'):
         return await teamProp(msgStr, msgData, bot)
@@ -236,9 +239,36 @@ async def teamProp(msgStr, msgData, bot):
 
 # team lock 一键全体卡上锁
 async def teamLock(msgStr, msgData, bot):
+    """
+    获取list
+    获取对应cardInfo，如有人不存在card，则返回error
+    写入cardLock
+    """
+    groupInfo = await dataSource.getGroupInfo(msgData['groupId'])
+    locked = groupInfo['cardLock']
+    team = groupInfo['teamList']
+    flag = False
+    ext1 = []
+    for uid in team:
+        cardInfo = await dataSource.getCurrentCharacter(uid)
+        if cardInfo == {}:
+            flag = True
+            name = await eventUtil.getPcName(uid, msgData, bot)
+            ext1.append(name)
+        if flag:
+            return await reply(msgCode.TARGET_USER_NOT_HAVE_CARD.name, msgData, ext1="、".join(ext1))
+        locked[uid] = cardInfo['id']
+
+    await dataSource.updateGroupItem(msgData['groupId'], 'cardLock', locked)
+    resultMsg = await reply(msgCode.TEAM_LOCK_SUCCESS.name, msgData)
+    await bot.send_msg(user_id=msgData["userId"], group_id=msgData["groupId"], message=resultMsg, auto_escape=False)
     return True
 
 
 # team unlock 一键全体卡解锁
-async def teamUnLock(msgStr, msgData, bot):
+async def teamUnLock(msgData, bot):
+    # 清空cardLock
+    await dataSource.updateGroupItem(msgData['groupId'], 'cardLock', {})
+    resultMsg = await reply(msgCode.TEAM_UNLOCK_SUCCESS.name, msgData)
+    await bot.send_msg(user_id=msgData["userId"], group_id=msgData["groupId"], message=resultMsg, auto_escape=False)
     return True

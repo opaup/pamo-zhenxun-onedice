@@ -16,7 +16,14 @@ msgDefaultJson = {
     "NOT_FOUND_CARD": "从[{USERNAME}]的包包里找不到名为{RESULT}的卡哦（？）",
     "NOT_FOUND_CARD_PROP": "从[{RESULT}]的身体里找不到名为【{EXT1}】的属性哦！",
     "CARD_NAME_TOO_LONG": "目前规定单卡昵称不应大于18字",
-    "CARD_IN_GROUP_LOCKED": "已在本群锁卡。无法切换",
+    "CARD_LOCKED_BY_THIS_GROUP": "角色卡已在本群锁定。",
+    "CARD_LOCKED_BY_OTHER_GROUP": "角色卡[{PCNAME}]在{RESULT}中被锁定了",
+    "ST_HELP": "",
+    "ST_LOCK": "已将本群的角色卡锁定为：{PCNAME}",
+    "ST_RM_SUCCESS": "[{USERNAME}]从的包包中将名为[{PCNAME}]的角色卡丢进了垃圾桶",
+    "ST_IS_LOCKED": "本群的角色卡已锁定为{PCNAME}，如需切换请先使用.st unlock解锁角色卡",
+    "ST_UNLOCK": "已解锁[{USERNAME}]当前角色卡",
+    "ST_UNLOCK_TARGET_GROUP_NO_LOCK": "[{USERNAME}]解锁角色卡失败，目标群聊[{EXT1}]没有相关角色卡锁定信息",
     "ROLL_FAIL": "掷骰出错了",
     "ROLL_CHECK_SUCCESS": "{NICKNAME}为[{PCNAME}]进行{EXT1}检定：{RESULT}【{EXT2}】",
     "ROLL_CHECK_HARD_SUCCESS": "{NICKNAME}为[{PCNAME}]进行{EXT1}检定：{RESULT}【{EXT2}】",
@@ -48,7 +55,6 @@ msgDefaultJson = {
     "DICE_SET_MODE": "已设置DICE默认模式为：{RESULT}",
     "DICE_SET_RULE": "已设置本群默认房规为：{RESULT}{EXT1}",
     "DICE_SET_DICETYPE": "已设置本群默认DICE为：{RESULT}",
-    "ST_HELP": "",
     "GROUP_NO_ONE": "唔？你说的是谁？群里边有 {RESULT} 这个人吗？",
     "TEAM_NO_ONE": "唔？你说的是谁？队里边有 {RESULT} 这个人吗？",
     "TEAM_ADD_SUCCESS": "已将{RESULT}添加到本群队伍中",
@@ -61,6 +67,7 @@ msgDefaultJson = {
     "TEAM_PROP": "将[{PCNAME}]的{EXT1}调整为：{RESULT}",
     "TEAM_LOCK_SUCCESS": "已将队伍中的全部角色卡锁定！",
     "TARGET_USER_NOT_HAVE_CARD": "[{EXT1}]还没有选择好角色卡哦。",
+    "TEAM_UNLOCK_SUCCESS": "已将队伍中的全部角色卡解锁",
 }
 
 groupDefaultJson = {

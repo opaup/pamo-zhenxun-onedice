@@ -4,7 +4,7 @@ import re
 from ..sub.custom import reply
 from ..em.msgCode import msgCode
 from ..utils.calculate import operatorCal
-from ..utils import cqUtil
+from ..utils import cqUtil, eventUtil
 from ..utils import data as dataSource
 
 helpDic = ["help", "帮助"]
@@ -49,7 +49,7 @@ async def stFlow(msgStr, msgData):
     cardList = await dataSource.getUserItem(msgData["userId"], "cardList")
     if msgStr in cardList:
         if isLock:
-            return await reply(msgCode.CARD_IN_GROUP_LOCKED.name, msgData)
+            return await reply(msgCode.CARD_LOCKED_BY_THIS_GROUP.name, msgData)
         return await switchCard(msgStr, cardList, msgData)
 
     # 读取当前环境下的卡，是否存在
@@ -67,6 +67,8 @@ async def stFlow(msgStr, msgData):
             return await showCard(msgStr, msgData)
         if cmdSplit[0] in listDic:
             return await listCard(msgData)
+        if cmdSplit[0] in lockDic:
+            return await lockCard(msgData)
     else:
         return await stHelp()
 
@@ -105,16 +107,18 @@ async def splitProp(card, cardProp):
 async def newCard(cardName, cardProp, msgData):
     card = {
         "name": cardName,
-        "id": msgData["userId"] + "_" + str((int(time.time()) * 1000) // 1)
+        "id": msgData["userId"] + "_" + str((int(time.time()) * 1000) // 1),
+        "status": 0,  # 0正常 -1删除
+        "locked": []
     }
     card = await splitProp(card, cardProp)
     await dataSource.createCharacter(card["id"], card)
     cardList = await dataSource.getUserItem(msgData["userId"], "cardList")
     cardList[cardName] = card["id"]
-    await dataSource.saveUserItem(msgData["userId"], "cardList", cardList)
+    await dataSource.updateUserItem(msgData["userId"], "cardList", cardList)
     # 切换全局卡为当前新卡
-    await dataSource.saveUserItem(msgData["userId"], "currentCard", card["id"])
-    await dataSource.saveUserItem(msgData["userId"], "currentCardName", card["name"])
+    await dataSource.updateUserItem(msgData["userId"], "currentCard", card["id"])
+    await dataSource.updateUserItem(msgData["userId"], "currentCardName", card["name"])
 
     return await reply(msgCode.SAVE_CARD_SUCCESS.name, msgData, cardName)
 
@@ -139,13 +143,13 @@ async def remakeCard(cardName, cardId, cardProp, msgData):
     for k, v in newProp.items():
         if k in prop:
             prop[k] = v
-    await dataSource.saveCharacterItem(cardId, "prop", prop)
+    await dataSource.updateCharacterItem(cardId, "prop", prop)
     return await reply(msgCode.UPDATE_CARD_SUCCESS.name, msgData, cardName)
 
 
 async def switchCard(cardName, cardList, msgData):
-    await dataSource.saveUserItem(msgData["userId"], "currentCardName", cardName)
-    await dataSource.saveUserItem(msgData["userId"], "currentCard", cardList[cardName])
+    await dataSource.updateUserItem(msgData["userId"], "currentCardName", cardName)
+    await dataSource.updateUserItem(msgData["userId"], "currentCard", cardList[cardName])
     return await reply(msgCode.SWITCH_CARD_SUCCESS.name, msgData, cardName)
 
 
@@ -176,7 +180,101 @@ async def listCard(msgData):
 
 
 async def removeCard(msgStr, msgData):
-    return
+    """
+    # 获取userInfo
+    # 查找msgStr的card，不存在返回
+    # 不能删除当前角色/不能删除有锁定群聊的角色
+    # 从user中删除
+    """
+    msgStr = msgStr.lstrip()
+    userId = msgData['userId']
+    pcname = await eventUtil.getPcName(userId)
+    if pcname == msgStr:
+        return await reply(msgCode.CARD_LOCKED_BY_THIS_GROUP.name, msgData)
+    pcname = msgStr
+    cardList = await dataSource.getUserItem(userId, "cardList")
+    if pcname not in cardList:
+        return await reply(msgCode.NOT_FOUND_CARD.name, msgData, result=pcname)
+    cardId = cardList[pcname]
+    cardInfo = await dataSource.getCharacter(cardId)
+    locked = cardInfo['locked']
+    if not locked == []:
+        # 被某些群锁定了
+        result = "[" + ",".join(locked) + "]"
+        return await reply(msgCode.CARD_LOCKED_BY_OTHER_GROUP.name, msgData, pcname=pcname,result=result)
+    # 从当前user中删除
+    cardList.pop(pcname)
+    await dataSource.updateUserItem(userId, 'cardList', cardList)
+    await dataSource.updateCharacterItem(cardId, 'status', -1)
+    return await reply(msgCode.ST_RM_SUCCESS.name, msgData, pcname=pcname)
+
+
+async def lockCard(msgStr, msgData):
+    """
+    # 获取当前角色卡，不存在返回
+    # 如果在本群已经锁定，返回先解锁
+    # 获取groupInfo/cardLock
+    # 添加、保存
+    """
+    userId = msgData['userId']
+    groupId = msgData['groupId']
+    cardInfo = await dataSource.getCurrentCharacter(userId)
+    if cardInfo == {}:
+        return await reply(msgCode.NO_CARD.name, msgData)
+    locked = await dataSource.getGroupItem(groupId, 'cardLock')
+    if userId in locked:
+        cardId = locked[userId]
+        oldLockCard = await dataSource.getCharacter(cardId)
+        return await reply(msgCode.ST_IS_LOCKED.name, msgData, pcname=oldLockCard['name'])
+    locked[userId] = cardInfo['id']
+    await dataSource.updateGroupItem(msgData['groupId'], 'cardLock', locked)
+    pcname = cardInfo['name']
+    return await reply(msgCode.ST_LOCK_SUCCESS.name, msgData, pcname=pcname)
+
+
+async def unlockCard(msgStr, msgData):
+    """
+    # 检测是否为纯数字。如是则是远程解锁当前选择的角色卡
+    # 包里没有角色卡返回
+    # 尝试查找目标群聊，不存在返回，存在解锁
+    # 非纯数字则解锁当前群
+    """
+    userId = msgData['userId']
+    groupId = msgData['groupId']
+    msgStr = msgStr.lstrip()
+    if await dataSource.getCurrentCharacter(userId) == {}:
+        return await reply(msgCode.NO_CARD.name, msgData)
+    if msgStr.isdigit():
+        groupId = msgStr
+        groupLock = await dataSource.getGroupItem(groupId, 'cardLock')
+        if groupLock == {}:
+            return await reply(msgCode.ST_UNLOCK_TARGET_GROUP_NO_LOCK.name, msgData, ext1=groupId)
+        cardId = groupLock[userId]
+        groupLock.pop(userId)
+        await unlockTargetGroup(cardId, groupId)
+        await dataSource.updateGroupItem(groupId, 'cardLock', groupLock)
+    else:
+        groupLock = await dataSource.getGroupItem(groupId, 'cardLock')
+        cardId = groupLock[userId]
+        groupLock.pop(userId)
+        await unlockTargetGroup(cardId, groupId)
+        await dataSource.updateGroupItem(groupId, 'cardLock', groupLock)
+
+    return await reply(msgCode.ST_UNLOCK.name, msgData)
+
+
+async def unlockTargetGroup(cardId, groupId):
+    """
+    在目标角色卡中删除目标群聊的锁定信息（在角色卡信息中操作）
+    """
+    cardInfo = await dataSource.getCharacter(cardId)
+    if "locked" not in cardInfo:
+        locked = []
+    else:
+        locked = cardInfo['locked']
+    if groupId in locked:
+        locked.remove(groupId)
+    await dataSource.updateCharacterItem(cardId, 'locked', locked)
 
 
 async def stHelp():
