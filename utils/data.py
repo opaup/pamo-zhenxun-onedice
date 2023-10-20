@@ -21,8 +21,8 @@ statusPath = datePath / "status"
 statisticsPath = datePath / "statistics"
 # 日志记录
 logsPath = datePath / "logs"
-# 临时
-tempPath = datePath / "temp"
+# 临时日志
+logsTempPath = logsPath / "temp"
 
 msgJsonPath = customPath / "msg.json"
 
@@ -48,6 +48,7 @@ async def load_path():
     statusPath.mkdir(parents=True, exist_ok=True)
     statisticsPath.mkdir(parents=True, exist_ok=True)
     logsPath.mkdir(parents=True, exist_ok=True)
+    logsTempPath.mkdir(parents=True, exist_ok=True)
 
     if not botJsonPath.exists():
         await create_bot(botJsonPath)

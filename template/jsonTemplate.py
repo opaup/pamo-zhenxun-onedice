@@ -79,7 +79,12 @@ groupDefaultJson = {
     "isNotice": "off",
     "secretMode": "off",
     "cardLock": {},
-    "teamList": []
+    "teamList": [],
+    "log": {
+        "status": "off",
+        "logging": "",
+        "logList": {}
+    }
 }
 
 userDefaultJson = {

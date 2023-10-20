@@ -13,6 +13,7 @@ def rd_before(func):
     让掷骰结果有一个等待的过程而不是立刻出值，增加趣味性
     方法必须有 cmdStr, msgData, bot 参数传递
     """
+
     @wraps(func)
     async def wrapper(cmdStr, msgData, bot, *args, **kwargs):
         result = await reply(msgCode.RD_BEFORE.name, msgData)
@@ -49,6 +50,7 @@ def check_from_group(func):
     """
     确认是否来源于群聊
     """
+
     @wraps(func)
     async def wrapper(cmdStr, msgData, *args, **kwargs):
         if not msgData['msgType'] == 'group':
@@ -62,9 +64,21 @@ def check_from_admin():
     """
     确认发送者是否拥有admin权限
     """
+
     @wraps(func)
     async def wrapper(cmdStr, msgData, *args, **kwargs):
-
         return await func(cmdStr, msgData, *args, **kwargs)
+
+    return wrapper
+
+
+def log_recoder():
+    """
+    log记录：这里是主要记录dice操作
+    """
+
+    @wraps(func)
+    async def wrapper(*args, **kwargs):
+        return
 
     return wrapper

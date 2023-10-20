@@ -3,12 +3,12 @@ from nonebot import get_driver, on_command
 from nonebot.rule import to_me
 from nonebot.typing import T_State
 from nonebot.adapters import Event
-from nonebot.adapters.onebot.v11 import Bot, MessageSegment, GroupMessageEvent, PrivateMessageEvent, Message, MessageEvent
+from nonebot.adapters.onebot.v11 import Bot, MessageSegment, Message, MessageEvent
 from nonebot.params import CommandArg
 from nonebot.plugin import PluginMetadata
 from .utils import data as dataSource
 from .utils import eventUtil as eventUtil
-from .sub import notice
+from .sub import notice, recordLog
 from .flow import doFlow
 import asyncio
 
