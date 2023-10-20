@@ -17,12 +17,22 @@ help_template = """这里是一个临时的帮助说明。
 .st 属性+-值 当前卡属性调整
 .st show (属性名) 查看角色卡详情/属性值
 .st list 查看角色卡列表
+.st rm 删除角色卡
+.st lock/unlock 锁定/解锁角色卡
 .rd基础投掷
 .ra检定
 .rp和.rb惩罚奖励骰
 .rh暗骰（格式和rd一致）
 .sc
 .dice help 查看群设置帮助
+.team 查看当前队伍列表
+.team call 呼叫全体队伍成员
+.team add/rm @成员 从本群队伍中添加/移除成员
+.team @成员 属性n (n代表数字)调整目标的属性值
+.team show @成员 (属性) 获取成员(目标属性)的属性值
+.team clear 清除队伍
+.team lock/unlock 队伍上锁/解锁
+.notice/发布公告/发布团贴 {公告内容} 进行团贴扩散请求
 ——————
 详细可查看项目地址：https://git.rabi-town.cn/opaup/pamo-zhenxun-onedice
 """
