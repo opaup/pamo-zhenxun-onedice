@@ -29,7 +29,7 @@ help_template = """这里是一个临时的帮助说明。
 
 
 async def doFlow(msgData, bot):
-    cmdStr = msgData["msg"].lower().lstrip()
+    cmdStr = msgData["msg"].lower().strip()
     logger.info(rf"[onedice]检测到指令：{cmdStr}")
 
     # 查找是否包含cq,替换成CQ

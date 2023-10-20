@@ -16,12 +16,13 @@ msgDefaultJson = {
     "NOT_FOUND_CARD": "从[{USERNAME}]的包包里找不到名为{RESULT}的卡哦（？）",
     "NOT_FOUND_CARD_PROP": "从[{RESULT}]的身体里找不到名为【{EXT1}】的属性哦！",
     "CARD_NAME_TOO_LONG": "目前规定单卡昵称不应大于18字",
+    "CARD_NOW_USED_SO_CANT_REMOVE": "不可删除当前正在使用的角色卡",
     "CARD_LOCKED_BY_THIS_GROUP": "角色卡已在本群锁定。",
     "CARD_LOCKED_BY_OTHER_GROUP": "角色卡[{PCNAME}]在{RESULT}中被锁定了",
     "ST_HELP": "",
-    "ST_LOCK": "已将本群的角色卡锁定为：{PCNAME}",
+    "ST_LOCK_SUCCESS": "[{USERNAME}]已将本群的角色卡锁定为：{PCNAME}",
     "ST_RM_SUCCESS": "[{USERNAME}]从的包包中将名为[{PCNAME}]的角色卡丢进了垃圾桶",
-    "ST_IS_LOCKED": "本群的角色卡已锁定为{PCNAME}，如需切换请先使用.st unlock解锁角色卡",
+    "ST_IS_LOCKED": "[{USERNAME}]在本群的角色卡已锁定为{PCNAME}，如需切换请先使用.st unlock解锁角色卡",
     "ST_UNLOCK": "已解锁[{USERNAME}]当前角色卡",
     "ST_UNLOCK_TARGET_GROUP_NO_LOCK": "[{USERNAME}]解锁角色卡失败，目标群聊[{EXT1}]没有相关角色卡锁定信息",
     "ROLL_FAIL": "掷骰出错了",
@@ -43,7 +44,7 @@ msgDefaultJson = {
     "SENDER_NOT_FROM_GROUP": "只有在群聊中才可以使用暗骰哦~",
     "RP_OR_RB_FORMAT_FAIL": "rp或rb的指令后必须跟10以内的数字哦。",
     "DICE_SET_NOT_ADMIN": "只有群主或管理员才可以使用该指令哦！",
-    "DICE_SET_HELP": "定义格式： group 字段名 value\ndice on/off 开关骰功能\ndice set x  设置默认骰\ndice isNotice on/off    "
+    "DICE_SET_HELP": "定义格式： group 字段名 value\ndice on/off 开关骰功能\ndice set x  设置默认骰\ndice notice on/off    "
                      "设置是否为公告群\ndice secret on/off    设置是否开启秘密团模式\ndice mode coc/dnd/其他    设置骰模式\ndice rule x "
                      "设置房规\n------附加内容------\n默认房规，当值小于50时，1大成功，98-100大失败，大于50时，1-3大成功，100大失败",
     "DICE_SET_ON": "骰功能已开启",

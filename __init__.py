@@ -8,6 +8,7 @@ from nonebot.params import CommandArg
 from nonebot.plugin import PluginMetadata
 from .utils import data as dataSource
 from .utils import eventUtil as eventUtil
+from .sub import notice
 from .flow import doFlow
 import asyncio
 

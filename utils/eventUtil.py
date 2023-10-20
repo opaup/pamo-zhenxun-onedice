@@ -3,6 +3,7 @@
 from nonebot.adapters.onebot.v11 import Bot, MessageSegment, Message, MessageEvent
 from . import data as dataSource
 
+
 async def getGroupName(groupId, bot):
     """
     通过groupId获取groupName
@@ -18,9 +19,11 @@ async def getPcName(idStr="", msgData=None, bot=None):
     如未指定id，则默认为发送者的pcname
     如未指定bot，则不存在角色卡时默认传回id
     """
-    if idStr == "":
+    if msgData is not None:
         idStr = msgData['userId']
-    cardInfo = await dataSource.getCurrentCharacter(idStr, msgData['groupId'])
+        cardInfo = await dataSource.getCurrentCharacter(idStr, msgData['groupId'])
+    else:
+        cardInfo = await dataSource.getCurrentCharacter(idStr)
     if not cardInfo == {}:
         pcname = cardInfo['name']
     else:

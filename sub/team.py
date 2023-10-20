@@ -2,6 +2,7 @@
 # @Author: opaup
 import re
 from ..core.rd import rdSplit, doRd
+from ..core.st import unlockTargetGroup
 from ..sub.custom import reply
 from ..utils import data as dataSource
 from ..utils import cqUtil, eventUtil
@@ -31,18 +32,18 @@ async def teamFlow(msgStr, msgData, bot):
     if cmd in callDic:
         return await teamCall(msgData, bot)
     if cmd in addDic:
-        msgStr = re.sub('|'.join(addDic), "", msgStr, 1).lstrip()
+        msgStr = re.sub('|'.join(addDic), "", msgStr, 1).strip()
         return await teamAdd(msgStr, msgData, bot)
     if cmd in showDic:
-        msgStr = re.sub('|'.join(showDic), "", msgStr, 1).lstrip()
+        msgStr = re.sub('|'.join(showDic), "", msgStr, 1).strip()
         return await teamShow(msgStr, msgData, bot)
     if cmd in clrDic:
         return await teamClr(msgData, bot)
     if cmd in rmDic:
-        msgStr = re.sub('|'.join(rmDic), "", msgStr, 1).lstrip()
+        msgStr = re.sub('|'.join(rmDic), "", msgStr, 1).strip()
         return await teamRm(msgStr, msgData, bot)
     if cmd in lockDic:
-        msgStr = re.sub('|'.join(lockDic), "", msgStr, 1).lstrip()
+        msgStr = re.sub('|'.join(lockDic), "", msgStr, 1).strip()
         return await teamLock(msgStr, msgData, bot)
     if cmd in unlockDic:
         return await teamUnLock(msgData, bot)
@@ -98,7 +99,7 @@ async def teamShow(msgStr, msgData, bot):
     # 如果没有匹配到，返回全部属性
     propName = re.search(r']\s*(\D+)', msgStr)
     if propName:
-        propName = propName.group(0).replace(']', '').lstrip()
+        propName = propName.group(0).replace(']', '').strip()
         if propName not in prop:
             prop[propName] = 0
         result = f"{propName} : {prop[propName]}"
@@ -218,8 +219,8 @@ async def teamProp(msgStr, msgData, bot):
     if cardInfo == "":
         return await reply(msgCode.TARGET_USER_NOT_HAVE_CARD.name, msgData, ext1=ext1)
     # 如果没有匹配到则为错误格式
-    propName = re.search(r']\s*(\D+)', msgStr).group(0).replace(']', '').lstrip()
-    adjust = re.search(r'\d+(?:[a-zA-Z]+)?$', msgStr).group(0).lstrip()
+    propName = re.search(r']\s*(\D+)', msgStr).group(0).replace(']', '').strip()
+    adjust = re.search(r'\d+(?:[a-zA-Z]+)?$', msgStr).group(0).strip()
     if propName[-1] == '-':
         adjust = '-' + adjust
         propName = propName.replace('-', '')
@@ -244,7 +245,8 @@ async def teamLock(msgStr, msgData, bot):
     获取对应cardInfo，如有人不存在card，则返回error
     写入cardLock
     """
-    groupInfo = await dataSource.getGroupInfo(msgData['groupId'])
+    groupId = msgData['groupId']
+    groupInfo = await dataSource.getGroupInfo(groupId)
     locked = groupInfo['cardLock']
     team = groupInfo['teamList']
     flag = False
@@ -258,8 +260,12 @@ async def teamLock(msgStr, msgData, bot):
         if flag:
             return await reply(msgCode.TARGET_USER_NOT_HAVE_CARD.name, msgData, ext1="、".join(ext1))
         locked[uid] = cardInfo['id']
+        cardLocked = cardInfo['locked']
+        if groupId not in cardLocked:
+            cardLocked.append(groupId)
+        await dataSource.updateCharacterItem(cardInfo['id'], 'locked', cardLocked)
 
-    await dataSource.updateGroupItem(msgData['groupId'], 'cardLock', locked)
+    await dataSource.updateGroupItem(groupId, 'cardLock', locked)
     resultMsg = await reply(msgCode.TEAM_LOCK_SUCCESS.name, msgData)
     await bot.send_msg(user_id=msgData["userId"], group_id=msgData["groupId"], message=resultMsg, auto_escape=False)
     return True
@@ -267,6 +273,11 @@ async def teamLock(msgStr, msgData, bot):
 
 # team unlock 一键全体卡解锁
 async def teamUnLock(msgData, bot):
+    groupId = msgData['groupId']
+    groupInfo = await dataSource.getGroupInfo(msgData['groupId'])
+    locked = groupInfo['cardLock']
+    for uid, cardId in locked.items():
+        await unlockTargetGroup(cardId, groupId)
     # 清空cardLock
     await dataSource.updateGroupItem(msgData['groupId'], 'cardLock', {})
     resultMsg = await reply(msgCode.TEAM_UNLOCK_SUCCESS.name, msgData)

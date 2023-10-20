@@ -20,14 +20,15 @@ async def diceFlow(msgStr, msgData):
     if len(split) <= 0:
         return await reply(key=msgCode.DICE_SET_HELP.name, msgData=msgData)
     cmd = split[0]
+    print(cmd)
     if cmd == "on" or cmd == "off":
         return await onOff(msgStr, msgData)
     if cmd == "set":
         msgStr = re.sub("set", "", msgStr, count=1).strip()
         return await setDiceType(msgStr, msgData)
-    if cmd == "isNotice":
-        msgStr = re.sub("isNotice", "", msgStr, count=1).strip()
-        return await setIsNotice(msgStr, msgData)
+    if cmd == "notice":
+        msgStr = re.sub("notice", "", msgStr, count=1).strip()
+        return await setNotice(msgStr, msgData)
     if cmd == "mode":
         msgStr = re.sub("mode", "", msgStr, count=1).strip()
         return await setMode(msgStr, msgData)
@@ -65,7 +66,7 @@ async def setDiceType(msgStr, msgData):
     return await reply(key=msgCode.DICE_SET_DICETYPE.name, msgData=msgData, result=result)
 
 
-async def setIsNotice(msgStr, msgData):
+async def setNotice(msgStr, msgData):
     """
     设置本群是否为团贴扩散群
     """

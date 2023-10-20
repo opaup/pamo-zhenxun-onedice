@@ -17,6 +17,7 @@ class msgCode(Enum):
     NOT_FOUND_CARD = ("NOT_FOUND_CARD", "从[{USERNAME}]的包包里找不到名为{RESULT}的卡哦（？）")
     NOT_FOUND_CARD_PROP = ("NOT_FOUND_CARD_PROP", "找不到该角色卡属性")
     CARD_NAME_TOO_LONG = ("CARD_NAME_TOO_LONG", "卡名过长")
+    CARD_NOW_USED_SO_CANT_REMOVE = ("CARD_NOW_USED_SO_CANT_REMOVE", "不可删除当前正在使用的角色卡")
     CARD_LOCKED_BY_THIS_GROUP = ("CARD_LOCKED_BY_THIS_GROUP", "角色卡已在本群锁定")
     CARD_LOCKED_BY_OTHER_GROUP = ("CARD_LOCKED_BY_OTHER_GROUP", "角色卡[{PCNAME}]在{RESULT}中被锁定了")
     ST_RM_SUCCESS = ("ST_RM_SUCCESS", "[{USERNAME}]从的包包中将名为[{PCNAME}]的角色卡丢进了垃圾桶")
