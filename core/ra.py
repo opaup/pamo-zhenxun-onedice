@@ -5,11 +5,12 @@ from ..utils import dice as dice
 from ..utils import data as dataSource
 from ..utils import propUtil as propUtil
 from ..em.msgCode import msgCode
-from ..core.aspect import rd_before
+from ..core.aspect import rd_before, log_recoder
 from ..sub.custom import reply
 
 
 @rd_before
+@log_recoder
 async def doRa(cmdStr, msgData, bot):
     calResult = await doRaCal(cmdStr, msgData)
     pcname = calResult["pcname"]
@@ -21,6 +22,8 @@ async def doRa(cmdStr, msgData, bot):
     secondEquation = calResult["secondEquation"]
     checkNum = calResult["checkNum"]
     normalResult = calResult["normalResult"]
+    if propName == "":
+        propName = str(propValue)
 
     checkResultNum = await checkResult(propValue, checkNum, ruleType)
     if checkResultNum == 0:
@@ -32,18 +35,21 @@ async def doRa(cmdStr, msgData, bot):
 
     if checkResultNum == 1:
         return await reply(msgCode.ROLL_CHECK_GREAT_SUCCESS.name, msgData, result, ext1=propName, ext2=checkStr,
-                     pcname=pcname)
+                           pcname=pcname)
     if checkResultNum == 2:
         return await reply(msgCode.ROLL_CHECK_EXT_HARD_SUCCESS.name, msgData, result, ext1=propName, ext2=checkStr,
-                     pcname=pcname)
+                           pcname=pcname)
     if checkResultNum == 3:
-        return await reply(msgCode.ROLL_CHECK_HARD_SUCCESS.name, msgData, result, ext1=propName, ext2=checkStr, pcname=pcname)
+        return await reply(msgCode.ROLL_CHECK_HARD_SUCCESS.name, msgData, result, ext1=propName, ext2=checkStr,
+                           pcname=pcname)
     if checkResultNum == 4:
-        return await reply(msgCode.ROLL_CHECK_SUCCESS.name, msgData, result, ext1=propName, ext2=checkStr, pcname=pcname)
+        return await reply(msgCode.ROLL_CHECK_SUCCESS.name, msgData, result, ext1=propName, ext2=checkStr,
+                           pcname=pcname)
     if checkResultNum == 5:
         return await reply(msgCode.ROLL_CHECK_FAIL.name, msgData, result, ext1=propName, ext2=checkStr, pcname=pcname)
     if checkResultNum == 6:
-        return await reply(msgCode.ROLL_CHECK_GREAT_FAIL.name, msgData, result, ext1=propName, ext2=checkStr, pcname=pcname)
+        return await reply(msgCode.ROLL_CHECK_GREAT_FAIL.name, msgData, result, ext1=propName, ext2=checkStr,
+                           pcname=pcname)
     return
 
 

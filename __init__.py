@@ -63,7 +63,7 @@ __plugin_settings__ = {
 # print(asyncio.run(on_message(msgStr)))
 
 response = on_command(
-    ".", aliases={"。"}, priority=2, block=True
+    ".", aliases={"。"}, priority=5, block=True
 )
 
 
@@ -79,6 +79,10 @@ async def handle_first_receive(bot: Bot, event: MessageEvent, arg: Message = Com
         "groupId": "",
         "groupName": "",
         "isAdmin": False,
+        "sender": "user",
+        "typeName": "message",
+        "messageId": str(event.message_id),
+        "timestamp": str(event.time),
     }
     # 如果是群消息
     if msgData['msgType'] == "group":

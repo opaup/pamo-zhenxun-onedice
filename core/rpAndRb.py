@@ -7,9 +7,11 @@ from ..utils.calculate import operatorCal
 from ..utils import dice as dice
 from ..utils import data as dataSource
 import re
+from ..core.aspect import log_recoder
 
 
 # 惩罚
+@log_recoder
 async def rp(msgStr, msgData):
     if msgStr == "" or not re.match(r'^\d$', msgStr):
         return await reply(key=msgCode.RP_OR_RB_FORMAT_FAIL.name, msgData=msgData)
@@ -19,11 +21,12 @@ async def rp(msgStr, msgData):
     if diceMode == "coc":
         return await cocRp(msgStr, msgData)
     if diceMode == "dnd":
-        return await cocRb(msgStr, msgData)
+        return await dndRb(msgStr, msgData)
     return
 
 
 # 奖励
+@log_recoder
 async def rb(msgStr, msgData):
     if msgStr == "" or not re.match(r'^\d$', msgStr):
         return await reply(key=msgCode.RP_OR_RB_FORMAT_FAIL.name, msgData=msgData)
@@ -33,7 +36,7 @@ async def rb(msgStr, msgData):
     if diceMode == "coc":
         return await cocRb(msgStr, msgData)
     if diceMode == "dnd":
-        return await cocRb(msgStr, msgData)
+        return await dndRb(msgStr, msgData)
     return
 
 
@@ -49,7 +52,7 @@ async def cocRp(time, msgData):
 
     resultNum = str(decade) + str(unit)
     allDecade = ", ".join(allDecade)
-    result = f"{resultNum}({allDecade})"
+    result = f"{resultNum}({allDecade})[惩罚骰]"
     return await reply(msgCode.RD_RESULT.name, msgData, result)
 
 
@@ -65,7 +68,7 @@ async def cocRb(time, msgData):
 
     resultNum = str(decade) + str(unit)
     allDecade = ", ".join(allDecade)
-    result = f"{resultNum}({allDecade})"
+    result = f"{resultNum}({allDecade})[奖励骰]"
     return await reply(msgCode.RD_RESULT.name, msgData, result)
 
 

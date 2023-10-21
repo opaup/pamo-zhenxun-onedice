@@ -5,12 +5,11 @@ import re
 import time
 import csv
 
-from nonebot import on_command, on_notice
+from nonebot import on_command, on_notice, on_message
 from nonebot.adapters.onebot.v11 import Bot, MessageEvent, NoticeEvent
 
 from ..utils import data as dataSource
-from ..utils import eventUtil as eventUtil
-from ..utils import logsUtil
+from ..utils import eventUtil, logsUtil, emailUtil
 
 log = on_command(
     ".log", aliases={"。log"}, priority=2, block=False
@@ -29,15 +28,21 @@ async def handle_receive(bot: Bot, event: MessageEvent):
             logName = split[1]
             illegalRegex = r'[\\/:*\?"<>|]'
             if re.search(illegalRegex, logName):
-                print("输入的logName包含非法字符")
-                return
+                await log.finish("输入的logName包含非法字符")
             await logOn(logName, logInfo, groupId, bot)
         else:
-            # 必须告诉真寻日志叫什么名字呀
-            return
+            await log.finish("必须告诉真寻日志叫什么名字呀")
+    if split[0] == "get":
+        if not len(split) <= 1:
+            logName = split[1]
+            illegalRegex = r'[\\/:*\?"<>|]'
+            if re.search(illegalRegex, logName):
+                await log.finish("输入的logName包含非法字符")
+            await logGet(logName, logInfo, userId, groupId, bot)
+        else:
+            await log.finish("必须告诉真寻日志叫什么名字呀")
     if split[0] == "off":
         await logOff(logInfo, groupId, bot)
-
     await log.finish(None)
 
 
@@ -59,7 +64,6 @@ async def logOn(logName, logInfo, groupId, bot):
     resultMsg = f"已开启名为{logName}的日志记录，记得使用.log off暂时关闭哦。"
     await dataSource.updateGroupItem(groupId, 'log', logInfo)
     await bot.send_msg(group_id=int(groupId), message=resultMsg, auto_escape=False)
-    return
 
 
 async def logOff(logInfo, groupId, bot):
@@ -75,23 +79,30 @@ async def logOff(logInfo, groupId, bot):
     split = re.split(",", timeGroup)
     startTime = split[0]
     logList[logName] = f"{startTime}|{updateTime}"
-    resultMsg = f"已暂时关闭名为{logName}的日志记录，可以使用.log on/end {logName}开启或终止哦。"
+    resultMsg = f"已暂时关闭名为{logName}的日志记录，可以使用.log on/get {logName}开启或获取哦。"
     await dataSource.updateGroupItem(groupId, 'log', logInfo)
     await bot.send_msg(group_id=int(groupId), message=resultMsg, auto_escape=False)
 
-    return
 
-
-async def logEnd():
+async def logGet(logName, logInfo, userId, groupId, bot):
     # 最后再对临时日志进行排序整理、格式化时间戳
     # 识别图片CQ码
-    # text = f"({nowTime}){pcname}: {msgStr}"
-    # nowTime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
-    return
-
-
-async def logGet():
-    return
+    # line = f"({nowTime}){pcname}: {msgStr}"
+    nowTime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
+    groupName = await eventUtil.getGroupName(groupId, bot)
+    logData = await logsUtil.readFromCSV(groupId, logName)
+    txtUrl = await logsUtil.putToTxt(groupId, logName, logData)
+    csvUrl = logsUtil.getCsvPath(groupId, logName)
+    title = f"【拉比邮政局】群聊[{groupName}({groupId})]中的日志文件：{logName}"
+    content = f"这是您在群聊[{groupName}({groupId})]中存放的日志文件：{logName}\n\t ---拉比邮政局 {nowTime}"
+    recvAddress = f"{userId}@qq.com"
+    with open(txtUrl, 'r', encoding='utf-8') as f:
+        payload_txt = f.read()
+    with open(csvUrl, 'r', encoding='utf-8') as f:
+        payload_csv = f.read()
+    await emailUtil.sendMail(title, content, recvAddress, logName=logName, payload_txt=payload_txt, payload_csv=payload_csv)
+    resultMsg = f"包含日志文件的邮件包裹已经寄出给地址：[{recvAddress}]啦，请注意查收~"
+    await bot.send_msg(group_id=int(groupId), message=resultMsg, auto_escape=False)
 
 
 async def getLogList():
@@ -102,12 +113,13 @@ async def logHelp():
     return
 
 
-msgHandler = on_command(cmd="", priority=1, block=False)
+msgHandler = on_message(priority=1, block=False)
 noticeHandler = on_notice(priority=1, block=False)
 
 
 @msgHandler.handle()
 async def msgRecoder(bot: Bot, event: MessageEvent):
+    messageId = str(event.message_id)
     message = str(event.message)
     userId = event.sender.user_id
     groupId = str(event.group_id)
@@ -124,8 +136,15 @@ async def msgRecoder(bot: Bot, event: MessageEvent):
         "groupId": groupId
     }
     pcname = await eventUtil.getPcName(userId, msgData, bot)
+    # 解析AT类型的CQ码
+    pattern = r'\[CQ:at,qq=(\d+)\]'
+    match = re.search(pattern, message)
+    if match:
+        qid = match.group(1)
+        atPcname = await eventUtil.getPcName(str(qid), msgData, bot)
+        message = re.sub(pattern, f'@{atPcname}({qid})', message)
 
-    row = [typeName, id, timestamp, message, userId, pcname]
+    row = [typeName, messageId, timestamp, message, userId, pcname]
     await logsUtil.writeIntoCSV(groupId, logName, row)
     await msgHandler.finish(None)
 

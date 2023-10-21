@@ -1,6 +1,5 @@
 # -*- coding:utf8 -*-
 # @Author: opaup
-from nonebot.adapters.onebot.v11 import Bot, MessageSegment, Message, MessageEvent
 from . import data as dataSource
 
 
@@ -13,23 +12,36 @@ async def getGroupName(groupId, bot):
     return group_name if group_name else "None"
 
 
-async def getPcName(idStr="", msgData=None, bot=None):
+async def getPcName(idStr="", msgData=None, bot=None, groupId=""):
     """
     获取user的pcname
-    如未指定id，则默认为发送者的pcname
+    如未指定id，则默认为发送者的pcname(必须有msgData)
+    如未指定group，则默认为消息来源group
     如未指定bot，则不存在角色卡时默认传回id
     """
-    if msgData is not None:
+    if idStr == "":
+        if msgData is None:
+            return ""
         idStr = msgData['userId']
-        cardInfo = await dataSource.getCurrentCharacter(idStr, msgData['groupId'])
+    if groupId == "":
+        if msgData is None:
+            groupId = ""
+        else:
+            groupId = msgData['groupId']
+    idStr = str(idStr)
+    groupId = str(groupId)
+    # 再判断一次
+    if groupId == "":
+        cardInfo = await dataSource.getCurrentCharacter(idStr, groupId)
     else:
         cardInfo = await dataSource.getCurrentCharacter(idStr)
+
     if not cardInfo == {}:
         pcname = cardInfo['name']
     else:
-        if bot is not None:
+        if bot is None:
+            pcname = idStr
+        else:
             userInfo = await bot.get_stranger_info(user_id=int(idStr))
             pcname = userInfo['nickname']
-        else:
-            pcname = idStr
     return pcname

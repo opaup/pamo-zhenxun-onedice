@@ -1,10 +1,13 @@
 import asyncio
 import random
-from ..em.msgCode import msgCode
 from functools import wraps
-from ..sub.custom import reply
 from aspectlib import weave
 from services.log import logger
+from ..em.msgCode import msgCode
+from ..sub.custom import reply
+from ..utils import data as dataSource
+from ..utils import eventUtil
+from ..utils import logsUtil
 
 
 def rd_before(func):
@@ -60,7 +63,7 @@ def check_from_group(func):
     return wrapper
 
 
-def check_from_admin():
+def check_from_admin(func):
     """
     确认发送者是否拥有admin权限
     """
@@ -72,13 +75,31 @@ def check_from_admin():
     return wrapper
 
 
-def log_recoder():
+def log_recoder(func):
     """
-    log记录：这里是主要记录dice操作
+    log记录：这里是主要记录dice操作，只记录返回消息，不记录用户指令
+    typeName=bot 时userId为谁触发的指令
     """
 
     @wraps(func)
-    async def wrapper(*args, **kwargs):
-        return
+    async def wrapper(cmdStr, msgData, *args, **kwargs):
+
+        result = await func(cmdStr, msgData, *args, **kwargs)
+        messageId = msgData['messageId']
+        timestamp = msgData['timestamp']
+        groupId = msgData['groupId']
+        userId = msgData['userId']
+        logInfo = await dataSource.getGroupItem(groupId, 'log')
+        logName = logInfo['logging']
+        typeName = "bot"
+        pcname = dataSource.NICKNAME
+        message = result
+        # 没有在记录的日志
+        if not logInfo['status'] == "on":
+            return result
+        row = [typeName, messageId, timestamp, message, userId, pcname]
+        await logsUtil.writeIntoCSV(groupId, logName, row)
+
+        return result
 
     return wrapper

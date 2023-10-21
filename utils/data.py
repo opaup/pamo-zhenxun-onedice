@@ -6,7 +6,10 @@ import json
 import asyncio
 
 NICKNAME = ""
-
+# 配置目录
+configsPath = Path() / "configs"
+# pdice配置
+configPath = configsPath / "pdice_configs.json"
 # 数据目录
 datePath = Path() / "data" / "pdice"
 # 用户数据
@@ -49,6 +52,7 @@ async def load_path():
     statisticsPath.mkdir(parents=True, exist_ok=True)
     logsPath.mkdir(parents=True, exist_ok=True)
     logsTempPath.mkdir(parents=True, exist_ok=True)
+    configsPath.mkdir(parents=True, exist_ok=True)
 
     if not botJsonPath.exists():
         await create_bot(botJsonPath)
@@ -83,6 +87,15 @@ async def suppleGroup(groupPath, item):
     return oldJson[item]
 
 
+async def suppleConfigs(item):
+    with open(configPath, 'r', encoding='utf-8') as f:
+        oldJson = json.load(f)
+    oldJson[item] = jsonTemplate.configDefaultJson[item]
+    with configPath.open('w', encoding='utf-8') as f:
+        json.dump(oldJson, f, indent=4, ensure_ascii=False)
+    return oldJson[item]
+
+
 async def create_bot(bot_path):
     with bot_path.open('w', encoding='utf-8') as f:
         json.dump(jsonTemplate.botDefaultJson, f, indent=4, ensure_ascii=False)
@@ -91,6 +104,11 @@ async def create_bot(bot_path):
 async def create_msg(msg_path):
     with msg_path.open('w', encoding='utf-8') as f:
         json.dump(jsonTemplate.msgDefaultJson, f, indent=4, ensure_ascii=False)
+
+
+async def create_configs():
+    with configPath.open('w', encoding='utf-8') as f:
+        json.dump(jsonTemplate.configDefaultJson, f, indent=4, ensure_ascii=False)
 
 
 async def getDiceType(groupId):
@@ -125,6 +143,14 @@ async def getGroupInfo(groupId):
     with open(groupPath, 'r', encoding='utf-8') as f:
         groupInfo = json.load(f)
     return groupInfo
+
+
+async def getConfigInfo():
+    if not configPath.exists():
+        await create_configs()
+    with open(configPath, 'r', encoding='utf-8') as f:
+        configInfo = json.load(f)
+    return configInfo
 
 
 async def getCharacter(cardId):
@@ -173,6 +199,13 @@ async def getUserItem(userId, item):
         userPath = usersPath / (userId + ".json")
         userInfo[item] = suppleUser(userPath, item)
     return userInfo[item]
+
+
+async def getConfigItem(item):
+    configInfo = await getConfigInfo()
+    if item not in configInfo:
+        configInfo[item] = suppleConfigs(item)
+    return configInfo[item]
 
 
 async def updateUserItem(userId, item, value):
@@ -254,6 +287,6 @@ async def getGroupIdAndName(msgData):
     # msgData
     return
 
+
 asyncio.run(load_path())
 asyncio.run(loadNickName())
-

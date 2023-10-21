@@ -99,3 +99,10 @@ userDefaultJson = {
     "currentCard": "",
     "cardList": {}
 }
+
+configDefaultJson = {
+    "smtp": {
+        "address": "你的邮箱账号",
+        "password": "申请的应用密码",
+    },
+}

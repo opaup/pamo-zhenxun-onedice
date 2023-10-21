@@ -2,13 +2,14 @@ from ..utils import dice as dice
 from ..utils import calculate as cal
 from ..sub.custom import reply
 from ..em.msgCode import msgCode
-from ..core.aspect import rd_before
+from ..core.aspect import rd_before, log_recoder
 from ..utils import data as dataSource
 import re
 
 
 # rd
 @rd_before
+@log_recoder
 async def rdFlow(cmdStr, msgData, bot):
     split = await rdSplit(cmdStr, msgData)
     a1 = split['a1']

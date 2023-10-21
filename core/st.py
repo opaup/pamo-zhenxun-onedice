@@ -6,6 +6,7 @@ from ..em.msgCode import msgCode
 from ..utils.calculate import operatorCal
 from ..utils import cqUtil, eventUtil
 from ..utils import data as dataSource
+from ..core.aspect import log_recoder
 
 helpDic = ["help", "帮助"]
 showDic = ["show", "查看", "info"]
@@ -15,6 +16,7 @@ unlockDic = ["unlock"]
 removeDic = ["rm", "删除"]
 
 
+@log_recoder
 async def stFlow(msgStr, msgData):
     isLock = False
     userId = msgData["userId"]

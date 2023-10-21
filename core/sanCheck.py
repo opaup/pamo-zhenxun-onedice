@@ -6,10 +6,11 @@ from ..template import propDic
 from ..utils import calculate as cal
 from ..utils import dice as dice
 from ..utils import data as dataSource
-from ..core.aspect import rd_before
+from ..core.aspect import rd_before, log_recoder
 
 
 @rd_before
+@log_recoder
 async def sc(cmdStr, msgData, bot):
     a2 = ""
     b2 = ""
@@ -83,7 +84,7 @@ async def sc(cmdStr, msgData, bot):
     result = rf"{checkNum}/{intelligent}[{checkStr}]"
     ext2 = rf"{san}"
     # 保存
-    await dataSource.updateCharacterProp(cardId, alias, san)
+    await dataSource.updateCharacterProp(cardId, "san", san)
 
     if raResult <= 4:
         if raResult == 1:
