@@ -18,6 +18,7 @@ log = on_command(
 
 @log.handle()
 async def handle_receive(bot: Bot, event: MessageEvent):
+    # TODO: 添加规则：dice off 时不响应和记录
     msgStr = str(event.message).replace(".log", "").replace("。log", "").strip()
     userId = event.sender.user_id
     groupId = str(event.group_id)
@@ -43,6 +44,10 @@ async def handle_receive(bot: Bot, event: MessageEvent):
             await log.finish("必须告诉真寻日志叫什么名字呀")
     if split[0] == "off":
         await logOff(logInfo, groupId, bot)
+    if split[0] == "help":
+        return
+    if split[0] == "list":
+        return
     await log.finish(None)
 
 
@@ -88,6 +93,7 @@ async def logGet(logName, logInfo, userId, groupId, bot):
     # 最后再对临时日志进行排序整理、格式化时间戳
     # 识别图片CQ码
     # line = f"({nowTime}){pcname}: {msgStr}"
+    # TODO 对撤回等事件记录进行处理
     nowTime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
     groupName = await eventUtil.getGroupName(groupId, bot)
     logData = await logsUtil.readFromCSV(groupId, logName)
@@ -151,6 +157,7 @@ async def msgRecoder(bot: Bot, event: MessageEvent):
 
 @noticeHandler.handle()
 async def noticeRecoder(bot: Bot, event: NoticeEvent):
+    # TODO 对撤回等事件进行记录
     await noticeHandler.finish(None)
 
 
