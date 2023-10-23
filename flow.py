@@ -2,7 +2,7 @@ from .sub.custom import reply
 from .em import msgCode
 from .utils import data as dataSource
 from .core import ra, rh, rd, rpAndRb, make, st, sanCheck, diceConfig
-from .sub import team
+from .sub import team, botInfo
 from services.log import logger
 import re
 
@@ -55,6 +55,9 @@ async def doFlow(msgData, bot):
         if not await dataSource.getGroupItem(msgData.groupId, "onOff") == "on":
             return False
 
+    # 获取bot信息
+    if re.match(r'^(bot)', cmdStr):
+        return await botInfo.botInfo(msgData, bot)
     # coc
     if re.match(r'^(coc)', cmdStr):
         cmdStr = re.sub("coc", "", cmdStr, count=1).strip()

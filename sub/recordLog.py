@@ -96,9 +96,11 @@ async def logOff(logInfo, groupId, bot):
 
 
 async def logGet(logName, logInfo, userId, groupId, bot):
+    """
     # 最后再对临时日志进行排序整理、格式化时间戳
     # 识别图片CQ码
     # line = f"({nowTime}){pcname}: {msgStr}"
+    """
     # TODO 对撤回等事件记录进行处理
     nowTime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
     groupName = await eventUtil.getGroupName(groupId, bot)
@@ -132,6 +134,8 @@ noticeHandler = on_notice(priority=1, block=False)
 
 @msgHandler.handle()
 async def msgRecoder(bot: Bot, event: MessageEvent, msgData=MsgData.MsgData()):
+    if not event.message_type == "group":
+        return
     messageId = str(event.message_id)
     message = str(event.message)
     userId = event.sender.user_id

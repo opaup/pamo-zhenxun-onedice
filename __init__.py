@@ -8,7 +8,7 @@ from nonebot.params import CommandArg
 from nonebot.plugin import PluginMetadata
 from .utils import data as dataSource
 from .utils import eventUtil as eventUtil
-from .sub import notice, recordLog
+from .sub import notice, recordLog, botInfo
 from .flow import doFlow
 from .models import MsgData
 import asyncio
@@ -26,7 +26,7 @@ usage：
 __plugin_des__ = f""
 __plugin_cmd__ = ["."]
 __plugin_type__ = ("功能", "工具")
-__plugin_version__ = 0.2
+__plugin_version__ = botInfo.plugin_version
 __plugin_author__ = "opaup"
 __plugin_settings__ = {
     "level": 5,

@@ -112,4 +112,12 @@ configDefaultJson = {
         "address": "你的邮箱账号",
         "password": "申请的应用密码",
     },
+    "database": {
+        "sql_name": "postgres",
+        "user": "",
+        "password": "",
+        "address": "",
+        "port": "",
+        "database": ""
+    }
 }
