@@ -22,12 +22,12 @@ async def getPcName(idStr="", msgData=None, bot=None, groupId=""):
     if idStr == "":
         if msgData is None:
             return ""
-        idStr = msgData['userId']
+        idStr = msgData.userId
     if groupId == "":
         if msgData is None:
             groupId = ""
         else:
-            groupId = msgData['groupId']
+            groupId = msgData.groupId
     idStr = str(idStr)
     groupId = str(groupId)
     # 再判断一次

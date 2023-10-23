@@ -71,7 +71,7 @@ async def getCheckStrAndRecord(checkResultNum, msgData):
         checkStr = "大失败"
 
     if checkResultNum != 0:
-        userInfo = await dataSource.getUserInfo(msgData["userId"])
+        userInfo = await dataSource.getUserInfo(msgData.userId)
         if checkResultNum <= 4:
             successRollNum = userInfo["successRollNum"]
             userInfo["successRollNum"] = successRollNum + 1
@@ -84,7 +84,7 @@ async def getCheckStrAndRecord(checkResultNum, msgData):
             if checkResultNum == 6:
                 greatFailRollNum = userInfo["greatFailRollNum"]
                 userInfo["greatFailRollNum"] = greatFailRollNum + 1
-        await dataSource.saveUserInfo(msgData["userId"], userInfo)
+        await dataSource.saveUserInfo(msgData.userId, userInfo)
     return checkStr
 
 
@@ -102,8 +102,8 @@ async def doRaCal(cmdStr, msgData):
     propName = ""
     propValue = ""
     diceType = "100"
-    if not msgData["msgType"] == "group":
-        diceType = await dataSource.getGroupItem(msgData["groupId"], "diceType")
+    if not msgData.msgType == "group":
+        diceType = await dataSource.getGroupItem(msgData.groupId, "diceType")
     operator = ""
     equation = ""
     num1 = 0
@@ -111,11 +111,11 @@ async def doRaCal(cmdStr, msgData):
     ruleType = "1"
     normalResult = await dice.roll(int(diceType))
 
-    if not msgData["msgType"] == "group":
-        character = await dataSource.getCurrentCharacter(msgData["userId"])
+    if not msgData.msgType == "group":
+        character = await dataSource.getCurrentCharacter(msgData.userId)
     else:
-        character = await dataSource.getCurrentCharacter(msgData["userId"], msgData["groupId"])
-        ruleType = await dataSource.getGroupItem(msgData["groupId"], "ruleType")
+        character = await dataSource.getCurrentCharacter(msgData.userId, msgData.groupId)
+        ruleType = await dataSource.getGroupItem(msgData.groupId, "ruleType")
         cardId = character["id"]
     if not character:
         character["name"] = "{USERNAME}"

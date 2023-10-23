@@ -40,7 +40,7 @@ async def sc(cmdStr, msgData, bot):
 
     # 检定
     raCal = await ra.doRaCal("灵感", msgData)
-    card = await dataSource.getCurrentCharacter(msgData['userId'], msgData['groupId'])
+    card = await dataSource.getCurrentCharacter(msgData.userId, msgData.groupId)
     san = card['prop']['san']
     cardId = raCal["cardId"]
     pcname = raCal["pcname"]

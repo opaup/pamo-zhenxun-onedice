@@ -21,11 +21,11 @@ async def updatePlaceholders(msgData):
         placeholders.update(data)
     if dataSource.NICKNAME != "":
         data['NICKNAME'] = dataSource.NICKNAME
-    if msgData["msgType"] == "group":
-        data['GROUPNAME'] = msgData['groupName']
-        data['GROUPID'] = msgData['groupId']
-    if msgData['username'] != "":
-        data['USERNAME'] = msgData['username']
+    if msgData.msgType == "group":
+        data['GROUPNAME'] = msgData.groupName
+        data['GROUPID'] = msgData.groupId
+    if msgData.username != "":
+        data['USERNAME'] = msgData.username
     placeholders.update(data)
 
 

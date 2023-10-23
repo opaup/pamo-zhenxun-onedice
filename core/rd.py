@@ -45,8 +45,8 @@ async def rdSplit(cmdStr, msgData):
     m = ""
     operator = ""
     extMsg = ""
-    if msgData["msgType"] == "group":
-        groupId = msgData["groupId"]
+    if msgData.msgType == "group":
+        groupId = msgData.groupId
         diceType = await dataSource.getDiceType(groupId)
     cmdStr = re.sub("r", "", cmdStr, count=1)
     # 判断是否包含d，如包含，则取d之前的内容

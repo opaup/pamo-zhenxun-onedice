@@ -20,12 +20,12 @@ def rd_before(func):
     @wraps(func)
     async def wrapper(cmdStr, msgData, bot, *args, **kwargs):
         result = await reply(msgCode.RD_BEFORE.name, msgData)
-        # print(result)
-        if msgData['msgType'] == "group":
-            await bot.send_group_msg(group_id=msgData['groupId'],
+        # print(msgData.msgType)
+        if msgData.msgType == "group":
+            await bot.send_group_msg(group_id=msgData.groupId,
                                      message=result)
         else:
-            await bot.send_private_msg(user_id=msgData['userId'],
+            await bot.send_private_msg(user_id=msgData.userId,
                                        message=result)
         await asyncio.sleep(2)
         return await func(cmdStr, msgData, bot, *args, **kwargs)
@@ -56,7 +56,7 @@ def check_from_group(func):
 
     @wraps(func)
     async def wrapper(cmdStr, msgData, *args, **kwargs):
-        if not msgData['msgType'] == 'group':
+        if not msgData.msgType == 'group':
             return await reply(key=msgCode.SENDER_NOT_FROM_GROUP.name, msgData=msgData)
         return await func(cmdStr, msgData, *args, **kwargs)
 
@@ -83,12 +83,11 @@ def log_recoder(func):
 
     @wraps(func)
     async def wrapper(cmdStr, msgData, *args, **kwargs):
-
         result = await func(cmdStr, msgData, *args, **kwargs)
-        messageId = msgData['messageId']
-        timestamp = msgData['timestamp']
-        groupId = msgData['groupId']
-        userId = msgData['userId']
+        messageId = msgData.messageId
+        timestamp = msgData.timestamp
+        groupId = msgData.groupId
+        userId = msgData.userId
         logInfo = await dataSource.getGroupItem(groupId, 'log')
         logName = logInfo['logging']
         typeName = "bot"

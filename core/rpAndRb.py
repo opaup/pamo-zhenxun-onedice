@@ -17,7 +17,7 @@ async def rp(msgStr, msgData):
         return await reply(key=msgCode.RP_OR_RB_FORMAT_FAIL.name, msgData=msgData)
     else:
         msgStr = int(msgStr)
-    diceMode = await dataSource.getGroupItem(msgData["groupId"], "diceMode")
+    diceMode = await dataSource.getGroupItem(msgData.groupId, "diceMode")
     if diceMode == "coc":
         return await cocRp(msgStr, msgData)
     if diceMode == "dnd":
@@ -32,7 +32,7 @@ async def rb(msgStr, msgData):
         return await reply(key=msgCode.RP_OR_RB_FORMAT_FAIL.name, msgData=msgData)
     else:
         msgStr = int(msgStr)
-    diceMode = await dataSource.getGroupItem(msgData["groupId"], "diceMode")
+    diceMode = await dataSource.getGroupItem(msgData.groupId, "diceMode")
     if diceMode == "coc":
         return await cocRb(msgStr, msgData)
     if diceMode == "dnd":

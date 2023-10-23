@@ -39,7 +39,7 @@ help_template = """这里是一个临时的帮助说明。
 
 
 async def doFlow(msgData, bot):
-    cmdStr = msgData["msg"].lower().strip()
+    cmdStr = msgData.msg.lower().strip()
     logger.info(rf"[onedice]检测到指令：{cmdStr}")
 
     # 查找是否包含cq,替换成CQ
@@ -51,8 +51,8 @@ async def doFlow(msgData, bot):
         cmdStr = re.sub("dice", "", cmdStr, count=1).strip()
         return await diceConfig.diceFlow(cmdStr, msgData)
     # 检查该环境下的dice功能是否开启
-    if msgData['msgType'] == "group":
-        if not await dataSource.getGroupItem(msgData['groupId'], "onOff") == "on":
+    if msgData.msgType == "group":
+        if not await dataSource.getGroupItem(msgData.groupId, "onOff") == "on":
             return False
 
     # coc
