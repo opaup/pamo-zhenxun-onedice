@@ -21,15 +21,16 @@ async def updatePlaceholders(msgData):
         placeholders.update(data)
     if dataSource.NICKNAME != "":
         data['NICKNAME'] = dataSource.NICKNAME
-    if msgData.msgType == "group":
-        data['GROUPNAME'] = msgData.groupName
-        data['GROUPID'] = msgData.groupId
-    if msgData.username != "":
-        data['USERNAME'] = msgData.username
+    if msgData is not None:
+        if msgData.msgType == "group":
+            data['GROUPNAME'] = msgData.groupName
+            data['GROUPID'] = msgData.groupId
+        if msgData.username != "":
+            data['USERNAME'] = msgData.username
     placeholders.update(data)
 
 
-async def reply(key, msgData, result="", pcname="", ext1="", ext2=""):
+async def reply(key, msgData=None, result="", pcname="", ext1="", ext2=""):
     """
     全部回复词的加工厂，关键字会在这里替换进个性化的回复词中，如回复词中存在“|”分隔符则会随机选取一个。
 
@@ -49,7 +50,7 @@ async def reply(key, msgData, result="", pcname="", ext1="", ext2=""):
     if re.search("[|]", text):
         parts = text.split("|")
         text = random.choice(parts)
-    if pcname == "":
+    if pcname == "" and msgData is not None:
         pcname = await eventUtil.getPcName(msgData=msgData)
     value = await replace_placeholders(text, result, pcname, ext1, ext2)
     return value

@@ -69,6 +69,13 @@ msgDefaultJson = {
     "TEAM_LOCK_SUCCESS": "已将队伍中的全部角色卡锁定！",
     "TARGET_USER_NOT_HAVE_CARD": "[{EXT1}]还没有选择好角色卡哦。",
     "TEAM_UNLOCK_SUCCESS": "已将队伍中的全部角色卡解锁",
+    "LOGS_START_SUCCESS": "已开启名为{RESULT}的日志记录，记得使用.log off暂时关闭哦。",
+    "LOGS_START_FAIL": "输入的logName包含非法字符",
+    "LOGS_OFF_SUCCESS": "已暂时关闭名为{RESULT}的日志记录，可以使用.log on/get {RESULT}开启或获取哦。",
+    "LOGS_NOT_HAVE_NAME": "必须告诉{NICKNAME}日志叫什么名字呀",
+    "LOGS_NOT_STARTED": "目前没有名为{RESULT}的日志处于正在记录状态",
+    "LOGS_IS_PREPARING": "{NICKNAME}正在整理、准备包裹，请等待...",
+    "LOGS_SEND_SUCCESS": "{NICKNAME}已将包含日志文件的邮件包裹已经寄出给地址：[{RESULT}]啦，请注意查收~",
 }
 
 groupDefaultJson = {

@@ -7,7 +7,10 @@ import csv
 
 from nonebot import on_command, on_notice, on_message
 from nonebot.adapters.onebot.v11 import Bot, MessageEvent, NoticeEvent
-
+from services.log import logger
+from ..models import MsgData
+from ..em.msgCode import msgCode
+from ..sub.custom import reply
 from ..utils import data as dataSource
 from ..utils import eventUtil, logsUtil, emailUtil
 
@@ -18,7 +21,6 @@ log = on_command(
 
 @log.handle()
 async def handle_receive(bot: Bot, event: MessageEvent):
-    # TODO: 添加规则：dice off 时不响应和记录
     msgStr = str(event.message).replace(".log", "").replace("。log", "").strip()
     userId = event.sender.user_id
     groupId = str(event.group_id)
@@ -29,19 +31,23 @@ async def handle_receive(bot: Bot, event: MessageEvent):
             logName = split[1]
             illegalRegex = r'[\\/:*\?"<>|]'
             if re.search(illegalRegex, logName):
-                await log.finish("输入的logName包含非法字符")
+                resultMsg = await reply(msgCode.LOGS_START_FAIL.name)
+                await log.finish(resultMsg)
             await logOn(logName, logInfo, groupId, bot)
         else:
-            await log.finish("必须告诉真寻日志叫什么名字呀")
+            resultMsg = await reply(msgCode.LOGS_NOT_HAVE_NAME.name)
+            await log.finish(resultMsg)
     if split[0] == "get":
         if not len(split) <= 1:
             logName = split[1]
             illegalRegex = r'[\\/:*\?"<>|]'
             if re.search(illegalRegex, logName):
-                await log.finish("输入的logName包含非法字符")
+                resultMsg = await reply(msgCode.LOGS_START_FAIL.name)
+                await log.finish(resultMsg)
             await logGet(logName, logInfo, userId, groupId, bot)
         else:
-            await log.finish("必须告诉真寻日志叫什么名字呀")
+            resultMsg = await reply(msgCode.LOGS_NOT_HAVE_NAME.name)
+            await log.finish(resultMsg)
     if split[0] == "off":
         await logOff(logInfo, groupId, bot)
     if split[0] == "help":
@@ -84,7 +90,7 @@ async def logOff(logInfo, groupId, bot):
     split = re.split(",", timeGroup)
     startTime = split[0]
     logList[logName] = f"{startTime}|{updateTime}"
-    resultMsg = f"已暂时关闭名为{logName}的日志记录，可以使用.log on/get {logName}开启或获取哦。"
+    resultMsg = await reply(msgCode.LOGS_OFF_SUCCESS.name, result=logName)
     await dataSource.updateGroupItem(groupId, 'log', logInfo)
     await bot.send_msg(group_id=int(groupId), message=resultMsg, auto_escape=False)
 
@@ -106,8 +112,9 @@ async def logGet(logName, logInfo, userId, groupId, bot):
         payload_txt = f.read()
     with open(csvUrl, 'r', encoding='utf-8') as f:
         payload_csv = f.read()
-    await emailUtil.sendMail(title, content, recvAddress, logName=logName, payload_txt=payload_txt, payload_csv=payload_csv)
-    resultMsg = f"包含日志文件的邮件包裹已经寄出给地址：[{recvAddress}]啦，请注意查收~"
+    await emailUtil.sendMail(title, content, recvAddress, logName=logName, payload_txt=payload_txt,
+                             payload_csv=payload_csv)
+    resultMsg = await reply(msgCode.LOGS_SEND_SUCCESS.name, result=recvAddress)
     await bot.send_msg(group_id=int(groupId), message=resultMsg, auto_escape=False)
 
 
@@ -124,7 +131,7 @@ noticeHandler = on_notice(priority=1, block=False)
 
 
 @msgHandler.handle()
-async def msgRecoder(bot: Bot, event: MessageEvent):
+async def msgRecoder(bot: Bot, event: MessageEvent, msgData=MsgData.MsgData()):
     messageId = str(event.message_id)
     message = str(event.message)
     userId = event.sender.user_id
@@ -137,10 +144,9 @@ async def msgRecoder(bot: Bot, event: MessageEvent):
         # 没有在记录的日志
         return
     logName = logInfo['logging']
-    msgData = {
-        "userId": str(userId),
-        "groupId": groupId
-    }
+    logger.info(f"[onedice-logRecoder] logging message({messageId}) to the log named {logName}")
+    msgData.userId = str(userId)
+    msgData.groupId = str(groupId)
     pcname = await eventUtil.getPcName(userId, msgData, bot)
     # 解析AT类型的CQ码
     pattern = r'\[CQ:at,qq=(\d+)\]'
@@ -159,5 +165,3 @@ async def msgRecoder(bot: Bot, event: MessageEvent):
 async def noticeRecoder(bot: Bot, event: NoticeEvent):
     # TODO 对撤回等事件进行记录
     await noticeHandler.finish(None)
-
-
