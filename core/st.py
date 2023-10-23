@@ -6,6 +6,7 @@ from ..em.msgCode import msgCode
 from ..utils.calculate import operatorCal
 from ..utils import cqUtil, eventUtil
 from ..utils import data as dataSource
+from ..core.aspect import log_recoder
 
 helpDic = ["help", "帮助"]
 showDic = ["show", "查看", "info"]
@@ -15,12 +16,13 @@ unlockDic = ["unlock"]
 removeDic = ["rm", "删除"]
 
 
+@log_recoder
 async def stFlow(msgStr, msgData):
     isLock = False
-    userId = msgData["userId"]
+    userId = msgData.userId
     groupId = ""
-    if msgData["groupId"]:
-        groupId = msgData["groupId"]
+    if msgData.groupId:
+        groupId = msgData.groupId
         cardLock = await dataSource.getGroupItem(groupId, "cardLock")
         for ids in cardLock:
             lockedUser = re.split("_", ids)
@@ -48,7 +50,7 @@ async def stFlow(msgStr, msgData):
     # 按空格分隔，如第一个匹配二级指令 list show
 
     # 判断user所拥有的卡中是否存在msgStr的卡
-    cardList = await dataSource.getUserItem(msgData["userId"], "cardList")
+    cardList = await dataSource.getUserItem(msgData.userId, "cardList")
     if msgStr in cardList:
         if isLock:
             return await reply(msgCode.CARD_LOCKED_BY_THIS_GROUP.name, msgData)
@@ -113,18 +115,18 @@ async def splitProp(card, cardProp):
 async def newCard(cardName, cardProp, msgData):
     card = {
         "name": cardName,
-        "id": msgData["userId"] + "_" + str((int(time.time()) * 1000) // 1),
+        "id": msgData.userId + "_" + str((int(time.time()) * 1000) // 1),
         "status": 0,  # 0正常 -1删除
         "locked": []
     }
     card = await splitProp(card, cardProp)
     await dataSource.createCharacter(card["id"], card)
-    cardList = await dataSource.getUserItem(msgData["userId"], "cardList")
+    cardList = await dataSource.getUserItem(msgData.userId, "cardList")
     cardList[cardName] = card["id"]
-    await dataSource.updateUserItem(msgData["userId"], "cardList", cardList)
+    await dataSource.updateUserItem(msgData.userId, "cardList", cardList)
     # 切换全局卡为当前新卡
-    await dataSource.updateUserItem(msgData["userId"], "currentCard", card["id"])
-    await dataSource.updateUserItem(msgData["userId"], "currentCardName", card["name"])
+    await dataSource.updateUserItem(msgData.userId, "currentCard", card["id"])
+    await dataSource.updateUserItem(msgData.userId, "currentCardName", card["name"])
 
     return await reply(msgCode.SAVE_CARD_SUCCESS.name, msgData, cardName)
 
@@ -154,8 +156,8 @@ async def remakeCard(cardName, cardId, cardProp, msgData):
 
 
 async def switchCard(cardName, cardList, msgData):
-    await dataSource.updateUserItem(msgData["userId"], "currentCardName", cardName)
-    await dataSource.updateUserItem(msgData["userId"], "currentCard", cardList[cardName])
+    await dataSource.updateUserItem(msgData.userId, "currentCardName", cardName)
+    await dataSource.updateUserItem(msgData.userId, "currentCard", cardList[cardName])
     return await reply(msgCode.SWITCH_CARD_SUCCESS.name, msgData, cardName)
 
 
@@ -163,7 +165,7 @@ async def showCard(msgStr, msgData):
     show_pattern = r'\b({})\b'.format('|'.join(showDic))
     msgStr = re.sub(show_pattern, "", msgStr, count=1).strip()
     msgStr = msgStr.strip()
-    cardInfo = await dataSource.getCurrentCharacter(msgData['userId'], msgData['groupId'])
+    cardInfo = await dataSource.getCurrentCharacter(msgData.userId, msgData.groupId)
     result = json.dumps(cardInfo, indent=4, ensure_ascii=False)
     # 如果为查看某个属性，查询是否存在该属性
     if not msgStr == "":
@@ -174,7 +176,7 @@ async def showCard(msgStr, msgData):
 
 
 async def listCard(msgData):
-    cardList = await dataSource.getUserItem(msgData['userId'], 'cardList')
+    cardList = await dataSource.getUserItem(msgData.userId, 'cardList')
     index = 1
     result = ""
     for key in cardList:
@@ -195,7 +197,7 @@ async def removeCard(msgStr, msgData):
     pattern = r'\b({})\b'.format('|'.join(removeDic))
     msgStr = re.sub(pattern, "", msgStr, count=1).strip()
     msgStr = msgStr.strip()
-    userId = msgData['userId']
+    userId = msgData.userId
     pcname = await eventUtil.getPcName(userId)
     if pcname == msgStr:
         return await reply(msgCode.CARD_NOW_USED_SO_CANT_REMOVE.name, msgData)
@@ -224,8 +226,8 @@ async def lockCard(msgData):
     # 获取groupInfo/cardLock
     # 添加、保存
     """
-    userId = msgData['userId']
-    groupId = msgData['groupId']
+    userId = msgData.userId
+    groupId = msgData.groupId
     cardInfo = await dataSource.getCurrentCharacter(userId)
     if cardInfo == {}:
         return await reply(msgCode.NO_CARD.name, msgData)
@@ -241,7 +243,7 @@ async def lockCard(msgData):
     if groupId not in cardLocked:
         cardLocked.append(groupId)
     await dataSource.updateCharacterItem(cardInfo['id'], 'locked', cardLocked)
-    await dataSource.updateGroupItem(msgData['groupId'], 'cardLock', locked)
+    await dataSource.updateGroupItem(msgData.groupId, 'cardLock', locked)
     return await reply(msgCode.ST_LOCK_SUCCESS.name, msgData, pcname=pcname)
 
 
@@ -254,8 +256,8 @@ async def unlockCard(msgStr, msgData):
     """
     pattern = r'\b({})\b'.format('|'.join(unlockDic))
     msgStr = re.sub(pattern, "", msgStr, count=1).strip()
-    userId = msgData['userId']
-    groupId = msgData['groupId']
+    userId = msgData.userId
+    groupId = msgData.groupId
     if await dataSource.getCurrentCharacter(userId) == {}:
         return await reply(msgCode.NO_CARD.name, msgData)
     if msgStr.isdigit():

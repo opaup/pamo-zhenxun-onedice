@@ -2,13 +2,14 @@ from ..utils import dice as dice
 from ..utils import calculate as cal
 from ..sub.custom import reply
 from ..em.msgCode import msgCode
-from ..core.aspect import rd_before
+from ..core.aspect import rd_before, log_recoder
 from ..utils import data as dataSource
 import re
 
 
 # rd
 @rd_before
+@log_recoder
 async def rdFlow(cmdStr, msgData, bot):
     split = await rdSplit(cmdStr, msgData)
     a1 = split['a1']
@@ -44,8 +45,8 @@ async def rdSplit(cmdStr, msgData):
     m = ""
     operator = ""
     extMsg = ""
-    if msgData["msgType"] == "group":
-        groupId = msgData["groupId"]
+    if msgData.msgType == "group":
+        groupId = msgData.groupId
         diceType = await dataSource.getDiceType(groupId)
     cmdStr = re.sub("r", "", cmdStr, count=1)
     # 判断是否包含d，如包含，则取d之前的内容

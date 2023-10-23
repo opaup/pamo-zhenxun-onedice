@@ -14,7 +14,7 @@ from ..utils.calculate import operatorCal
 
 async def diceFlow(msgStr, msgData):
     # isAdmin
-    if not msgData['isAdmin']:
+    if not msgData.isAdmin:
         return await reply(key=msgCode.DICE_SET_NOT_ADMIN.name, msgData=msgData)
     split = re.split(" ", msgStr)
     if len(split) <= 0:
@@ -47,10 +47,10 @@ async def onOff(msgStr, msgData):
     开启或关闭骰子功能
     """
     if msgStr == "on":
-        await dataSource.updateGroupItem(msgData['groupId'], 'onOff', msgStr)
+        await dataSource.updateGroupItem(msgData.groupId, 'onOff', msgStr)
         return await reply(key=msgCode.DICE_SET_ON.name, msgData=msgData)
     if msgStr == "off":
-        await dataSource.updateGroupItem(msgData['groupId'], 'onOff', msgStr)
+        await dataSource.updateGroupItem(msgData.groupId, 'onOff', msgStr)
         return await reply(key=msgCode.DICE_SET_OFF.name, msgData=msgData)
     return await reply(key=msgCode.DICE_SET_HELP.name, msgData=msgData)
 
@@ -61,7 +61,7 @@ async def setDiceType(msgStr, msgData):
     """
     if not msgStr.isdigit():
         return await reply(key=msgCode.DICE_SET_HELP.name, msgData=msgData)
-    await dataSource.updateGroupItem(msgData['groupId'], 'diceType', msgStr)
+    await dataSource.updateGroupItem(msgData.groupId, 'diceType', msgStr)
     result = msgStr
     return await reply(key=msgCode.DICE_SET_DICETYPE.name, msgData=msgData, result=result)
 
@@ -71,10 +71,10 @@ async def setNotice(msgStr, msgData):
     设置本群是否为团贴扩散群
     """
     if msgStr == "on":
-        await dataSource.updateGroupItem(msgData['groupId'], 'isNotice', msgStr)
+        await dataSource.updateGroupItem(msgData.groupId, 'isNotice', msgStr)
         return await reply(key=msgCode.DICE_SET_ISNOTICE_ON.name, msgData=msgData)
     if msgStr == "off":
-        await dataSource.updateGroupItem(msgData['groupId'], 'isNotice', msgStr)
+        await dataSource.updateGroupItem(msgData.groupId, 'isNotice', msgStr)
         return await reply(key=msgCode.DICE_SET_ISNOTICE_OFF.name, msgData=msgData)
     return await reply(key=msgCode.DICE_SET_HELP.name, msgData=msgData)
 
@@ -87,7 +87,7 @@ async def setMode(msgStr, msgData):
     diceMode = ["coc"]
     if msgStr not in diceMode:
         return await reply(key=msgCode.DICE_SET_HELP.name, msgData=msgData)
-    await dataSource.updateGroupItem(msgData['groupId'], 'diceMode', msgStr)
+    await dataSource.updateGroupItem(msgData.groupId, 'diceMode', msgStr)
     result = msgStr
     return await reply(key=msgCode.DICE_SET_DICETYPE.name, msgData=msgData, result=result)
 

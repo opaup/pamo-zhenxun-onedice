@@ -56,7 +56,7 @@ async def teamFlow(msgStr, msgData, bot):
 
 # team 查看团队列表
 async def teamList(msgData, bot):
-    groupInfo = await dataSource.getGroupInfo(msgData['groupId'])
+    groupInfo = await dataSource.getGroupInfo(msgData.groupId)
     # 应当显示属性和状态
     nowTeamList = groupInfo["teamList"]
     i = 0
@@ -64,7 +64,7 @@ async def teamList(msgData, bot):
     for idStr in nowTeamList:
         i += 1
         s = []
-        cardInfo = await dataSource.getCurrentCharacter(idStr, msgData['groupId'])
+        cardInfo = await dataSource.getCurrentCharacter(idStr, msgData.groupId)
         pcname = await eventUtil.getPcName(idStr, msgData, bot)
         s.append(f"{str(i)}.{pcname}|{idStr}")
         if not cardInfo == {}:
@@ -84,14 +84,14 @@ async def teamList(msgData, bot):
             s.append(")")
         result.append("".join(s))
     resultMsg = await reply(msgCode.TEAM_LIST.name, msgData, "\n".join(result))
-    await bot.send_msg(user_id=msgData["userId"], group_id=msgData["groupId"], message=resultMsg, auto_escape=False)
+    await bot.send_msg(user_id=msgData.userId, group_id=msgData.groupId, message=resultMsg, auto_escape=False)
     return True
 
 
 # team show 查看团队成员属性
 async def teamShow(msgStr, msgData, bot):
     userId = cqUtil.fromStrGetUserId(msgStr)
-    cardInfo = await dataSource.getCurrentCharacter(userId, msgData['groupId'])
+    cardInfo = await dataSource.getCurrentCharacter(userId, msgData.groupId)
     prop = cardInfo['prop']
     pcname = await eventUtil.getPcName(userId, msgData, bot)
     if cardInfo == "":
@@ -109,7 +109,7 @@ async def teamShow(msgStr, msgData, bot):
             s.append(f"{propName} : {propValue}")
         result = "\n".join(s)
     resultMsg = await reply(msgCode.TEAM_SHOW.name, msgData, result, pcname=pcname)
-    await bot.send_msg(user_id=msgData["userId"], group_id=msgData["groupId"], message=resultMsg, auto_escape=False)
+    await bot.send_msg(user_id=msgData.userId, group_id=msgData.groupId, message=resultMsg, auto_escape=False)
     return True
 
 
@@ -124,7 +124,7 @@ async def teamAdd(msgStr, msgData, bot):
         willAddIds = re.findall(idPattern, msgStr)
     result = " [" + "], [".join(willAddIds) + "] "
     # 获取当前成员列表，查看是否存在该用户
-    groupList = await bot.get_group_member_list(group_id=msgData['groupId'])
+    groupList = await bot.get_group_member_list(group_id=msgData.groupId)
     # 为CQ码则解析CQ码再加入，如为ID则直接加入
     tempList = []
     for user in willAddIds:
@@ -137,23 +137,23 @@ async def teamAdd(msgStr, msgData, bot):
     for user in willAddIds:
         if user not in userIdInGroupList:
             return await reply(msgCode.GROUP_NO_ONE.name, msgData)
-    oldTeamList = await dataSource.getGroupItem(msgData['groupId'], "teamList")
+    oldTeamList = await dataSource.getGroupItem(msgData.groupId, "teamList")
     # 如果已在team中，不重复加入
     for willAddId in willAddIds:
         if willAddId not in oldTeamList:
             oldTeamList.append(willAddId)
-    await dataSource.updateGroupItem(msgData['groupId'], "teamList", oldTeamList)
+    await dataSource.updateGroupItem(msgData.groupId, "teamList", oldTeamList)
     resultMsg = await reply(msgCode.TEAM_ADD_SUCCESS.name, msgData, result)
-    await bot.send_msg(user_id=msgData["userId"], group_id=msgData["groupId"], message=resultMsg, auto_escape=False)
+    await bot.send_msg(user_id=msgData.userId, group_id=msgData.groupId, message=resultMsg, auto_escape=False)
     return True
 
 
 # team clear/clr/cls 清空队伍
 async def teamClr(msgData, bot):
-    result = f"{msgData['groupName']}({msgData['groupId']})"
+    result = f"{msgData.groupName}({msgData.groupId})"
     resultMsg = await reply(msgCode.TEAM_CLR.name, msgData, result)
-    await dataSource.updateGroupItem(msgData['groupId'], "teamList", [])
-    await bot.send_msg(user_id=msgData["userId"], group_id=msgData["groupId"], message=resultMsg, auto_escape=False)
+    await dataSource.updateGroupItem(msgData.groupId, "teamList", [])
+    await bot.send_msg(user_id=msgData.userId, group_id=msgData.groupId, message=resultMsg, auto_escape=False)
     return True
 
 
@@ -169,7 +169,7 @@ async def teamRm(msgStr, msgData, bot):
         willRmIds = re.findall(idPattern, msgStr)
     result = " [" + "], [".join(willRmIds) + "] "
     # 获取当前团队列表，查看是否存在该用户
-    groupInfo = await dataSource.getGroupInfo(msgData['groupId'])
+    groupInfo = await dataSource.getGroupInfo(msgData.groupId)
     nowTeamList = groupInfo["teamList"]
     locked = groupInfo["cardLock"]
     # 为CQ码则解析CQ码再加入，如为ID则直接删除
@@ -189,14 +189,14 @@ async def teamRm(msgStr, msgData, bot):
         nowTeamList.remove(idStr)
 
     resultMsg = await reply(msgCode.TEAM_RM_SUCCESS.name, msgData, result)
-    await dataSource.updateGroupItem(msgData['groupId'], "teamList", nowTeamList)
-    await bot.send_msg(user_id=msgData["userId"], group_id=msgData["groupId"], message=resultMsg, auto_escape=False)
+    await dataSource.updateGroupItem(msgData.groupId, "teamList", nowTeamList)
+    await bot.send_msg(user_id=msgData.userId, group_id=msgData.groupId, message=resultMsg, auto_escape=False)
     return True
 
 
 # team call 呼叫队伍全体成员
 async def teamCall(msgData, bot):
-    groupInfo = await dataSource.getGroupInfo(msgData['groupId'])
+    groupInfo = await dataSource.getGroupInfo(msgData.groupId)
     # 应当显示属性和状态
     nowTeamList = groupInfo["teamList"]
     i = 0
@@ -206,14 +206,14 @@ async def teamCall(msgData, bot):
         s = f"{str(i)}.{cqUtil.atSomebody(idStr)}"
         result.append(s)
     resultMsg = await reply(msgCode.TEAM_CALL.name, msgData, "\n".join(result))
-    await bot.send_msg(user_id=msgData["userId"], group_id=msgData["groupId"], message=resultMsg, auto_escape=False)
+    await bot.send_msg(user_id=msgData.userId, group_id=msgData.groupId, message=resultMsg, auto_escape=False)
     return True
 
 
 # team @at|uid propvalue 调整成员卡属性
 async def teamProp(msgStr, msgData, bot):
     userId = cqUtil.fromStrGetUserId(msgStr)
-    cardInfo = await dataSource.getCurrentCharacter(userId, msgData['groupId'])
+    cardInfo = await dataSource.getCurrentCharacter(userId, msgData.groupId)
     prop = cardInfo['prop']
     pcname = await eventUtil.getPcName(userId, msgData, bot)
     if cardInfo == "":
@@ -234,7 +234,7 @@ async def teamProp(msgStr, msgData, bot):
         propValue = 0
     await dataSource.updateCharacterProp(cardInfo['id'], propName, propValue)
     resultMsg = await reply(msgCode.TEAM_PROP.name, msgData, result, pcname=pcname, ext1=propName)
-    await bot.send_msg(user_id=msgData["userId"], group_id=msgData["groupId"], message=resultMsg, auto_escape=False)
+    await bot.send_msg(user_id=msgData.userId, group_id=msgData.groupId, message=resultMsg, auto_escape=False)
     return True
 
 
@@ -245,7 +245,7 @@ async def teamLock(msgStr, msgData, bot):
     获取对应cardInfo，如有人不存在card，则返回error
     写入cardLock
     """
-    groupId = msgData['groupId']
+    groupId = msgData.groupId
     groupInfo = await dataSource.getGroupInfo(groupId)
     locked = groupInfo['cardLock']
     team = groupInfo['teamList']
@@ -267,19 +267,19 @@ async def teamLock(msgStr, msgData, bot):
 
     await dataSource.updateGroupItem(groupId, 'cardLock', locked)
     resultMsg = await reply(msgCode.TEAM_LOCK_SUCCESS.name, msgData)
-    await bot.send_msg(user_id=msgData["userId"], group_id=msgData["groupId"], message=resultMsg, auto_escape=False)
+    await bot.send_msg(user_id=msgData.userId, group_id=msgData.groupId, message=resultMsg, auto_escape=False)
     return True
 
 
 # team unlock 一键全体卡解锁
 async def teamUnLock(msgData, bot):
-    groupId = msgData['groupId']
-    groupInfo = await dataSource.getGroupInfo(msgData['groupId'])
+    groupId = msgData.groupId
+    groupInfo = await dataSource.getGroupInfo(msgData.groupId)
     locked = groupInfo['cardLock']
     for uid, cardId in locked.items():
         await unlockTargetGroup(cardId, groupId)
     # 清空cardLock
-    await dataSource.updateGroupItem(msgData['groupId'], 'cardLock', {})
+    await dataSource.updateGroupItem(msgData.groupId, 'cardLock', {})
     resultMsg = await reply(msgCode.TEAM_UNLOCK_SUCCESS.name, msgData)
-    await bot.send_msg(user_id=msgData["userId"], group_id=msgData["groupId"], message=resultMsg, auto_escape=False)
+    await bot.send_msg(user_id=msgData.userId, group_id=msgData.groupId, message=resultMsg, auto_escape=False)
     return True
