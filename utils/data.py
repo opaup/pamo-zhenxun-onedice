@@ -2,10 +2,12 @@ from pathlib import Path
 from ..template.propDic import propName
 from ..template import jsonTemplate as jsonTemplate
 import importlib.util as importlibUtil
+import os
 import json
 import asyncio
 
 NICKNAME = ""
+SUPERUSERS = ['525915186']
 # 配置目录
 configsPath = Path() / "configs"
 # pdice配置
@@ -229,6 +231,16 @@ async def saveUserInfo(userId, value):
         json.dump(userInfo, f, indent=4, ensure_ascii=False)
 
 
+async def saveGroupInfo(groupId, value):
+    """
+    覆盖原来的保存新的Info
+    """
+    groupInfo = value
+    groupPath = statusPath / (groupId + ".json")
+    with groupPath.open('w', encoding='utf-8') as f:
+        json.dump(groupInfo, f, indent=4, ensure_ascii=False)
+
+
 async def createCharacter(newId, newJson):
     characterPath = charactersPath / (newId + ".json")
     with characterPath.open('w', encoding='utf-8') as f:
@@ -286,6 +298,59 @@ async def getGroupIdAndName(msgData):
     # if msgData["msgType"] == "group":
     # msgData
     return
+
+
+async def checkExist_user(userId):
+    filePath = usersPath / (userId + ".json")
+    return os.path.isfile(filePath)
+
+
+async def checkExist_group(groupId):
+    filePath = statusPath / (groupId + ".json")
+    return os.path.isfile(filePath)
+
+
+async def checkExist_character(cardId):
+    filePath = charactersPath / (cardId + ".json")
+    return os.path.isfile(filePath)
+
+
+async def getAllUsersDataFile():
+    fileList = []
+    # 使用os.listdir()获取指定文件夹下的所有文件和子文件夹
+    for filename in os.listdir(usersPath):
+        fileList.append(filename)
+    return fileList
+
+
+async def getAllGroupsDataFile():
+    fileList = []
+    # 使用os.listdir()获取指定文件夹下的所有文件和子文件夹
+    for filename in os.listdir(statusPath):
+        fileList.append(filename)
+    return fileList
+
+
+async def getAllCharactersDataFile():
+    fileList = []
+    # 使用os.listdir()获取指定文件夹下的所有文件和子文件夹
+    for filename in os.listdir(charactersPath):
+        fileList.append(filename)
+    return fileList
+
+
+async def getLogsTempGroups():
+    groups = []
+    for groupId in os.listdir(logsTempPath):
+        groups.append(groupId)
+    return groups
+
+
+async def getLogsTempName(groupId):
+    fileList = []
+    for filename in os.listdir(logsTempPath / groupId):
+        fileList.append(filename)
+    return fileList
 
 
 asyncio.run(load_path())

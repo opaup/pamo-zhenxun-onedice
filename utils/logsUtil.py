@@ -73,3 +73,24 @@ async def putToTxt(groupId, logName, logData):
 
 def getCsvPath(groupId, logName):
     return logsTempPath / groupId / f"{logName}.csv"
+
+
+async def writeToNewCSV(groupId, logName, data):
+    """
+    将从readFromCSV读出的全部信息一次性写入一个新的CSV文件
+    """
+    fileName = f"{logName}.csv"
+    tempPath = logsTempPath / groupId
+    tempUrl = tempPath / fileName
+    tempPath.mkdir(parents=True, exist_ok=True)
+
+    with open(tempUrl, 'w', encoding='utf-8-sig', newline='') as new_f:
+        writer = csv.writer(new_f)
+        for _, row_data in data.items():
+            writer.writerow([row_data['typeName'],
+                             row_data['messageId'],
+                             row_data['timestamp'],
+                             row_data['message'],
+                             row_data['userId'],
+                             row_data['pcname']])
+    return tempUrl

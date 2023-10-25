@@ -10,6 +10,7 @@ from ..sub.custom import reply
 from ..em.msgCode import msgCode
 from ..utils import data as dataSource
 from ..utils.calculate import operatorCal
+from ..database import db
 
 
 async def diceFlow(msgStr, msgData):
@@ -36,8 +37,15 @@ async def diceFlow(msgStr, msgData):
         msgStr = re.sub("rule", "", msgStr, count=1).strip()
         return await setRule(msgStr, msgData)
     if cmd == "help":
-        msgStr = re.sub("help", "", msgStr, count=1).strip()
         return await reply(key=msgCode.DICE_SET_HELP.name, msgData=msgData)
+    if cmd == "pullall":
+        return await db.pullAll(msgData)
+    if cmd == 'pushall':
+        return await db.pushAll(msgData)
+    if cmd == "rollbackall":
+        return await db.rollbackAll(msgData)
+    if cmd == "pushlogsall":
+        return await db.pushLogsAll(msgData)
 
     return await reply(key=msgCode.DICE_SET_HELP.name, msgData=msgData)
 

@@ -9,7 +9,6 @@ from ..utils import data as dataSource
 project_name = "zhenxun-onedice"
 plugin_version = 0.3
 
-
 async def botInfo(msgData, bot):
     friendList = await bot.get_friend_list()
     groupList = await bot.get_group_list()
