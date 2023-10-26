@@ -56,5 +56,5 @@ async def sendMail(title, content, recvAddress, logName="", payload_txt=None, pa
     session.login(address, password)
     text = message.as_string().encode('utf-8')
     session.sendmail(address, recvAddress, text)
-    logger.success(f"[onedice-logRecoder] email send to [{recvAddress}] successfully")
+    logger.success(f"[onedice-logRecoder] email send to [{recvAddress}] successfully", command="log get")
     session.quit()

@@ -128,7 +128,7 @@ async def logEnd(msgStr, userId, groupId, bot):
         resultMsg = f"该日志已被结束，无法进行操作，请使用.log get获取，如有疑问可联系管理员"
         await bot.send_msg(group_id=int(groupId), message=resultMsg, auto_escape=False)
         return
-    logInfo['endList']['logName'] = int(endTime)
+    logInfo['endList'][logName] = int(endTime)
     resultMsg = f"已结束日志[{logName}]的记录，可以使用(.log get {logName})获取，超过14天未获取将被自动清除。"
     await dataSource.updateGroupItem(groupId, 'log', logInfo)
     await bot.send_msg(user_id=int(userId), group_id=int(groupId), message=resultMsg, auto_escape=False)
@@ -170,7 +170,11 @@ async def getLogList(logInfo, userId, groupId, bot):
         if logName == logInfo['logging'] and logInfo['status'] == "on":
             status = f"（记录ing）"
         else:
-            status = f" (已结束于: {logInfo['endList'][logName]})" if logName in logInfo['endList'] else ""
+            if logName in logInfo['endList']:
+                endTime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(logInfo['endList'][logName]))
+                status = f" (已结束于: {endTime})"
+            else:
+                status = ""
         logsList.append(f"{i}. {logName}{status}")
         i += 1
     groupName = await eventUtil.getGroupName(groupId, bot)
