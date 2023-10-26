@@ -111,5 +111,5 @@ async def pushLogsAll():
             if file == "":
                 continue
             data = await logsUtil.readFromCSV(groupId, file)
-            await dbUtils.pushLogsData(data)
+            await dbUtils.pushLogsData(data, groupId, file)
     logger.warning("[onedice] 同步本地日志文件完成")

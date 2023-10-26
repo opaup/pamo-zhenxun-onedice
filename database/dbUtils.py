@@ -87,7 +87,7 @@ async def pullLogs(groupId=None, logName=None):
     return
 
 
-async def pushLogsData(data):
+async def pushLogsData(data, groupId, file):
     for x, y in data.items():
         dic = {strUtil.camelToSnake(k): v for k, v in y.items()}
         dic['group_id'] = groupId
