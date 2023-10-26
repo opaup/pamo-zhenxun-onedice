@@ -71,7 +71,7 @@ async def saveOrUpdateById(model_class, theId, dic):
     if existing:
         return await existing.update_or_create(id=theId, defaults=dic)
     else:
-        return await database.onedice_log.create(**dic)
+        return await model_class.create(**dic)
 
 
 async def pullLogs(groupId=None, logName=None):
