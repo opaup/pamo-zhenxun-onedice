@@ -90,7 +90,8 @@ groupDefaultJson = {
     "log": {
         "status": "off",
         "logging": "",
-        "logList": {}
+        "logList": {},
+        "endList": {},
     }
 }
 
@@ -113,6 +114,7 @@ configDefaultJson = {
         "password": "申请的应用密码",
     },
     "database": {
+        "onOff": True,
         "sql_name": "postgres",
         "user": "",
         "password": "",

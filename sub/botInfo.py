@@ -7,7 +7,8 @@ import platform
 from ..utils import data as dataSource
 
 project_name = "zhenxun-onedice"
-plugin_version = 0.3
+plugin_version = "0.3.8-preview"
+project_address = "https://github.com/opaup/pamo-zhenxun-onedice"
 
 async def botInfo(msgData, bot):
     friendList = await bot.get_friend_list()
@@ -34,15 +35,15 @@ async def botInfo(msgData, bot):
 
     resultMsg = (
         f"[{project_name}]当前位置：{location}\n"
-        f"目前版本：{plugin_version}-preview\n"
+        f"目前版本：{plugin_version}\n"
         f"使用 真寻帮助\t获取其他功能的菜单\n"
         f"使用 .help\t获取骰功能的帮助菜单\n"
         f"使用 .dice on\t开启骰功能\n"
         f"使用 .dice off\t关闭骰功能\n"
-        f"项目地址：https://github.com/opaup/pamo-zhenxun-onedice\n"
+        f"项目地址：{project_address}\n"
         f"——————————\n"
         f"{nickname}目前拥有{friendNum}个好友与{groupNum}个群聊。\n"
         f"当前操作系统：{system_info} {release_info}\n"
-        f"硬盘状态：{storage_used}% 内存占用：{memory_used}% CPU占用：{cpu_used}%"
+        f"储存占用：{storage_used}% 内存占用：{memory_used}% CPU占用：{cpu_used}%"
     )
     return resultMsg

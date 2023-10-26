@@ -8,6 +8,7 @@ import csv
 from nonebot import on_command, on_notice, on_message
 from nonebot.adapters.onebot.v11 import Bot, MessageEvent, NoticeEvent
 from services.log import logger
+from utils.utils import scheduler
 from ..models import MsgData
 from ..em.msgCode import msgCode
 from ..sub.custom import reply
@@ -33,10 +34,11 @@ async def handle_receive(bot: Bot, event: MessageEvent):
             if re.search(illegalRegex, logName):
                 resultMsg = await reply(msgCode.LOGS_START_FAIL.name)
                 await log.finish(resultMsg)
-            await logOn(logName, logInfo, groupId, bot)
+            await logOn(logName, logInfo, userId, groupId, bot)
         else:
             resultMsg = await reply(msgCode.LOGS_NOT_HAVE_NAME.name)
             await log.finish(resultMsg)
+        return
     if split[0] == "get":
         if not len(split) <= 1:
             logName = split[1]
@@ -48,16 +50,22 @@ async def handle_receive(bot: Bot, event: MessageEvent):
         else:
             resultMsg = await reply(msgCode.LOGS_NOT_HAVE_NAME.name)
             await log.finish(resultMsg)
+        return
     if split[0] == "off":
-        await logOff(logInfo, groupId, bot)
+        await logOff(logInfo, userId, groupId, bot)
+        return
+    if split[0] == "end":
+        await logEnd(msgStr, userId, groupId, bot)
+        return
     if split[0] == "help":
         return
     if split[0] == "list":
+        await getLogList(logInfo, userId, groupId, bot)
         return
     await log.finish(None)
 
 
-async def logOn(logName, logInfo, groupId, bot):
+async def logOn(logName, logInfo, userId, groupId, bot):
     """
     # 判断是否已经有在记录且未关闭，有则返回，无则split[1] 为logName
     # 设置当前group的log的logging = logName，状态为on
@@ -65,6 +73,13 @@ async def logOn(logName, logInfo, groupId, bot):
     """
     if logInfo['status'] == "on":
         # 已被开启，不可重复开启
+        resultMsg = f"当前还在记录日志[{logInfo['logging']}]，请先使用 [log off {logInfo['logging']}] 关闭记录"
+        await bot.send_msg(user_id=int(userId), group_id=int(groupId), message=resultMsg, auto_escape=False)
+        return
+    if logName in logInfo['endList']:
+        # 已结束不可开启
+        resultMsg = f"该日志已被结束，无法进行操作，请使用.log get获取，如有疑问可联系管理员"
+        await bot.send_msg(group_id=int(groupId), message=resultMsg, auto_escape=False)
         return
     startTime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
 
@@ -74,12 +89,14 @@ async def logOn(logName, logInfo, groupId, bot):
     logList[logName] = f"{startTime},"
     resultMsg = f"已开启名为{logName}的日志记录，记得使用.log off暂时关闭哦。"
     await dataSource.updateGroupItem(groupId, 'log', logInfo)
-    await bot.send_msg(group_id=int(groupId), message=resultMsg, auto_escape=False)
+    await bot.send_msg(user_id=int(userId), group_id=int(groupId), message=resultMsg, auto_escape=False)
 
 
-async def logOff(logInfo, groupId, bot):
+async def logOff(logInfo, userId, groupId, bot):
     if not logInfo['status'] == "on":
         # 没有在记录的日志
+        resultMsg = f"当前没有正在记录的日志哦！"
+        await bot.send_msg(user_id=int(userId), group_id=int(groupId), message=resultMsg, auto_escape=False)
         return
     updateTime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
 
@@ -92,7 +109,29 @@ async def logOff(logInfo, groupId, bot):
     logList[logName] = f"{startTime}|{updateTime}"
     resultMsg = await reply(msgCode.LOGS_OFF_SUCCESS.name, result=logName)
     await dataSource.updateGroupItem(groupId, 'log', logInfo)
-    await bot.send_msg(group_id=int(groupId), message=resultMsg, auto_escape=False)
+    await bot.send_msg(user_id=int(userId), group_id=int(groupId), message=resultMsg, auto_escape=False)
+
+async def logEnd(msgStr, userId, groupId, bot):
+    endTime = time.time()
+    logName = msgStr.replace("end", "").strip()
+    logInfo = await dataSource.getGroupItem(groupId, 'log')
+    if logInfo['status'] == "on":
+        # 当前还在记录日志
+        resultMsg = f"当前还在记录日志[{logInfo['logging']}]，请先使用 [log off {logInfo['logging']}] 关闭记录"
+        await bot.send_msg(user_id=int(userId), group_id=int(groupId), message=resultMsg, auto_escape=False)
+        return
+    if logName == "":
+        resultMsg = await reply(msgCode.LOGS_NOT_HAVE_NAME.name)
+        await bot.send_msg(user_id=int(userId), group_id=int(groupId), message=resultMsg, auto_escape=False)
+        return
+    if logName in logInfo['endList']:
+        resultMsg = f"该日志已被结束，无法进行操作，请使用.log get获取，如有疑问可联系管理员"
+        await bot.send_msg(group_id=int(groupId), message=resultMsg, auto_escape=False)
+        return
+    logInfo['endList']['logName'] = int(endTime)
+    resultMsg = f"已结束日志[{logName}]的记录，可以使用(.log get {logName})获取，超过14天未获取将被自动清除。"
+    await dataSource.updateGroupItem(groupId, 'log', logInfo)
+    await bot.send_msg(user_id=int(userId), group_id=int(groupId), message=resultMsg, auto_escape=False)
 
 
 async def logGet(logName, logInfo, userId, groupId, bot):
@@ -102,6 +141,10 @@ async def logGet(logName, logInfo, userId, groupId, bot):
     # line = f"({nowTime}){pcname}: {msgStr}"
     """
     # TODO 对撤回等事件记录进行处理
+    if logName not in logInfo['endList']:
+        resultMsg = f"该日志还没有创建或结束哦，需要先使用 .log end 结束日志记录。"
+        await bot.send_msg(user_id=int(userId), group_id=int(groupId), message=resultMsg, auto_escape=False)
+        return
     nowTime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(time.time()))
     groupName = await eventUtil.getGroupName(groupId, bot)
     logData = await logsUtil.readFromCSV(groupId, logName)
@@ -117,11 +160,23 @@ async def logGet(logName, logInfo, userId, groupId, bot):
     await emailUtil.sendMail(title, content, recvAddress, logName=logName, payload_txt=payload_txt,
                              payload_csv=payload_csv)
     resultMsg = await reply(msgCode.LOGS_SEND_SUCCESS.name, result=recvAddress)
-    await bot.send_msg(group_id=int(groupId), message=resultMsg, auto_escape=False)
+    await bot.send_msg(user_id=int(userId), group_id=int(groupId), message=resultMsg, auto_escape=False)
 
 
-async def getLogList():
-    return
+async def getLogList(logInfo, userId, groupId, bot):
+    i = 1
+    logsList = []
+    for logName in logInfo['logList']:
+        if logName == logInfo['logging'] and logInfo['status'] == "on":
+            status = f"（记录ing）"
+        else:
+            status = f" (已结束于: {logInfo['endList'][logName]})" if logName in logInfo['endList'] else ""
+        logsList.append(f"{i}. {logName}{status}")
+        i += 1
+    groupName = await eventUtil.getGroupName(groupId, bot)
+    listStr = "\n".join(logsList)
+    resultMsg = f"群聊[{groupName}({groupId})]的日志记录列表：\n{listStr}"
+    await bot.send_msg(user_id=int(userId), group_id=int(groupId), message=resultMsg, auto_escape=False)
 
 
 async def logHelp():
@@ -169,3 +224,16 @@ async def msgRecoder(bot: Bot, event: MessageEvent, msgData=MsgData.MsgData()):
 async def noticeRecoder(bot: Bot, event: NoticeEvent):
     # TODO 对撤回等事件进行记录
     await noticeHandler.finish(None)
+
+
+@scheduler.scheduled_job(
+    "cron",
+    hour=2,
+    minute=1,
+)
+async def cleanLocalLogs():
+    """
+    # 每天凌晨两点钟进行一次本地logs检查，已完成且超过14天的logs将被清除
+    # 清理前先push一次
+    """
+    return
