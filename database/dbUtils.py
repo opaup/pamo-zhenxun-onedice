@@ -68,7 +68,10 @@ async def pullCharacterData(cardId=None):
 async def saveOrUpdateById(model_class, theId, dic):
     existing = await model_class.filter(id=theId).first()
     dic = {strUtil.camelToSnake(k): v for k, v in dic.items()}
-    return await existing.update_or_create(id=theId, defaults=dic)
+    if existing:
+        return await existing.update_or_create(id=theId, defaults=dic)
+    else:
+        return await database.onedice_log.create(**dic)
 
 
 async def pullLogs(groupId=None, logName=None):
