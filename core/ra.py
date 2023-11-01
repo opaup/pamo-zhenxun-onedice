@@ -116,9 +116,10 @@ async def doRaCal(cmdStr, msgData):
     else:
         character = await dataSource.getCurrentCharacter(msgData.userId, msgData.groupId)
         ruleType = await dataSource.getGroupItem(msgData.groupId, "ruleType")
-    if not character:
-        cardId = character["id"]
+    if not character == {}:
         character["name"] = "{USERNAME}"
+    else:
+        cardId = character["id"]
     pcname = character["name"]
 
     # 是否存在操作符
@@ -136,7 +137,13 @@ async def doRaCal(cmdStr, msgData):
         propValue = int(propValue)
     # 优先读了指令中的propValue，如无则读卡
     if propValue == 0 and not propName == "":
-        propValue = character["prop"][propName]
+        if propName not in character["prop"]:
+            propValue = 0
+        else:
+            if character == {}:
+                propValue = 0
+            else:
+                propValue = character["prop"][propName]
 
     # 运算符不为空，则表示存在附加表达式
     try:
