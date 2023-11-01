@@ -136,15 +136,17 @@ async def doRaCal(cmdStr, msgData):
         propValue = "".join(re.findall(r'\d+', cmdStr)) or 0
         propValue = int(propValue)
     # 优先读了指令中的propValue，如无则读卡
-    if propValue == 0 and not propName == "":
-        if propName not in character["prop"]:
-            propValue = 0
-        else:
-            if character == {}:
+    try:
+        if propValue == 0 and not propName == "":
+            if propName not in character["prop"]:
                 propValue = 0
             else:
-                propValue = character["prop"][propName]
-
+                if character == {}:
+                    propValue = 0
+                else:
+                    propValue = character["prop"][propName]
+    except KeyError:
+        propValue = 0
     # 运算符不为空，则表示存在附加表达式
     try:
         if not operator == "":
