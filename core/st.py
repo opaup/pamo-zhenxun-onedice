@@ -45,7 +45,7 @@ async def stFlow(msgStr, msgData):
         cardList = await dataSource.getUserItem(userId, "cardList")
         if cardName in cardList:
             return await remakeCard(cardName, cardList[cardName], cardProp, msgData)
-        if re.search(r'([\u4e00-\u9fa5]+)(\d+)', msgStr):
+        if re.search(r'([a-zA-Z\u4e00-\u9fff]+)(\d+)', msgStr):
             return await newCard(cardName, cardProp, msgData)
     # 按空格分隔，如第一个匹配二级指令 list show
 

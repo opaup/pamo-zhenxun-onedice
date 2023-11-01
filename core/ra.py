@@ -116,8 +116,8 @@ async def doRaCal(cmdStr, msgData):
     else:
         character = await dataSource.getCurrentCharacter(msgData.userId, msgData.groupId)
         ruleType = await dataSource.getGroupItem(msgData.groupId, "ruleType")
-        cardId = character["id"]
     if not character:
+        cardId = character["id"]
         character["name"] = "{USERNAME}"
     pcname = character["name"]
 
