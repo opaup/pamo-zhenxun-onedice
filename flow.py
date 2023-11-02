@@ -1,7 +1,7 @@
 from .sub.custom import reply
 from .em import msgCode
 from .utils import data as dataSource
-from .core import ra, rh, rd, rpAndRb, make, st, sanCheck, diceConfig
+from .core import ra, rh, rd, rpAndRb, make, st, sanCheck, diceConfig, LiAndTi
 from .sub import team, botInfo
 from services.log import logger
 import re
@@ -23,6 +23,10 @@ help_template = """这里是一个临时的帮助说明。
 .ra检定
 .rp和.rb惩罚奖励骰
 .rh暗骰（格式和rd一致）
+.ti (list) 临时/即时疯狂症状| list 查看全部
+.li (list) 总结疯狂症状| list 查看全部
+.lio 查看全部焦躁症
+.lip 查看全部恐惧症
 .sc
 .dice help 查看群设置帮助
 .team 查看当前队伍列表
@@ -87,6 +91,14 @@ async def doFlow(msgData, bot):
     if re.match(r'^(ra)', cmdStr):
         cmdStr = re.sub(r'ra', "", cmdStr, count=1).strip()
         return await ra.doRa(cmdStr, msgData, bot)
+    # ti
+    if re.match(r'^(ti)', cmdStr):
+        cmdStr = re.sub(r'ti', "", cmdStr, count=1).strip()
+        return await LiAndTi.getTi(cmdStr)
+    # li
+    if re.match(r'^(li)', cmdStr):
+        cmdStr = re.sub(r'li', "", cmdStr, count=1).strip()
+        return await LiAndTi.getLi(cmdStr)
     # sc
     if re.match(r'^(sc)', cmdStr):
         cmdStr = re.sub(r'sc', "", cmdStr, count=1).strip()
