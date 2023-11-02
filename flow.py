@@ -7,11 +7,11 @@ from services.log import logger
 import re
 
 
-help_template = """这里是一个临时的帮助说明。
+help_template = f"""这里是一个临时的帮助说明。
 目前pamo-zhenxun-onedice仍在初期开发过程，如出现未知bug请及时联系帕沫（525915186）。
 简单的指令列表：
 基本的.rd
-.coc
+.coc coc7th人物卡作成
 .st 角色名 切卡
 .st 角色名-属性属性值 录入/更新
 .st 属性+-值 当前卡属性调整
@@ -19,6 +19,7 @@ help_template = """这里是一个临时的帮助说明。
 .st list 查看角色卡列表
 .st rm 删除角色卡
 .st lock/unlock 锁定/解锁角色卡
+——————
 .rd基础投掷
 .ra检定
 .rp和.rb惩罚奖励骰
@@ -27,7 +28,8 @@ help_template = """这里是一个临时的帮助说明。
 .li (list) 总结疯狂症状| list 查看全部
 .lio 查看全部焦躁症
 .lip 查看全部恐惧症
-.sc
+.sc san值检定
+——————
 .dice help 查看群设置帮助
 .team 查看当前队伍列表
 .team call 呼叫全体队伍成员
@@ -36,9 +38,9 @@ help_template = """这里是一个临时的帮助说明。
 .team show @成员 (属性) 获取成员(目标属性)的属性值
 .team clear 清除队伍
 .team lock/unlock 队伍上锁/解锁
-.notice/发布公告/发布团贴 {公告内容} 进行团贴扩散请求
+.notice/发布公告/发布团贴 [公告内容] 进行团贴扩散请求
 ——————
-详细可查看项目地址：https://git.rabi-town.cn/opaup/pamo-zhenxun-onedice
+详细可查看项目地址：{botInfo.project_address}
 """
 
 

@@ -147,6 +147,17 @@ async def getGroupInfo(groupId):
     return groupInfo
 
 
+async def getGroupStatusList():
+    """获取已存在于本地的群组状态列表-json(dict)格式，key为groupId，value为groupInfo的格式"""
+    statusFiles = os.listdir(statusPath)
+    statusList = {}
+    for file in statusFiles:
+        groupId = file.replace(".json", "")
+        groupInfo = await getGroupInfo(groupId)
+        statusList[groupId] = groupInfo
+    return statusList
+
+
 async def getConfigInfo():
     if not configPath.exists():
         await create_configs()
