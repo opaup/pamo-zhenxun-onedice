@@ -58,7 +58,7 @@ async def handle_receive(bot: Bot, event: MessageEvent):
         await logEnd(msgStr, userId, groupId, bot)
         return
     if split[0] == "help":
-        return
+        return log.finish(logHelp())
     if split[0] == "list":
         await getLogList(logInfo, userId, groupId, bot)
         return
@@ -151,7 +151,7 @@ async def logGet(logName, logInfo, userId, groupId, bot):
     txtUrl = await logsUtil.putToTxt(groupId, logName, logData)
     csvUrl = logsUtil.getCsvPath(groupId, logName)
     title = f"【拉比邮政局】群聊[{groupName}({groupId})]中的日志文件：{logName}"
-    content = f"这是您在群聊[{groupName}({groupId})]中存放的日志文件：{logName}\n\t ---拉比邮政局 {nowTime}"
+    content = f"这是您在群聊[{groupName}({groupId})]中存放的日志文件：{logName}\n  ---拉比邮政局 {nowTime}"
     recvAddress = f"{userId}@qq.com"
     with open(txtUrl, 'r', encoding='utf-8') as f:
         payload_txt = f.read()
@@ -183,8 +183,12 @@ async def getLogList(logInfo, userId, groupId, bot):
     await bot.send_msg(user_id=int(userId), group_id=int(groupId), message=resultMsg, auto_escape=False)
 
 
-async def logHelp():
-    return
+def logHelp():
+    resultMsg = (f"log on/off 开启/关闭日志记录"
+                 f"log end 结束日志记录"
+                 f"log get 获取日志"
+                 f"log list 获取当前群组下的日志列表")
+    return resultMsg
 
 
 msgHandler = on_message(priority=1, block=False)

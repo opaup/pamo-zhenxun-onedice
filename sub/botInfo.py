@@ -7,7 +7,7 @@ import platform
 from ..utils import data as dataSource
 
 project_name = "zhenxun-onedice"
-plugin_version = "0.4.8-preview"
+plugin_version = "0.4.9-preview"
 project_address = "https://github.com/opaup/pamo-zhenxun-onedice"
 
 async def botInfo(msgData, bot):
@@ -45,10 +45,13 @@ async def botInfo(msgData, bot):
         f"[{project_name}]\n"
         f"当前位于{location}\n"
         f"目前版本：{plugin_version}\n"
-        f"使用 真寻帮助\t获取其他功能的菜单\n"
-        f"使用 .help\t获取骰功能的帮助菜单\n"
-        f"使用 .dice on\t开启骰功能\n"
-        f"使用 .dice off\t关闭骰功能\n"
+        f"使用 真寻帮助 获取其他功能的菜单\n"
+        f"使用 .dice on 开启骰功能\n"
+        f"使用 .dice off 关闭骰功能\n"
+        f"使用 .help normal 获取一般指令帮助\n"
+        f"使用 .help sub 获取附属指令帮助\n"
+        f"使用 .help dice 获取骰设置指令帮助\n"
+        f"使用 .help other 获取其他指令帮助\n"
         f"项目地址：{project_address}\n"
         f"——————————\n"
         f"{nickname}目前拥有{friendNum}个好友与{groupNum}个群组。\n"

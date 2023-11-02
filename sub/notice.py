@@ -62,9 +62,7 @@ async def notice(bot: Bot, event: MessageEvent):
         await bot.send_msg(group_id=int(groupId), message=msg, auto_escape=False)
         return
     rabi = userBag[itemName]
-    if rabi <= 0:
-        return print("dont have rabi")
-    elif rabi > 3:
+    if rabi > 3:
         consume = -(3 - rabi) + 1
         flag = True
     else:

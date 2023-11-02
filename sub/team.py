@@ -17,12 +17,13 @@ async def teamFlow(msgStr, msgData, bot):
 
     listDic = ["list", "列表"]
     addDic = ["add"]
-    clrDic = ["clr", "clear", "cls"]
+    clrDic = ["clr", "clear", "cls", "清空", "解散"]
     showDic = ["show"]
-    rmDic = ["rm", "del"]
+    rmDic = ["rm", "del", "delete"]
     callDic = ["call"]
     lockDic = ["lock"]
     unlockDic = ["unlock"]
+    helpDic = ["help", "帮助"]
     if msgStr == "":
         return await teamList(msgData, bot)
     cmdSplit = re.split(" ", msgStr)
@@ -47,6 +48,9 @@ async def teamFlow(msgStr, msgData, bot):
         return await teamLock(msgStr, msgData, bot)
     if cmd in unlockDic:
         return await teamUnLock(msgData, bot)
+    if cmd in helpDic:
+        msgStr = re.sub('|'.join(helpDic), "", msgStr, 1).strip()
+        return teamHelp(msgStr)
     # 如果为数字或起始终止符为[]
     if (re.match(r'^\d{2,}$', cmd)) or (len(cmd) >= 2 and cmd[0] == '[' and cmd[-1] == ']'):
         return await teamProp(msgStr, msgData, bot)
@@ -283,3 +287,16 @@ async def teamUnLock(msgData, bot):
     resultMsg = await reply(msgCode.TEAM_UNLOCK_SUCCESS.name, msgData)
     await bot.send_msg(user_id=msgData.userId, group_id=msgData.groupId, message=resultMsg, auto_escape=False)
     return True
+
+
+def teamHelp():
+    resultMsg = (f"team (list) 查看当前小队列表，加不加list都一样\n"
+                 f"team add 添加小队成员，例.team add [@蟹林言]\n"
+                 f"team clear 清空小队\n"
+                 f"team show (@成员+属性名) 查看小队成员的角色属性、没有指定成员和属性则是查看全部角色的属性，例.team show [@五仁月饼]血量"
+                 f"team [@成员]属性名属性值 调整指定成员的属性，模型值默认为减去，如为负数则是增加，例.team [@帕沫]信用评级999\n"
+                 f"team rm @成员 从小队中删除指定成员\n"
+                 f"team call 一键呼叫小队成员\n"
+                 f"team lock/unlock 一键锁定/解锁小队成员角色卡\n"
+                 f"其中二级指令，list=列表，clr=clear=cls=清空=解散，rm=del=delete")
+    return resultMsg

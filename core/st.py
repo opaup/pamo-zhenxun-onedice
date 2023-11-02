@@ -66,7 +66,7 @@ async def stFlow(msgStr, msgData):
     cmdSplit = re.split(" ", msgStr)
     if len(cmdSplit) >= 1:
         if cmdSplit[0] in helpDic:
-            return await stHelp()
+            return stHelp()
         if cmdSplit[0] in showDic:
             return await showCard(msgStr, msgData)
         if cmdSplit[0] in listDic:
@@ -78,7 +78,7 @@ async def stFlow(msgStr, msgData):
         if cmdSplit[0] in unlockDic:
             return await unlockCard(msgStr, msgData)
     else:
-        return await stHelp()
+        return stHelp()
 
     # 是否存在 +-，且应存在角色卡，格式为 字符串[+-]数字
     m2 = re.match(r'^([\u4e00-\u9fa5]+)(\d+)$', msgStr)
@@ -211,7 +211,7 @@ async def removeCard(msgStr, msgData):
     if not locked == []:
         # 被某些群锁定了
         result = "[" + ",".join(locked) + "]"
-        return await reply(msgCode.CARD_LOCKED_BY_OTHER_GROUP.name, msgData, pcname=pcname,result=result)
+        return await reply(msgCode.CARD_LOCKED_BY_OTHER_GROUP.name, msgData, pcname=pcname, result=result)
     # 从当前user中删除
     cardList.pop(pcname)
     await dataSource.updateUserItem(userId, 'cardList', cardList)
@@ -293,5 +293,13 @@ async def unlockTargetGroup(cardId, groupId):
     await dataSource.updateCharacterItem(cardId, 'locked', locked)
 
 
-async def stHelp():
-    return
+def stHelp():
+    resultMsg = (f"st 角色名 切卡，例如.st 林言\n"
+                 f"st 角色名-属性属性值 录入/更新角色卡，例如.st 犬神香-hp7智力30魅力80\n"
+                 f"st 属性+-值 当前卡属性调整，例如.st 智商+999\n"
+                 f"st show (属性名) 查看角色卡详情/属性值，例如 .st show 炮术\n"
+                 f"st list 查看角色卡列表\n"
+                 f"st rm 删除角色卡\n"
+                 f"st lock/unlock 锁定/解锁角色卡"
+                 f"ps：在二级指令中help=帮助，show=info=查看，list=列表，lock=锁定，rm=删除")
+    return resultMsg
