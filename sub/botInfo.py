@@ -7,7 +7,7 @@ import platform
 from ..utils import data as dataSource
 
 project_name = "zhenxun-onedice"
-plugin_version = "0.3.8-preview"
+plugin_version = "0.4.8-preview"
 project_address = "https://github.com/opaup/pamo-zhenxun-onedice"
 
 async def botInfo(msgData, bot):
