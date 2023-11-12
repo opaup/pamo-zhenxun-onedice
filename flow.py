@@ -2,7 +2,8 @@ from .sub.custom import reply
 from .em import msgCode
 from .utils import data as dataSource
 from .core import ra, rh, rd, rpAndRb, make, st, sanCheck, diceConfig, LiAndTi
-from .sub import team, botInfo, help
+from .sub import team, botInfo, help, hiy, init
+from .other import jrrp
 from services.log import logger
 import re
 
@@ -122,6 +123,12 @@ async def doFlow(msgData, bot):
         return await team.teamFlow(cmdStr, msgData, bot)
     # npc
     if re.match(r'^(npc)', cmdStr):
+        return await reply(msgCode.NO_ACHIEVE_CMD.name, msgData)
+    # hiy使用记录
+    if re.match(r'^(hiy|记录|roll点记录|检定记录)', cmdStr):
+        return await hiy.getHistoryForRoll(msgData)
+    # jrrp
+    if re.match(r'^(jrrp|今日人品|人品)', cmdStr):
         return await reply(msgCode.NO_ACHIEVE_CMD.name, msgData)
     # help
     if re.match(r'^(help|帮助)', cmdStr):

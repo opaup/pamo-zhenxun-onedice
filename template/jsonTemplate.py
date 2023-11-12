@@ -99,6 +99,7 @@ userDefaultJson = {
     # 权限级别 0 无权限 1 normal 2 认证KP(允许发布团贴) 3 协管 4 骰主 默认为1
     "permissionLevel": 1,
     "pcCardId": 0,
+    "rollNum": 0,
     "successRollNum": 0,
     "failRollNum": 0,
     "greatSuccessRollNum": 0,

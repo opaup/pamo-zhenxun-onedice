@@ -72,6 +72,10 @@ async def getCheckStrAndRecord(checkResultNum, msgData):
 
     if checkResultNum != 0:
         userInfo = await dataSource.getUserInfo(msgData.userId)
+        if "rollNum" not in userInfo:
+            userInfo["rollNum"] = 0
+        rollNum = userInfo["rollNum"]
+        userInfo["rollNum"] = rollNum + 1
         if checkResultNum <= 4:
             successRollNum = userInfo["successRollNum"]
             userInfo["successRollNum"] = successRollNum + 1
