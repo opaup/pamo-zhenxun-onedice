@@ -303,6 +303,34 @@ async def updateCharacterProp(cardId, prop, value):
         await saveCharacterProp(cardId, prop, value)
 
 
+async def getCharacterProp(cardId, prop):
+    """
+    获取角色指定属性，使用字典匹配属性名
+    """
+    characterInfo = await getCharacter(cardId)
+    props = characterInfo['prop']
+    key = ""
+    for standard_key, aliases in propName.items():
+        if prop in aliases:
+            key = standard_key
+            break
+    if not key == "":
+        propAlias = propName[key]
+        for alias in propAlias:
+            if alias in props:
+                return props[alias]
+    return 0
+
+
+async def getCurrentCharacterProp(prop, userId, groupId=""):
+    """
+    获取当前角色(包括锁定卡)指定属性，使用字典匹配属性名
+    """
+    characterInfo = await getCurrentCharacter(userId, groupId)
+    cardId = characterInfo['id']
+    return await getCharacterProp(cardId, prop)
+
+
 async def getGroupIdAndName(msgData):
     groupId = ""
     groupName = ""

@@ -25,7 +25,7 @@ class msgCode(Enum):
     ST_IS_LOCKED = ("ST_IS_LOCKED", "本群的角色卡已锁定为{PCNAME}，如需切换请先使用.st unlock解锁角色卡")
     ST_UNLOCK = ("ST_UNLOCK", "已解锁[{USERNAME}]当前角色卡")
     ST_UNLOCK_TARGET_GROUP_NO_LOCK = (
-    "ST_UNLOCK_TARGET_GROUP_NO_LOCK", "[{USERNAME}]解锁角色卡失败，目标群聊[{EXT1}]没有相关角色卡锁定信息")
+        "ST_UNLOCK_TARGET_GROUP_NO_LOCK", "[{USERNAME}]解锁角色卡失败，目标群聊[{EXT1}]没有相关角色卡锁定信息")
     ROLL_FAIL = ("ROLL_FAIL", "掷骰出错了")
     ROLL_CHECK_SUCCESS = ("ROLL_CHECK_SUCCESS", "掷骰检定成功")
     ROLL_CHECK_HARD_SUCCESS = ("ROLL_CHECK_HARD_SUCCESS", "掷骰检定困难成功")
@@ -69,8 +69,10 @@ class msgCode(Enum):
     TEAM_UNLOCK_SUCCESS = ("TEAM_UNLOCK_SUCCESS", "已将队伍中的全部角色卡解锁")
     LOGS_START_SUCCESS = ("LOGS_START_SUCCESS", "已开启名为{result}的日志记录，记得使用.log off暂时关闭哦。")
     LOGS_START_FAIL = ("LOGS_START_FAIL", "输入的logName包含非法字符")
-    LOGS_OFF_SUCCESS = ("LOGS_OFF_SUCCESS", "已暂时关闭名为{result}的日志记录，可以使用.log on/get {result}开启或获取哦。")
+    LOGS_OFF_SUCCESS = (
+    "LOGS_OFF_SUCCESS", "已暂时关闭名为{result}的日志记录，可以使用.log on/get {result}开启或获取哦。")
     LOGS_NOT_HAVE_NAME = ("LOGS_START_FAIL", "必须告诉{NICKNAME}日志叫什么名字呀")
     LOGS_NOT_STARTED = ("LOGS_NOT_STARTED", "目前没有名为{RESULT}的日志处于正在记录状态")
     LOGS_IS_PREPARING = ("LOGS_IS_PREPARING", "{NICKNAME}正在整理、准备包裹，请等待...")
-    LOGS_SEND_SUCCESS = ("LOGS_SEND_SUCCESS", "{NICKNAME}已将包含日志文件的邮件包裹已经寄出给地址：[{result}]啦，请注意查收~")
+    LOGS_SEND_SUCCESS = (
+    "LOGS_SEND_SUCCESS", "{NICKNAME}已将包含日志文件的邮件包裹已经寄出给地址：[{result}]啦，请注意查收~")

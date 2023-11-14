@@ -81,7 +81,7 @@ async def stFlow(msgStr, msgData):
         return stHelp()
 
     # 是否存在 +-，且应存在角色卡，格式为 字符串[+-]数字
-    m2 = re.match(r'^([\u4e00-\u9fa5]+)(\d+)$', msgStr)
+    m2 = re.match(r'^([\u4e00-\u9fa5a-zA-Z]+)(\d+)$', msgStr)
     if re.match(r'^(.+)[+-](\d+)$', msgStr) or m2:
         # TODO 如果是锁定卡则更新锁定卡
         operator = ""
@@ -134,6 +134,11 @@ async def newCard(cardName, cardProp, msgData):
 async def updateCard(cardId, propName, operator, value, msgData):
     cardInfo = await dataSource.getCharacter(cardId)
     if propName not in cardInfo['prop']:
+        # 如果不存在该属性，则新建一个属性
+        if operator == "":
+            cardInfo['prop'][propName] = value
+            await dataSource.updateCharacterItem(cardId, prop, cardInfo['prop'])
+            return await reply(msgCode.UPDATE_CARD_SUCCESS.name, msgData, propName)
         return await reply(msgCode.NOT_FOUND_CARD_PROP.name, msgData, cardInfo['name'], ext1=propName)
     oldPropValue = cardInfo['prop'][propName]
     if operator == "":
@@ -146,7 +151,7 @@ async def updateCard(cardId, propName, operator, value, msgData):
 
 async def remakeCard(cardName, cardId, cardProp, msgData):
     newProp = {}
-    prop = dataSource.getCharacter(cardId)["prop"]
+    prop = await dataSource.getCharacter(cardId)["prop"]
     newProp = splitProp(newProp, cardProp)["prop"]
     for k, v in newProp.items():
         if k in prop:

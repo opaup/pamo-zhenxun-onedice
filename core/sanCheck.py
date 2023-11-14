@@ -41,7 +41,8 @@ async def sc(cmdStr, msgData, bot):
     # 检定
     raCal = await ra.doRaCal("灵感", msgData)
     card = await dataSource.getCurrentCharacter(msgData.userId, msgData.groupId)
-    san = card['prop']['san']
+    # san = card['prop']['san']
+    san = await dataSource.getCurrentCharacterProp("san", msgData.userId, msgData.groupId)
     cardId = raCal["cardId"]
     pcname = raCal["pcname"]
     intelligent = raCal["propValue"]
